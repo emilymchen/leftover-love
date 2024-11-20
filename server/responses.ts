@@ -1,7 +1,7 @@
 import { Authing } from "./app";
-import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friending";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/posting";
 import { Router } from "./framework/router";
+import { MessageSenderNotMatchError, MessageDoc } from "./concepts/messaging";
 
 /**
  * This class does useful conversions for the frontend.
@@ -28,14 +28,25 @@ export default class Responses {
   }
 
   /**
-   * Convert FriendRequestDoc into more readable format for the frontend
-   * by converting the ids into usernames.
+   * Convert MessageDoc into more readable format for the frontend by converting the sender/receiver id into a username.
    */
-  static async friendRequests(requests: FriendRequestDoc[]) {
-    const from = requests.map((request) => request.from);
-    const to = requests.map((request) => request.to);
-    const usernames = await Authing.idsToUsernames(from.concat(to));
-    return requests.map((request, i) => ({ ...request, from: usernames[i], to: usernames[i + requests.length] }));
+  static async message(message: MessageDoc | null) {
+    console.log(message);
+    if (!message) {
+      return message;
+    }
+    const sender = await Authing.getUserById(message.from);
+    const receiver = await Authing.getUserById(message.to);
+    return { ...message, to: receiver.username, from: sender.username };
+  }
+
+  /**
+   * Same as {@link message} but for an array of MessageDoc for improved performance.
+   */
+  static async messages(messages: MessageDoc[]) {
+    const senders = await Authing.idsToUsernames(messages.map((message) => message.from));
+    const receivers = await Authing.idsToUsernames(messages.map((message) => message.to));
+    return messages.map((message, i) => ({ ...message, from: senders[i], to: receivers[i] }));
   }
 }
 
@@ -44,22 +55,7 @@ Router.registerError(PostAuthorNotMatchError, async (e) => {
   return e.formatWith(username, e._id);
 });
 
-Router.registerError(FriendRequestAlreadyExistsError, async (e) => {
-  const [user1, user2] = await Promise.all([Authing.getUserById(e.from), Authing.getUserById(e.to)]);
-  return e.formatWith(user1.username, user2.username);
-});
-
-Router.registerError(FriendNotFoundError, async (e) => {
-  const [user1, user2] = await Promise.all([Authing.getUserById(e.user1), Authing.getUserById(e.user2)]);
-  return e.formatWith(user1.username, user2.username);
-});
-
-Router.registerError(FriendRequestNotFoundError, async (e) => {
-  const [user1, user2] = await Promise.all([Authing.getUserById(e.from), Authing.getUserById(e.to)]);
-  return e.formatWith(user1.username, user2.username);
-});
-
-Router.registerError(AlreadyFriendsError, async (e) => {
-  const [user1, user2] = await Promise.all([Authing.getUserById(e.user1), Authing.getUserById(e.user2)]);
-  return e.formatWith(user1.username, user2.username);
+Router.registerError(MessageSenderNotMatchError, async (e) => {
+  const username = (await Authing.getUserById(e.sender)).username;
+  return e.formatWith(username, e._id);
 });

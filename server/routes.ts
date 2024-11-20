@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Friending, Posting, Sessioning } from "./app";
+import { Authing, Messaging, Posting, Sessioning } from "./app";
 import { PostOptions } from "./concepts/posting";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
@@ -106,51 +106,47 @@ class Routes {
     return Posting.delete(oid);
   }
 
-  @Router.get("/friends")
-  async getFriends(session: SessionDoc) {
-    const user = Sessioning.getUser(session);
-    return await Authing.idsToUsernames(await Friending.getFriends(user));
+  @Router.get("/messages")
+  @Router.validate(z.object({ currentUser: z.string(), otherUser: z.string() }))
+  async getMessages(currentUser: string, otherUser: string) {
+    const currentUser_id = (await Authing.getUserByUsername(currentUser))._id;
+    const otherUser_id = (await Authing.getUserByUsername(otherUser))._id;
+    const sent_messages = await Messaging.getMessagesByUser(currentUser_id, otherUser_id);
+    const received_messages = await Messaging.getMessagesByUser(otherUser_id, currentUser_id);
+    const all_messages = sent_messages.concat(received_messages);
+    const sorted_messages = all_messages.sort((a, b) => a.time.getTime() - b.time.getTime());
+    return Responses.messages(sorted_messages);
   }
 
-  @Router.delete("/friends/:friend")
-  async removeFriend(session: SessionDoc, friend: string) {
-    const user = Sessioning.getUser(session);
-    const friendOid = (await Authing.getUserByUsername(friend))._id;
-    return await Friending.removeFriend(user, friendOid);
+  /**
+   *  Sends a message from the current session user to the given username.
+   *  If the user's message activity is being tracked, a record is created as well.
+   *
+   * @param session  the session of the user, the user must be allowed to message
+   * @param to the username of the user to send the message to, user must exist and be allowed to message, to != from
+   * @param content the text of the message
+   * @returns the created message
+   */
+  @Router.post("/messages")
+  async sendMessage(session: SessionDoc, to: string, content: string) {
+    const receiver = (await Authing.getUserByUsername(to))._id;
+    const sender = Sessioning.getUser(session);
+    const created = await Messaging.send(receiver, sender, content);
+    return { msg: created.msg, message: await Responses.message(created.message) };
   }
 
-  @Router.get("/friend/requests")
-  async getRequests(session: SessionDoc) {
+  /**
+   *  Deletes a message with the given id.
+   *
+   * @param session the session of the user, the user must be allowed to message and be the sender of the message
+   * @param id the message id
+   */
+  @Router.delete("/messages/:id")
+  async deleteMessage(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
-    return await Responses.friendRequests(await Friending.getRequests(user));
-  }
-
-  @Router.post("/friend/requests/:to")
-  async sendFriendRequest(session: SessionDoc, to: string) {
-    const user = Sessioning.getUser(session);
-    const toOid = (await Authing.getUserByUsername(to))._id;
-    return await Friending.sendRequest(user, toOid);
-  }
-
-  @Router.delete("/friend/requests/:to")
-  async removeFriendRequest(session: SessionDoc, to: string) {
-    const user = Sessioning.getUser(session);
-    const toOid = (await Authing.getUserByUsername(to))._id;
-    return await Friending.removeRequest(user, toOid);
-  }
-
-  @Router.put("/friend/accept/:from")
-  async acceptFriendRequest(session: SessionDoc, from: string) {
-    const user = Sessioning.getUser(session);
-    const fromOid = (await Authing.getUserByUsername(from))._id;
-    return await Friending.acceptRequest(fromOid, user);
-  }
-
-  @Router.put("/friend/reject/:from")
-  async rejectFriendRequest(session: SessionDoc, from: string) {
-    const user = Sessioning.getUser(session);
-    const fromOid = (await Authing.getUserByUsername(from))._id;
-    return await Friending.rejectRequest(fromOid, user);
+    const oid = new ObjectId(id);
+    await Messaging.assertSenderIsUser(oid, user);
+    return Messaging.delete(oid);
   }
 }
 
