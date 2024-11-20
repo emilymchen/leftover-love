@@ -3,14 +3,11 @@ import { ObjectId } from "mongodb";
 import DocCollection, { BaseDoc } from "../framework/doc";
 import { NotAllowedError, NotFoundError } from "./errors";
 
-export interface PostOptions {
-  backgroundColor?: string;
-}
-
 export interface PostDoc extends BaseDoc {
   author: ObjectId;
-  content: string;
-  options?: PostOptions;
+  food_item: string;
+  expiration_time: Date;
+  quantity: number;
 }
 
 /**
@@ -26,8 +23,8 @@ export default class PostingConcept {
     this.posts = new DocCollection<PostDoc>(collectionName);
   }
 
-  async create(author: ObjectId, content: string, options?: PostOptions) {
-    const _id = await this.posts.createOne({ author, content, options });
+  async create(author: ObjectId, food_item: string, expiration_time: Date, quantity: number) {
+    const _id = await this.posts.createOne({ author, food_item, expiration_time, quantity });
     return { msg: "Post successfully created!", post: await this.posts.readOne({ _id }) };
   }
 
@@ -40,10 +37,10 @@ export default class PostingConcept {
     return await this.posts.readMany({ author });
   }
 
-  async update(_id: ObjectId, content?: string, options?: PostOptions) {
+  async update(_id: ObjectId, food_item?: string, expiration_time?: Date, quantity?: number) {
     // Note that if content or options is undefined, those fields will *not* be updated
     // since undefined values for partialUpdateOne are ignored.
-    await this.posts.partialUpdateOne({ _id }, { content, options });
+    await this.posts.partialUpdateOne({ _id }, { food_item, expiration_time, quantity });
     return { msg: "Post successfully updated!" };
   }
 
@@ -59,6 +56,20 @@ export default class PostingConcept {
     }
     if (post.author.toString() !== user.toString()) {
       throw new PostAuthorNotMatchError(user, _id);
+    }
+  }
+
+  async isPostExpired(_id: ObjectId) {
+    const post = await this.posts.readOne({ _id });
+    if (!post) {
+      throw new NotFoundError(`Post ${_id} does not exist!`);
+    }
+    return post.expiration_time < new Date();
+  }
+
+  async assertPostIsNotExpired(_id: ObjectId) {
+    if (await this.isPostExpired(_id)) {
+      throw new NotAllowedError(`Post ${_id} is expired!`);
     }
   }
 }
