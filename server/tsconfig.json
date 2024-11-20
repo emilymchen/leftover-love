@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+
+    "rootDir": "../",
+    "baseUrl": "./",
+    "outDir": "../dist-server/",
+  },
+  "include": ["./**/*.ts", "../public/*.ts", "../test/*.ts", "../api/index.ts"],
+}

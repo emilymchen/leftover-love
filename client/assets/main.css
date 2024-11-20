@@ -1,0 +1,32 @@
+/* Add some global styles here! */
+
+:root {
+  --red: rgb(208, 67, 12);
+  --base-bg: #f1f3f5;
+}
+
+button.btn-small {
+  font-size: 80%;
+}
+
+button.button-error {
+  color: white;
+  background: var(--red);
+}
+
+a.button {
+  color: #212529;
+  background-color: #f1f3f5;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25em;
+  padding: 0.375em 0.75em;
+  text-decoration: none;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
