@@ -5,8 +5,8 @@ import RegisterForm from "@/components/Login/RegisterForm.vue";
 
 <template>
   <main class="column">
-    <h1>Leftover Love</h1>
-    <LoginForm />
+    <h1>Sign up your business</h1>
+    <p>Let's find your store to turn your leftovers into impact in just a few minutes:</p>
     <RegisterForm />
   </main>
 </template>
