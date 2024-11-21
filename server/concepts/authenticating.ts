@@ -5,6 +5,8 @@ import { BadValuesError, NotAllowedError, NotFoundError } from "./errors";
 export interface UserDoc extends BaseDoc {
   username: string;
   password: string;
+  role: string;
+  location: string | null;
 }
 
 /**
@@ -23,9 +25,13 @@ export default class AuthenticatingConcept {
     void this.users.collection.createIndex({ username: 1 });
   }
 
-  async create(username: string, password: string) {
-    await this.assertGoodCredentials(username, password);
-    const _id = await this.users.createOne({ username, password });
+  async create(username: string, password: string, role: string, location?: string) {
+    await this.assertGoodCredentials(username, password, role);
+    await this.assertValidRole(role);
+    if (role === "Recipient" && !location) {
+      throw new BadValuesError("Location must be provided for Recipient users!");
+    }
+    const _id = await this.users.createOne({ username, password, role, location });
     return { msg: "User created successfully!", user: await this.users.readOne({ _id }) };
   }
 
@@ -105,9 +111,35 @@ export default class AuthenticatingConcept {
     }
   }
 
-  private async assertGoodCredentials(username: string, password: string) {
-    if (!username || !password) {
-      throw new BadValuesError("Username and password must be non-empty!");
+  async assertIsRole(_id: ObjectId, role: string) {
+    const user = await this.users.readOne({ _id });
+    if (user === null) {
+      throw new NotFoundError(`User not found!`);
+    }
+    if (user.role !== role) {
+      throw new NotAllowedError(`User is not a ${role}!`);
+    }
+  }
+
+  async getUserRole(_id: ObjectId) {
+    const user = await this.users.readOne({ _id });
+    if (user === null) {
+      throw new NotFoundError(`User not found!`);
+    }
+    return user.role;
+  }
+
+  async getUserLocation(_id: ObjectId) {
+    const user = await this.users.readOne({ _id });
+    if (user === null) {
+      throw new NotFoundError(`User not found!`);
+    }
+    return user.location;
+  }
+
+  private async assertGoodCredentials(username: string, password: string, role: string) {
+    if (!username || !password || !role) {
+      throw new BadValuesError("Username, password, and role must be non-empty!");
     }
     await this.assertUsernameUnique(username);
   }
@@ -115,6 +147,12 @@ export default class AuthenticatingConcept {
   private async assertUsernameUnique(username: string) {
     if (await this.users.readOne({ username })) {
       throw new NotAllowedError(`User with username ${username} already exists!`);
+    }
+  }
+
+  private async assertValidRole(role: string) {
+    if (!["Recipient", "Donor", "Volunteer"].includes(role)) {
+      throw new BadValuesError(`Role must be one of 'Recipient', 'Donor', or 'Volunteer'. Role ${role} is invalid.`);
     }
   }
 }
