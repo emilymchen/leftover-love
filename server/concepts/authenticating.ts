@@ -28,8 +28,8 @@ export default class AuthenticatingConcept {
   async create(username: string, password: string, role: string, location?: string) {
     await this.assertGoodCredentials(username, password, role);
     await this.assertValidRole(role);
-    if (role === "Recipient" && !location) {
-      throw new BadValuesError("Location must be provided for Recipient users!");
+    if (role === "Donor" && !location) {
+      throw new BadValuesError("Location must be provided for Donor users!");
     }
     const _id = await this.users.createOne({ username, password, role, location });
     return { msg: "User created successfully!", user: await this.users.readOne({ _id }) };
