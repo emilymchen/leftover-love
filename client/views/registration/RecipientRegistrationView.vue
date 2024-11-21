@@ -6,6 +6,6 @@ import RegisterForm from "@/components/Login/RegisterForm.vue";
 <template>
   <main class="column">
     <h1>Find food today</h1>
-    <RegisterForm />
+    <RegisterForm role="Recipient" />
   </main>
 </template>

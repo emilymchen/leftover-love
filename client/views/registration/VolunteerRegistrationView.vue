@@ -6,6 +6,6 @@ import RegisterForm from "@/components/Login/RegisterForm.vue";
 <template>
   <main class="column">
     <h1>Make a difference today</h1>
-    <RegisterForm />
+    <RegisterForm role="Volunteer" />
   </main>
 </template>

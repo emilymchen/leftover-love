@@ -20,7 +20,7 @@ const register = (role: string) => {
     <button @click="register('recipient')">find food</button>
     <button @click="register('donor')">join the mission</button>
     <button @click="register('volunteer')">volunteer today</button>
-    <LoginForm />
-    <RegisterForm />
+    <!-- <LoginForm /> -->
+    <!-- <RegisterForm /> -->
   </main>
 </template>
