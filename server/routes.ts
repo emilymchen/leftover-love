@@ -50,6 +50,12 @@ class Routes {
     return Authing.updatePassword(user, currentPassword, newPassword);
   }
 
+  @Router.get("/user-role")
+  async getUserRole(session: SessionDoc) {
+    const user = Sessioning.getUser(session);
+    return await Authing.getUserRole(user);
+  }
+
   @Router.delete("/users")
   async deleteUser(session: SessionDoc) {
     const user = Sessioning.getUser(session);
