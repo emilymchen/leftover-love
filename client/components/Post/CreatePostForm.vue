@@ -6,7 +6,7 @@ const food_item = ref("");
 const qty = ref(1);
 const expiration_time = ref("");
 const tags = ref("");
-const emit = defineEmits(["refreshPosts"]);
+const emit = defineEmits(["refreshPosts", "closeCreatePost"]);
 
 const createPost = async (food_item: string, quantity: number, expiration_time: string) => {
   try {
@@ -47,19 +47,22 @@ const emptyForm = () => {
       <label for="tags">Tags</label>
       <input type="text" id="tags" v-model="tags" placeholder="Tags (e.g., vegan, spicy)" />
     </div>
-    <button type="submit" class="pure-button pure-button-primary">Post</button>
+    <div class="create-post-buttons">
+      <button class="create-post-button" type="submit" >Post</button>
+      <button class="close-post-button" @click="emit('closeCreatePost')">Close</button>
+    </div>
   </form>
 </template>
 
 <style scoped>
-form {
+/* form {
   background-color: var(--base-bg);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
   padding: 1em;
-}
+} */
 
 textarea {
   font-family: inherit;
@@ -70,7 +73,7 @@ textarea {
   resize: none;
 }
 form {
-  background-color: var(--base-bg);
+  background-color: var(--light-bg);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
@@ -116,6 +119,24 @@ button {
 }
 
 button:hover {
-  background-color: var(--button-hover-bg);
+  /* background-color: var(--button-hover-bg); */
+}
+
+.create-post-buttons {
+  display: flex;
+  flex-flow: row, nowrap;
+  justify-content: center;
+
+  button {
+    margin: 8px;
+  }
+
+  .create-post-button {
+    background-color: var(--pink);
+  }
+
+  .close-post-button {
+    background-color: var(--light-grey);
+  }
 }
 </style>

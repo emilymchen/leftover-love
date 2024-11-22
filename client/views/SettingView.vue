@@ -19,10 +19,43 @@ async function delete_() {
 </script>
 
 <template>
-  <main class="column">
-    <h1>Settings for {{ currentUsername }}</h1>
-    <button class="pure-button pure-button-primary" @click="logout">Logout</button>
-    <button class="button-error pure-button" @click="delete_">Delete User</button>
+  <main class="account-settings">
+    <!-- <h1>Settings for {{ currentUsername }}</h1> -->
+    <h1>Account Settings</h1>
     <UpdateUserForm />
+    <div class="logout-delete-buttons">
+      <button class="logout-button" @click="logout">Logout</button>
+      <button class="delete-button" @click="delete_">Delete User</button>
+    </div>
   </main>
 </template>
+
+<style scoped>
+h1 {
+  color: var(--red);
+}
+
+.account-settings {
+  display: flex;
+  flex-flow: column nowrap;
+  margin-left: 40px;
+}
+
+.logout-delete-buttons {
+  display: flex;
+  flex-flow: row nowrap;
+
+  button {
+    margin: 4px;
+    border-style: none;
+  }
+
+  .logout-button {
+    background-color: var(--pink);
+  }
+
+  .delete-button {
+    background-color: var(--light-grey);
+  }
+}
+</style>

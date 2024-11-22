@@ -12,15 +12,17 @@ const { currentUsername } = storeToRefs(useUserStore());
   <div class="food-item-post">
     <div class="top-section">
       <div class="food-name">{{ props.post.food_item }}</div>
-      <div class="expiration-time">Expires: {{ formatDate(props.post.expiration_item) }}</div>
     </div>
-    <div class="details">
+    <div class="author-details">
       <div class="author">{{ props.post.author }}</div>
+    </div>
+    <div class="qty-expiration-details">
       <div class="quantity">Qty: {{ props.post.quantity }}</div>
+      <div class="expiration-time">Expires: {{ formatDate(props.post.expiration_item) }}</div>
     </div>
     <div class="base">
       <menu v-if="props.post.author == currentUsername">
-        <li><button @click="emit('editPost', props.post._id)">Edit</button></li>
+        <button class="edit-button" @click="emit('editPost', props.post._id)">Edit</button>
       </menu>
     </div>
   </div>
@@ -56,6 +58,17 @@ menu {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  menu {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .edit-button {
+    width: 100%;
+    margin-top: 8px;
+    border-radius: 8px;
+  }
 }
 
 .base article:only-child {
@@ -70,7 +83,9 @@ menu {
   border-radius: 8px;
   padding: 16px;
   font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
+  background-color: var(--light-bg);
+  /* background-color: var(--light-grey); */
+  /* background-color: #f9f9f9; */
 }
 
 .top-section {
@@ -88,11 +103,11 @@ menu {
 
 .expiration-time {
   font-size: 14px;
-  color: var(--green);
+  color: var(--dark-green);
   text-align: right;
 }
 
-.details {
+.author-details {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -100,11 +115,19 @@ menu {
 
 .author {
   font-size: 16px;
-  color: var(--dark-green);
+  color: var(--darker-green);
 }
 
 .quantity {
   font-size: 14px;
-  color: #777;
+  color: var(--dark-green);
+  /* color: #777; */
 }
+
+.qty-expiration-details {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
 </style>

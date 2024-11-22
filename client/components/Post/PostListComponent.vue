@@ -13,6 +13,7 @@ const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
 let editing = ref("");
 let searchAuthor = ref("");
+let isCreatingPost = ref(false);
 
 async function getPosts(author?: string) {
   let query: Record<string, string> = author !== undefined ? { author } : {};
@@ -30,7 +31,7 @@ function updateEditing(id: string) {
   editing.value = id;
 }
 
-onBeforeMount(async () => {
+async function updatePosts() {
   if (isDonor) {
     // If it's a donor, we only want to have them see their food listings
     await getPosts(currentUsername.value);
@@ -40,18 +41,22 @@ onBeforeMount(async () => {
     await getPosts();
   }
   loaded.value = true;
+}
+
+onBeforeMount(async () => {
+  await updatePosts()
 });
 </script>
 
 <template>
   <section v-if="isLoggedIn && isDonor">
-    <h2>Create a post:</h2>
-    <CreatePostForm @refreshPosts="getPosts" />
+    <button class="expand-create-post-button" @click="isCreatingPost = true" v-if="!isCreatingPost">Create a post</button>
+    <CreatePostForm @refreshPosts="updatePosts" @closeCreatePost="isCreatingPost = false" v-else/>
   </section>
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
-      <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
-      <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
+      <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="updateEditing" />
+      <EditPostForm v-else :post="post" @refreshPosts="updatePosts" @editPost="updateEditing" />
     </article>
   </section>
   <p v-else-if="loaded">No posts found</p>
@@ -82,6 +87,9 @@ article {
 
 .posts {
   padding: 1em;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-evenly;
 }
 
 .row {
@@ -89,5 +97,11 @@ article {
   justify-content: space-between;
   margin: 0 auto;
   max-width: 60em;
+}
+
+.expand-create-post-button {
+  background-color: var(--pink);
+  border-style: none;
+  border-radius: 8px;
 }
 </style>

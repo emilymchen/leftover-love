@@ -25,7 +25,7 @@ onBeforeMount(async () => {
   <header>
     <nav>
       <div class="title">
-        <img src="@/assets/images/logo.svg" />
+        <img src="@/assets/images/logo.png" />
         <RouterLink :to="{ name: 'Home' }">
           <h1>Leftover Love</h1>
         </RouterLink>
@@ -54,7 +54,8 @@ onBeforeMount(async () => {
 
 nav {
   padding: 1em 2em;
-  background-color: lightgray;
+  /* background-color: lightgray; */
+  background-color: var(--beige);
   display: flex;
   align-items: center;
 }
@@ -62,6 +63,7 @@ nav {
 h1 {
   font-size: 2em;
   margin: 0;
+  color: var(--darker-green);
 }
 
 .title {

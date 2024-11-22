@@ -3,7 +3,10 @@
 :root {
   --red: rgb(208, 67, 12);
   --beige: #d4c8a9;
+  --light-bg: rgba(255, 255, 255, 28%);
   --green: #b0b470;
+  --dark-green: #58823A;
+  --darker-green: #43603B;
   --orange: #d13717;
   --base-bg: #f1f3f5;
   --light-grey: #b0a892;
@@ -47,4 +50,16 @@ button {
   justify-content: center;
   align-items: center;
   gap: 1em;
+}
+
+
+body {
+  background-color: var(--beige);
+  color: var(--text);
+
+  font-family: 'Averia Serif Libre';
+}
+
+* {
+  font-family: 'Averia Serif Libre';
 }
