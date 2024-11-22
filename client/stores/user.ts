@@ -17,9 +17,21 @@ export const useUserStore = defineStore(
       currentRole.value = "";
     };
 
-    const createUser = async (username: string, password: string, role: string, location: string) => {
-      await fetchy("/api/users", "POST", {
+    const registerRecipient = async (username: string, password: string, role: string) => {
+      await fetchy("/api/users-recipient", "POST", {
+        body: { username, password, role },
+      });
+    };
+
+    const registerDonor = async (username: string, password: string, role: string, location: string) => {
+      await fetchy("/api/users-donor", "POST", {
         body: { username, password, role, location },
+      });
+    };
+
+    const registerVolunteer = async (username: string, password: string, role: string) => {
+      await fetchy("/api/users-volunteer", "POST", {
+        body: { username, password, role },
       });
     };
 
@@ -61,7 +73,9 @@ export const useUserStore = defineStore(
       currentUsername,
       currentRole,
       isLoggedIn,
-      createUser,
+      registerRecipient,
+      registerDonor,
+      registerVolunteer,
       loginUser,
       updateSession,
       logoutUser,

@@ -6,12 +6,25 @@ import { defineProps, ref } from "vue";
 const username = ref("");
 const password = ref("");
 const address = ref(""); // TODO: not sure how to validate it's a real address? placeholder for now
-const { createUser, loginUser, updateSession } = useUserStore();
+const { registerRecipient, registerDonor, registerVolunteer, loginUser, updateSession } = useUserStore();
 
 const props = defineProps({ role: "Recipient" | "Volunteer" | "Donor" });
 
 async function register() {
-  await createUser(username.value, password.value, props.role, address.value);
+  switch (props.role) {
+    case "Recipient":
+      await registerRecipient(username.value, password.value);
+      break;
+    case "Volunteer":
+      await registerVolunteer(username.value, password.value);
+      break;
+    case "Donor":
+      await registerDonor(username.value, password.value, address.value);
+      break;
+    default:
+      throw new Error("Invalid role");
+  }
+  // await createUser(username.value, password.value, props.role, address.value);
   await loginUser(username.value, password.value);
   await updateSession();
   void router.push({ name: "Home" });
