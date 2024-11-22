@@ -104,7 +104,7 @@ class Routes {
    * @returns the created post
    */
   @Router.post("/posts")
-  async createPost(session: SessionDoc, food_item: string, expiration_time: Date, quantity: number, t?: string[]) {
+  async createPost(session: SessionDoc, food_item: string, expiration_time: Date, quantity: number) {
     const user = Sessioning.getUser(session);
     const created = await Posting.create(user, food_item, expiration_time, quantity);
     await Authing.assertIsRole(user, "Donor");
