@@ -5,7 +5,11 @@ import { storeToRefs } from "pinia";
 
 const props = defineProps(["post"]);
 const emit = defineEmits(["editPost", "refreshPosts"]);
-const { currentUsername } = storeToRefs(useUserStore());
+const { currentUsername, isDonor } = storeToRefs(useUserStore());
+
+function isExpired(expiration_time: string) {
+  return new Date(expiration_time) < new Date();
+}
 </script>
 
 <template>
@@ -21,9 +25,14 @@ const { currentUsername } = storeToRefs(useUserStore());
       <div class="expiration-time">Expires: {{ formatDate(props.post.expiration_item) }}</div>
     </div>
     <div class="base">
-      <menu v-if="props.post.author == currentUsername">
-        <button class="edit-button" @click="emit('editPost', props.post._id)">Edit</button>
-      </menu>
+      <div class="donor-buttons">
+        <menu v-if="isExpired(props.post.expiration_time)">
+          <button class="edit-button">Expired</button>
+        </menu>
+        <menu v-else-if="props.post.author == currentUsername && isDonor">
+          <button class="edit-button" @click="emit('editPost', props.post._id)">Edit</button>
+        </menu>
+      </div>
     </div>
   </div>
 </template>
@@ -38,15 +47,6 @@ p {
   font-size: 1.2em;
 }
 
-menu {
-  list-style-type: none;
-  display: flex;
-  flex-direction: row;
-  gap: 1em;
-  padding: 0;
-  margin: 0;
-}
-
 .timestamp {
   display: flex;
   justify-content: flex-end;
@@ -55,18 +55,34 @@ menu {
 }
 
 .base {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  width: 100%;
 
   menu {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+    padding: 0;
+    margin: 0;
     display: flex;
     justify-content: center;
     width: 100%;
+    padding: 0;
+    margin: 0;
   }
+
   .edit-button {
     width: 100%;
     margin-top: 8px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
     border-radius: 8px;
   }
 }
@@ -84,8 +100,6 @@ menu {
   padding: 16px;
   font-family: Arial, sans-serif;
   background-color: var(--light-bg);
-  /* background-color: var(--light-grey); */
-  /* background-color: #f9f9f9; */
 }
 
 .top-section {
@@ -121,7 +135,6 @@ menu {
 .quantity {
   font-size: 14px;
   color: var(--dark-green);
-  /* color: #777; */
 }
 
 .qty-expiration-details {
@@ -129,5 +142,4 @@ menu {
   flex-flow: row nowrap;
   justify-content: space-between;
 }
-
 </style>

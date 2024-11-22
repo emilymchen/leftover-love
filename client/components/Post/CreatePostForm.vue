@@ -48,7 +48,7 @@ const emptyForm = () => {
       <input type="text" id="tags" v-model="tags" placeholder="Tags (e.g., vegan, spicy)" />
     </div>
     <div class="create-post-buttons">
-      <button class="create-post-button" type="submit" >Post</button>
+      <button class="create-post-button" type="submit">Post</button>
       <button class="close-post-button" @click="emit('closeCreatePost')">Close</button>
     </div>
   </form>

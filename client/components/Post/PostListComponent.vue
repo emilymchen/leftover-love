@@ -44,14 +44,14 @@ async function updatePosts() {
 }
 
 onBeforeMount(async () => {
-  await updatePosts()
+  await updatePosts();
 });
 </script>
 
 <template>
   <section v-if="isLoggedIn && isDonor">
     <button class="expand-create-post-button" @click="isCreatingPost = true" v-if="!isCreatingPost">Create a post</button>
-    <CreatePostForm @refreshPosts="updatePosts" @closeCreatePost="isCreatingPost = false" v-else/>
+    <CreatePostForm @refreshPosts="updatePosts" @closeCreatePost="isCreatingPost = false" v-else />
   </section>
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
