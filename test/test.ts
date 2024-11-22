@@ -29,8 +29,8 @@ beforeEach(async () => {
   await db.dropDatabase();
 
   // Add some default users we can use
-  await app.createUser(getEmptySession(), "alice", "alice123", "Donor", "212 Goldenwest");
-  await app.createUser(getEmptySession(), "bob", "bob123", "Admin", "189 Vassar Street");
+  await app.registerDonor(getEmptySession(), "alice", "alice123", "Donor", "212 Goldenwest");
+  await app.registerDonor(getEmptySession(), "bob", "bob123", "Admin", "189 Vassar Street");
 });
 
 // After all tests are done...
@@ -43,7 +43,7 @@ describe("Create a user and log in", () => {
   it("should create a user and log in", async () => {
     const session = getEmptySession();
 
-    const created = await app.createUser(session, "barish", "1234", "Donor", "212 Goldenwest");
+    const created = await app.registerDonor(session, "barish", "1234", "Donor", "212 Goldenwest");
     assert(created.user);
     await assert.rejects(app.logIn(session, "barish", "123"));
     await app.logIn(session, "barish", "1234");
@@ -53,9 +53,9 @@ describe("Create a user and log in", () => {
   it("duplicate username should fail", async () => {
     const session = getEmptySession();
 
-    const created = await app.createUser(session, "barish", "1234", "Donor", "212 Goldenwest");
+    const created = await app.registerDonor(session, "barish", "1234", "Donor", "212 Goldenwest");
     assert(created.user);
-    await assert.rejects(app.createUser(session, "barish", "1234", "Donor", "212 Goldenwest"));
+    await assert.rejects(app.registerDonor(session, "barish", "1234", "Donor", "212 Goldenwest"));
   });
 
   it("get invalid username should fail", async () => {

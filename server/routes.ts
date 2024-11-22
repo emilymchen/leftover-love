@@ -31,10 +31,22 @@ class Routes {
     return await Authing.getUserByUsername(username);
   }
 
-  @Router.post("/users")
-  async createUser(session: SessionDoc, username: string, password: string, role: string, location?: string) {
+  @Router.post("/users-recipient")
+  async registerRecipient(session: SessionDoc, username: string, password: string, role: string) {
     Sessioning.isLoggedOut(session);
-    return await Authing.create(username, password, role, location);
+    return await Authing.create(username, password, role, "Recipient");
+  }
+
+  @Router.post("/users-donor")
+  async registerDonor(session: SessionDoc, username: string, password: string, role: string, location: string) {
+    Sessioning.isLoggedOut(session);
+    return await Authing.create(username, password, "Donor", location);
+  }
+
+  @Router.post("/users-volunteer")
+  async registerVolunteer(session: SessionDoc, username: string, password: string, role: string) {
+    Sessioning.isLoggedOut(session);
+    return await Authing.create(username, password, "Volunteer");
   }
 
   @Router.patch("/users/username")
