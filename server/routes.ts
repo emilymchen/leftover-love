@@ -3,7 +3,6 @@ import { ObjectId } from "mongodb";
 import { Router, getExpressRouter } from "./framework/router";
 
 import { Authing, Messaging, Posting, Sessioning } from "./app";
-import { PostOptions } from "./concepts/posting";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
 
@@ -89,26 +88,51 @@ class Routes {
     return Responses.posts(posts);
   }
 
-  @Router.post("/posts")
-  async createPost(session: SessionDoc, content: string, options?: PostOptions) {
+  @Router.get("/posts/user")
+  async getUserPosts(session: SessionDoc) {
     const user = Sessioning.getUser(session);
-    const created = await Posting.create(user, content, options);
+    return Responses.posts(await Posting.getByAuthor(user));
+  }
+
+  /**
+   * Creates a food donation post with the given food item, expiration time, quantity, and tags.
+   * @param session  the session of the user, the user must be a donor
+   * @param food_item  the name of the food item
+   * @param expiration_time  the expiration time of the food item, must be in the future
+   * @param quantity the quantity of the food item
+   * @param t  the tags of the food item
+   * @returns the created post
+   */
+  @Router.post("/posts")
+  async createPost(session: SessionDoc, food_item: string, expiration_time: Date, quantity: number, t?: string[]) {
+    const user = Sessioning.getUser(session);
+    const created = await Posting.create(user, food_item, expiration_time, quantity);
+    await Authing.assertIsRole(user, "Donor");
+    // TODO: Add tags
     return { msg: created.msg, post: await Responses.post(created.post) };
   }
 
   @Router.patch("/posts/:id")
-  async updatePost(session: SessionDoc, id: string, content?: string, options?: PostOptions) {
+  async updatePost(session: SessionDoc, id: string, food_item?: string, expiration_time?: Date, quantity?: number) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
+    await Authing.assertIsRole(user, "Donor");
     await Posting.assertAuthorIsUser(oid, user);
-    return await Posting.update(oid, content, options);
+    return await Posting.update(oid, food_item, expiration_time, quantity);
   }
 
+  /**
+   * Deletes a post with the given id and the associated claims, deliveries, and tags.
+   * @param session  the session of the user, the user must be a donor and the author of the post
+   * @param id the id of the post to delete
+   */
   @Router.delete("/posts/:id")
   async deletePost(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
+    await Authing.assertIsRole(user, "Donor");
     await Posting.assertAuthorIsUser(oid, user);
+    //TODO: Add in claim, delivery, & tag syncs
     return Posting.delete(oid);
   }
 
