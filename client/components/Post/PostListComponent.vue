@@ -6,9 +6,8 @@ import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-import SearchPostForm from "./SearchPostForm.vue";
 
-const { isLoggedIn } = storeToRefs(useUserStore());
+const { isLoggedIn, isDonor, currentUsername, isRecipient } = storeToRefs(useUserStore());
 
 const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
@@ -32,21 +31,23 @@ function updateEditing(id: string) {
 }
 
 onBeforeMount(async () => {
-  await getPosts();
+  if (isDonor) {
+    // If it's a donor, we only want to have them see their food listings
+    await getPosts(currentUsername.value);
+  } else if (isRecipient) {
+    // If it's a recipient, we want them to see all the available non-claimed food listings
+    // TODO: we need to replace this endpoint later
+    await getPosts();
+  }
   loaded.value = true;
 });
 </script>
 
 <template>
-  <section v-if="isLoggedIn">
+  <section v-if="isLoggedIn && isDonor">
     <h2>Create a post:</h2>
     <CreatePostForm @refreshPosts="getPosts" />
   </section>
-  <div class="row">
-    <h2 v-if="!searchAuthor">Posts:</h2>
-    <h2 v-else>Posts by {{ searchAuthor }}:</h2>
-    <SearchPostForm @getPostsByAuthor="getPosts" />
-  </div>
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
       <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
@@ -72,7 +73,6 @@ p,
 }
 
 article {
-  background-color: var(--base-bg);
   border-radius: 1em;
   display: flex;
   flex-direction: column;

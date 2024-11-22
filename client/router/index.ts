@@ -7,9 +7,9 @@ import LoginView from "../views/LoginView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import SettingView from "../views/SettingView.vue";
 import WelcomeView from "../views/WelcomeView.vue";
-import DonorRegistrationView from "../views/registration/DonorRegistrationView.vue";
-import RecipientRegistrationView from "../views/registration/RecipientRegistrationView.vue";
-import VolunteerRegistrationView from "../views/registration/VolunteerRegistrationView.vue";
+import DonorRegistrationView from "../views/Registration/DonorRegistrationView.vue";
+import RecipientRegistrationView from "../views/Registration/RecipientRegistrationView.vue";
+import VolunteerRegistrationView from "../views/Registration/VolunteerRegistrationView.vue";
 
 const router = createRouter({
   history: createWebHistory(),

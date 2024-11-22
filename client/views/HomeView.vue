@@ -2,8 +2,6 @@
 import PostListComponent from "@/components/Post/PostListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { ref, onBeforeMount } from "vue";
-import { fetchy } from "@/utils/fetchy";
 
 const { currentUsername, currentRole, isLoggedIn } = storeToRefs(useUserStore());
 </script>

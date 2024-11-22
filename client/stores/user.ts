@@ -12,6 +12,10 @@ export const useUserStore = defineStore(
 
     const isLoggedIn = computed(() => currentUsername.value !== "");
 
+    const isDonor = computed(() => currentRole.value === "Donor");
+    const isRecipient = computed(() => currentRole.value === "Recipient");
+    const isVolunteer = computed(() => currentRole.value === "Volunteer");
+
     const resetStore = () => {
       currentUsername.value = "";
       currentRole.value = "";
@@ -61,6 +65,9 @@ export const useUserStore = defineStore(
       currentUsername,
       currentRole,
       isLoggedIn,
+      isDonor,
+      isRecipient,
+      isVolunteer,
       createUser,
       loginUser,
       updateSession,

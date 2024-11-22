@@ -2,7 +2,14 @@
 
 :root {
   --red: rgb(208, 67, 12);
+  --beige: #d4c8a9;
+  --green: #b0b470;
+  --orange: #d13717;
   --base-bg: #f1f3f5;
+  --light-grey: #b0a892;
+  --medium-grey: #b1a892;
+  --dark-grey: #264528;
+  --pink: #ab5c53;
 }
 
 button.btn-small {
@@ -21,6 +28,17 @@ a.button {
   border-radius: 0.25em;
   padding: 0.375em 0.75em;
   text-decoration: none;
+}
+
+
+button {
+  font-size: 1em;
+  padding: 0.5em 1em;
+  border-radius: 0.25em;
+  border: 1px solid #dee2e6;
+  background: var(--orange);
+  color: white;
+  cursor: pointer;
 }
 
 .column {

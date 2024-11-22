@@ -2,13 +2,16 @@
 import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
-const content = ref("");
+const food_item = ref("");
+const qty = ref(1);
+const expiration_time = ref("");
+const tags = ref("");
 const emit = defineEmits(["refreshPosts"]);
 
-const createPost = async (content: string) => {
+const createPost = async (food_item: string, quantity: number, expiration_time: string) => {
   try {
     await fetchy("/api/posts", "POST", {
-      body: { content },
+      body: { food_item: food_item, quantity: quantity, expiration_time: expiration_time },
     });
   } catch (_) {
     return;
@@ -18,15 +21,33 @@ const createPost = async (content: string) => {
 };
 
 const emptyForm = () => {
-  content.value = "";
+  food_item.value = "";
+  qty.value = 1;
+  expiration_time.value = "";
+  tags.value = "";
 };
 </script>
 
 <template>
-  <form @submit.prevent="createPost(content)">
-    <label for="content">Post Contents:</label>
-    <textarea id="content" v-model="content" placeholder="Create a post!" required> </textarea>
-    <button type="submit" class="pure-button-primary pure-button">Create Post</button>
+  <form @submit.prevent="createPost(food_item, qty, expiration_time)">
+    <h2>List a Meal</h2>
+    <div class="form-group">
+      <label for="food_item">Food Item</label>
+      <textarea id="food_item" v-model="food_item" placeholder="Unnamed Food" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="qty">Quantity</label>
+      <input type="number" id="qty" v-model="qty" min="1" placeholder="Quantity" required />
+    </div>
+    <div class="form-group">
+      <label for="expiration_time">Expiration Date</label>
+      <input type="date" id="expiration_time" v-model="expiration_time" required />
+    </div>
+    <div class="form-group">
+      <label for="tags">Tags</label>
+      <input type="text" id="tags" v-model="tags" placeholder="Tags (e.g., vegan, spicy)" />
+    </div>
+    <button type="submit" class="pure-button pure-button-primary">Post</button>
   </form>
 </template>
 
@@ -47,5 +68,54 @@ textarea {
   padding: 0.5em;
   border-radius: 4px;
   resize: none;
+}
+form {
+  background-color: var(--base-bg);
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1.5em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  margin-bottom: 0.5em;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+textarea,
+input {
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+textarea {
+  resize: none;
+  height: 6em;
+}
+
+button {
+  align-self: center;
+  padding: 0.5em 1.5em;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--button-hover-bg);
 }
 </style>

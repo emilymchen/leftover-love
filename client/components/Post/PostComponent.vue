@@ -2,34 +2,27 @@
 import { useUserStore } from "@/stores/user";
 import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
-import { fetchy } from "../../utils/fetchy";
 
 const props = defineProps(["post"]);
 const emit = defineEmits(["editPost", "refreshPosts"]);
 const { currentUsername } = storeToRefs(useUserStore());
-
-const deletePost = async () => {
-  try {
-    await fetchy(`/api/posts/${props.post._id}`, "DELETE");
-  } catch {
-    return;
-  }
-  emit("refreshPosts");
-};
 </script>
 
 <template>
-  <p class="author">{{ props.post.author }}</p>
-  <p>{{ props.post.content }}</p>
-  <div class="base">
-    <menu v-if="props.post.author == currentUsername">
-      <li><button class="btn-small pure-button" @click="emit('editPost', props.post._id)">Edit</button></li>
-      <li><button class="button-error btn-small pure-button" @click="deletePost">Delete</button></li>
-    </menu>
-    <article class="timestamp">
-      <p v-if="props.post.dateCreated !== props.post.dateUpdated">Edited on: {{ formatDate(props.post.dateUpdated) }}</p>
-      <p v-else>Created on: {{ formatDate(props.post.dateCreated) }}</p>
-    </article>
+  <div class="food-item-post">
+    <div class="top-section">
+      <div class="food-name">{{ props.post.food_item }}</div>
+      <div class="expiration-time">Expires: {{ formatDate(props.post.expiration_item) }}</div>
+    </div>
+    <div class="details">
+      <div class="author">{{ props.post.author }}</div>
+      <div class="quantity">Qty: {{ props.post.quantity }}</div>
+    </div>
+    <div class="base">
+      <menu v-if="props.post.author == currentUsername">
+        <li><button @click="emit('editPost', props.post._id)">Edit</button></li>
+      </menu>
+    </div>
   </div>
 </template>
 
@@ -67,5 +60,51 @@ menu {
 
 .base article:only-child {
   margin-left: auto;
+}
+
+.food-item-post {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+}
+
+.top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.food-name {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.expiration-time {
+  font-size: 14px;
+  color: var(--green);
+  text-align: right;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.author {
+  font-size: 16px;
+  color: var(--dark-green);
+}
+
+.quantity {
+  font-size: 14px;
+  color: #777;
 }
 </style>

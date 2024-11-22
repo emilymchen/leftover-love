@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import LoginForm from "@/components/Login/LoginForm.vue";
-import RegisterForm from "@/components/Login/RegisterForm.vue";
 import router from "@/router";
 
-const login = () => {
-  router.push("/login");
-};
+async function login() {
+  void router.push("/login");
+}
 
-const register = (role: string) => {
-  router.push(`/register-${role}`);
-};
+async function register(role: string) {
+  void router.push(`/register-${role}`);
+}
 </script>
 
 <template>
@@ -20,7 +18,5 @@ const register = (role: string) => {
     <button @click="register('recipient')">find food</button>
     <button @click="register('donor')">join the mission</button>
     <button @click="register('volunteer')">volunteer today</button>
-    <!-- <LoginForm /> -->
-    <!-- <RegisterForm /> -->
   </main>
 </template>
