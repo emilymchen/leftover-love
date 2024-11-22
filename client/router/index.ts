@@ -6,6 +6,10 @@ import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import SettingView from "../views/SettingView.vue";
+import WelcomeView from "../views/WelcomeView.vue";
+import DonorRegistrationView from "../views/registration/DonorRegistrationView.vue";
+import RecipientRegistrationView from "../views/registration/RecipientRegistrationView.vue";
+import VolunteerRegistrationView from "../views/registration/VolunteerRegistrationView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -14,6 +18,7 @@ const router = createRouter({
       path: "/",
       name: "Home",
       component: HomeView,
+      meta: { requiresAuth: true },
     },
     {
       path: "/setting",
@@ -22,10 +27,52 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/welcome",
+      name: "Welcome",
+      component: WelcomeView,
+      meta: { requiresAuth: false },
+    },
+    {
       path: "/login",
       name: "Login",
       component: LoginView,
       meta: { requiresAuth: false },
+      beforeEnter: (to, from) => {
+        const { isLoggedIn } = storeToRefs(useUserStore());
+        if (isLoggedIn.value) {
+          return { name: "Settings" };
+        }
+      },
+    },
+    {
+      path: "/register-recipient",
+      name: "Recipient-Registration",
+      component: RecipientRegistrationView,
+      meta: { requiresAuth: false },
+      beforeEnter: (to, from) => {
+        const { isLoggedIn } = storeToRefs(useUserStore());
+        if (isLoggedIn.value) {
+          return { name: "Settings" };
+        }
+      },
+    },
+    {
+      path: "/register-donor",
+      name: "Donor-Registration",
+      meta: { requiresAuth: false },
+      component: DonorRegistrationView,
+      beforeEnter: (to, from) => {
+        const { isLoggedIn } = storeToRefs(useUserStore());
+        if (isLoggedIn.value) {
+          return { name: "Settings" };
+        }
+      },
+    },
+    {
+      path: "/register-volunteer",
+      name: "Volunteer-Registration",
+      meta: { requiresAuth: false },
+      component: VolunteerRegistrationView,
       beforeEnter: (to, from) => {
         const { isLoggedIn } = storeToRefs(useUserStore());
         if (isLoggedIn.value) {
@@ -48,7 +95,7 @@ router.beforeEach((to, from) => {
   const { isLoggedIn } = storeToRefs(useUserStore());
 
   if (to.meta.requiresAuth && !isLoggedIn.value) {
-    return { name: "Login" };
+    return { name: "Welcome" };
   }
 });
 

@@ -33,9 +33,9 @@ class Routes {
   }
 
   @Router.post("/users")
-  async createUser(session: SessionDoc, username: string, password: string) {
+  async createUser(session: SessionDoc, username: string, password: string, role: string, location?: string) {
     Sessioning.isLoggedOut(session);
-    return await Authing.create(username, password);
+    return await Authing.create(username, password, role, location);
   }
 
   @Router.patch("/users/username")
@@ -48,6 +48,12 @@ class Routes {
   async updatePassword(session: SessionDoc, currentPassword: string, newPassword: string) {
     const user = Sessioning.getUser(session);
     return Authing.updatePassword(user, currentPassword, newPassword);
+  }
+
+  @Router.get("/user-role")
+  async getUserRole(session: SessionDoc) {
+    const user = Sessioning.getUser(session);
+    return await Authing.getUserRole(user);
   }
 
   @Router.delete("/users")
