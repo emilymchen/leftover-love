@@ -17,6 +17,7 @@ const createPost = async (food_item: string, quantity: number, expiration_time: 
     return;
   }
   emit("refreshPosts");
+  emit("closeCreatePost");
   emptyForm();
 };
 
@@ -55,14 +56,6 @@ const emptyForm = () => {
 </template>
 
 <style scoped>
-textarea {
-  font-family: inherit;
-  font-size: inherit;
-  height: 6em;
-  padding: 0.5em;
-  border-radius: 4px;
-  resize: none;
-}
 form {
   border-radius: 1em;
   display: flex;
@@ -110,10 +103,6 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
-
-button:hover {
-  /* background-color: var(--button-hover-bg); */
 }
 
 .create-post-buttons {

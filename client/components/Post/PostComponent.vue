@@ -21,12 +21,12 @@ function isExpired(expiration_time: string) {
   </div>
   <div class="qty-expiration-details">
     <div class="quantity">Qty: {{ props.post.quantity }}</div>
-    <div class="expiration-time">Expires: {{ formatDate(props.post.expiration_item) }}</div>
+    <div class="expiration-time">Expires: {{ formatDate(new Date(props.post.expiration_time)) }}</div>
   </div>
   <div class="base">
     <div class="donor-buttons">
       <menu v-if="isExpired(props.post.expiration_time)">
-        <button class="edit-button">Expired</button>
+        <button class="expired-button">Expired</button>
       </menu>
       <menu v-else-if="props.post.author == currentUsername && isDonor">
         <button class="edit-button" @click="emit('editPost', props.post._id)">Edit</button>
@@ -81,6 +81,21 @@ function isExpired(expiration_time: string) {
 
   .edit-button:hover {
     transform: scale(1.05);
+  }
+
+  .expired-button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.2s ease;
+    position: relative;
+    bottom: 0;
+    background-color: grey;
+    color: var(--light-beige);
   }
 }
 

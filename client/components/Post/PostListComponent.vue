@@ -11,9 +11,10 @@ const { isDonor, currentUsername, isRecipient } = storeToRefs(useUserStore());
 
 const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
-let editing = ref("");
+let currentPost = ref<Record<string, any> | null>(null);
 let searchAuthor = ref("");
 let isCreatingPost = ref(false);
+let isEditingPost = ref(false);
 
 async function getPosts(author?: string) {
   let query: Record<string, string> = author !== undefined ? { author } : {};
@@ -27,8 +28,9 @@ async function getPosts(author?: string) {
   posts.value = postResults;
 }
 
-function updateEditing(id: string) {
-  editing.value = id;
+function startEditing(post: Record<string, any>) {
+  currentPost.value = post;
+  isEditingPost.value = true;
 }
 
 async function updatePosts() {
@@ -59,8 +61,7 @@ onBeforeMount(async () => {
       </article>
 
       <article v-for="post in posts" :key="post._id" class="post-item">
-        <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="updateEditing" />
-        <EditPostForm v-else :post="post" @refreshPosts="updatePosts" @editPost="updateEditing" />
+        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="startEditing(post)" />
       </article>
     </section>
 
@@ -70,14 +71,23 @@ onBeforeMount(async () => {
       </div>
     </div>
 
-    <p v-else-if="!posts.length && loaded">No posts found</p>
-    <p v-else>Loading...</p>
+    <div v-if="isEditingPost" class="modal-background">
+      <div class="modal">
+        <EditPostForm
+          :post="currentPost"
+          @refreshPosts="updatePosts"
+          @closeEditPost="
+            isEditingPost = false;
+            currentPost = null;
+          "
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .posts-outer-container {
-  display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100vh;
@@ -85,8 +95,7 @@ onBeforeMount(async () => {
 
 .posts {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1em;
+  grid-template-columns: repeat(4, minmax(250px, 1fr));
   margin-top: 1em;
   flex-grow: 1;
 }
@@ -162,7 +171,6 @@ article {
 .modal {
   padding: 2em;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   min-width: 400px;
   max-width: 75vw;
 }

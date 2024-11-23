@@ -1,4 +1,6 @@
 /* Add some global styles here! */
+@import url('https://fonts.googleapis.com/css2?family=Caprasimo&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre&display=swap');
 
 :root {
   --red: rgb(208, 67, 12);
@@ -56,10 +58,12 @@ button {
 body {
   background-color: var(--beige);
   color: var(--text);
+}
 
-  font-family: 'Libre Baskerville', serif;
+h1 {
+  font-family: 'Caprasimo';
 }
 
 * {
-  font-family: 'Libre Baskerville', serif;
+  font-family: 'Averia Serif Libre', serif;
 }

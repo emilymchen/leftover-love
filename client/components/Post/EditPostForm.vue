@@ -7,7 +7,7 @@ const food_item = ref(props.post.food_item);
 const qty = ref(props.post.quantity);
 const expiration_time = ref(props.post.expiration_time);
 const tags = ref(props.post.tags);
-const emit = defineEmits(["editPost", "refreshPosts"]);
+const emit = defineEmits(["editPost", "refreshPosts", "closeEditPost"]);
 
 const editPost = async (food_item: string, quantity: number, expiration_time: string, tags: string[]) => {
   try {
@@ -15,8 +15,9 @@ const editPost = async (food_item: string, quantity: number, expiration_time: st
   } catch (_) {
     return;
   }
-  emit("editPost");
+  emit("editPost", null);
   emit("refreshPosts");
+  emit("closeEditPost");
 };
 const deletePost = async () => {
   try {
@@ -25,6 +26,7 @@ const deletePost = async () => {
     return;
   }
   emit("refreshPosts");
+  emit("closeEditPost");
 };
 </script>
 
@@ -33,7 +35,7 @@ const deletePost = async () => {
     <h2>Edit Your Meal</h2>
     <div class="form-group">
       <label for="food_item">Food Item</label>
-      <textarea id="food_item" v-model="food_item" placeholder="Unnamed Food" required></textarea>
+      <input id="food_item" v-model="food_item" placeholder="Unnamed Food" required />
     </div>
     <div class="form-group">
       <label for="qty">Quantity</label>
@@ -47,11 +49,9 @@ const deletePost = async () => {
       <label for="tags">Tags</label>
       <input type="text" id="tags" v-model="tags" placeholder="Tags (e.g., vegan, spicy)" />
     </div>
-    <div class="base">
-      <menu>
-        <li><button class="btn-small pure-button-primary pure-button" type="submit">Save</button></li>
-        <li><button class="btn-small pure-button" @click="emit('editPost')">Cancel</button></li>
-      </menu>
+    <div class="create-post-buttons">
+      <button class="btn-small pure-button-primary pure-button" type="submit">Save</button>
+      <button class="btn-small pure-button" @click="emit('closeEditPost')">Cancel</button>
       <button class="button-error btn-small pure-button" @click="deletePost">Delete</button>
     </div>
   </form>
@@ -59,48 +59,73 @@ const deletePost = async () => {
 
 <style scoped>
 form {
-  background-color: var(--base-bg);
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1.5em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-color: black;
+  max-width: 30em;
+  background: white;
+  padding: 50px;
+}
+
+h2 {
+  margin-bottom: 0.5em;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
 }
 
-textarea {
+textarea,
+input {
   font-family: inherit;
-  font-size: inherit;
-  height: 6em;
+  font-size: 1rem;
+  padding: 0.5em;
+  border: 1px solid #ccc;
   border-radius: 4px;
+  width: 100%;
+}
+
+textarea {
   resize: none;
+  height: 6em;
 }
 
-p {
-  margin: 0em;
+button {
+  align-self: center;
+  padding: 0.5em 1.5em;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.author {
-  font-weight: bold;
-  font-size: 1.2em;
+button:hover {
+  /* background-color: var(--button-hover-bg); */
 }
 
-menu {
-  list-style-type: none;
+.create-post-buttons {
   display: flex;
-  flex-direction: row;
-  gap: 1em;
-  padding: 0;
-  margin: 0;
-}
+  flex-flow: row, nowrap;
+  justify-content: center;
 
-.base {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+  button {
+    margin: 8px;
+  }
 
-.timestamp {
-  display: flex;
-  justify-content: flex-end;
-  font-size: 0.9em;
-  font-style: italic;
+  .create-post-button {
+    background-color: var(--pink);
+  }
+
+  .close-post-button {
+    background-color: var(--light-grey);
+  }
 }
 </style>
