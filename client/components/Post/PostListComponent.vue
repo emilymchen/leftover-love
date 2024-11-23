@@ -25,7 +25,11 @@ async function getPosts(author?: string) {
     return;
   }
   searchAuthor.value = author ? author : "";
-  posts.value = postResults;
+  if (isRecipient.value) {
+    posts.value = postResults.filter((post: Record<string, any>) => post.expiration_time > new Date().toISOString());
+  } else {
+    posts.value = postResults;
+  }
 }
 
 function startEditing(post: Record<string, any>) {
@@ -34,10 +38,10 @@ function startEditing(post: Record<string, any>) {
 }
 
 async function updatePosts() {
-  if (isDonor) {
+  if (isDonor.value) {
     // If it's a donor, we only want to have them see their food listings
     await getPosts(currentUsername.value);
-  } else if (isRecipient) {
+  } else if (isRecipient.value) {
     // If it's a recipient, we want them to see all the available non-claimed food listings
     // TODO: we need to replace this endpoint later
     await getPosts();
@@ -47,7 +51,6 @@ async function updatePosts() {
 
 onBeforeMount(async () => {
   await updatePosts();
-  console.log(posts.value);
 });
 </script>
 
@@ -65,13 +68,13 @@ onBeforeMount(async () => {
       </article>
     </section>
 
-    <div v-if="isCreatingPost" class="modal-background">
+    <div v-if="isDonor && isCreatingPost" class="modal-background">
       <div class="modal">
         <CreatePostForm @refreshPosts="updatePosts" @closeCreatePost="isCreatingPost = false" />
       </div>
     </div>
 
-    <div v-if="isEditingPost" class="modal-background">
+    <div v-if="isDonor && isEditingPost" class="modal-background">
       <div class="modal">
         <EditPostForm
           :post="currentPost"

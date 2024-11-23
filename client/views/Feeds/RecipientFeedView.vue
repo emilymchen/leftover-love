@@ -3,27 +3,44 @@ import PostListComponent from "@/components/Post/PostListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
-const { currentUsername, currentRole, isLoggedIn, isRecipient } = storeToRefs(useUserStore());
+const { isLoggedIn, isRecipient } = storeToRefs(useUserStore());
 </script>
 
 <template>
-  <main>
-    <h1>Home Page</h1>
-    <section>
-      <h1 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h1>
-      <h1 v-else>Please login!</h1>
-      <h2 v-if="isLoggedIn">You are a {{ currentRole }}!</h2>
+  <main class="main-container">
+    <section v-if="isLoggedIn && isRecipient" class="listing-section">
+      <div class="header-container">
+        <h1>Delivery</h1>
+      </div>
+      <div class="spacer"></div>
+
+      <PostListComponent />
     </section>
-    <PostListComponent />
   </main>
 </template>
 
 <style scoped>
 h1 {
-  text-align: center;
+  text-align: left;
+  color: var(--orange);
+  font-size: 2em;
+  margin: 0;
+  font-weight: 900;
 }
 h2 {
   text-align: center;
   font-style: italic;
+}
+.main-container {
+  padding: 1.5em;
+}
+
+.listing-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.spacer {
+  height: 2em;
 }
 </style>
