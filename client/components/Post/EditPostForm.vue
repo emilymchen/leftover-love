@@ -12,7 +12,7 @@ const emit = defineEmits(["editPost", "refreshPosts", "closeEditPost"]);
 const editPost = async (food_item: string, quantity: number, expiration_time: string, tags: string[]) => {
   try {
     await fetchy(`/api/posts/${props.post._id}`, "PATCH", { body: { food_item: food_item, quantity: quantity, expiration_time: expiration_time, tags: tags } });
-  } catch (_) {
+  } catch {
     return;
   }
   emit("editPost", null);
@@ -105,10 +105,6 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
-
-button:hover {
-  /* background-color: var(--button-hover-bg); */
 }
 
 .create-post-buttons {

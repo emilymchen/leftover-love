@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
-import { storeToRefs } from "pinia";
 import UpdateUserForm from "../components/Setting/UpdateUserForm.vue";
 
-const { currentUsername } = storeToRefs(useUserStore());
 const { logoutUser, deleteUser } = useUserStore();
 
 async function logout() {

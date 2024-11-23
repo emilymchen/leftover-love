@@ -102,6 +102,11 @@ export default class AuthenticatingConcept {
     return { msg: "Password updated successfully!" };
   }
 
+  async updateLocation(_id: ObjectId, location: string) {
+    await this.users.partialUpdateOne({ _id }, { location });
+    return { msg: "Location updated successfully!" };
+  }
+
   async delete(_id: ObjectId) {
     await this.users.deleteOne({ _id });
     return { msg: "User deleted!" };

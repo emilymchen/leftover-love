@@ -13,7 +13,7 @@ const createPost = async (food_item: string, quantity: number, expiration_time: 
     await fetchy("/api/posts", "POST", {
       body: { food_item: food_item, quantity: quantity, expiration_time: expiration_time },
     });
-  } catch (_) {
+  } catch {
     return;
   }
   emit("refreshPosts");

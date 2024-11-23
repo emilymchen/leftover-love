@@ -7,7 +7,7 @@ export const useUserStore = defineStore(
   "user",
   () => {
     const currentUsername = ref("");
-
+    const currentAddress = ref("");
     const currentRole = ref("");
 
     const isLoggedIn = computed(() => currentUsername.value !== "");
@@ -19,6 +19,7 @@ export const useUserStore = defineStore(
     const resetStore = () => {
       currentUsername.value = "";
       currentRole.value = "";
+      currentAddress.value = "";
     };
 
     const createUser = async (username: string, password: string, role: string, location: string) => {
@@ -35,11 +36,14 @@ export const useUserStore = defineStore(
 
     const updateSession = async () => {
       try {
-        const { username, role } = await fetchy("/api/session", "GET", { alert: false });
+        const { username, role, location } = await fetchy("/api/session", "GET", { alert: false });
         currentUsername.value = username;
         currentRole.value = role;
+        currentAddress.value = location;
       } catch {
         currentUsername.value = "";
+        currentRole.value = "";
+        currentAddress.value = "";
       }
     };
 
@@ -56,6 +60,10 @@ export const useUserStore = defineStore(
       await fetchy("/api/users/password", "PATCH", { body: { currentPassword, newPassword } });
     };
 
+    const updateUserAddress = async (address: string) => {
+      await fetchy("/api/users/address", "PATCH", { body: { address } });
+    };
+
     const deleteUser = async () => {
       await fetchy("/api/users", "DELETE");
       resetStore();
@@ -64,6 +72,7 @@ export const useUserStore = defineStore(
     return {
       currentUsername,
       currentRole,
+      currentAddress,
       isLoggedIn,
       isDonor,
       isRecipient,
@@ -74,6 +83,7 @@ export const useUserStore = defineStore(
       logoutUser,
       updateUserUsername,
       updateUserPassword,
+      updateUserAddress,
       deleteUser,
     };
   },
