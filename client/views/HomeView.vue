@@ -12,7 +12,7 @@ const { currentUsername, currentRole, isLoggedIn } = storeToRefs(useUserStore())
     <section>
       <h1 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h1>
       <h1 v-else>Please login!</h1>
-      <h1 v-if="isLoggedIn">role: {{ currentRole }}</h1>
+      <h2 v-if="isLoggedIn">You are a {{ currentRole }}!</h2>
     </section>
     <PostListComponent />
   </main>
@@ -21,5 +21,9 @@ const { currentUsername, currentRole, isLoggedIn } = storeToRefs(useUserStore())
 <style scoped>
 h1 {
   text-align: center;
+}
+h2 {
+  text-align: center;
+  font-style: italic;
 }
 </style>

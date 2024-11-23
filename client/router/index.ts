@@ -2,6 +2,8 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
+import RestaurantHomeView from "../views/Feeds/RestaurantHomeView.vue";
+import RecipientFeedView from "../views/Feeds/RecipientFeedView.vue";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
@@ -19,6 +21,38 @@ const router = createRouter({
       name: "Home",
       component: HomeView,
       meta: { requiresAuth: true },
+      beforeEnter: (to, from) => {
+        const { isRecipient, isDonor } = storeToRefs(useUserStore());
+        if (isDonor.value) {
+          return { name: "Restaurant Food Listings" };
+        } else if (isRecipient.value) {
+          return { name: "Recipient Feed" };
+        }
+      },
+    },
+    {
+      path: "/restaurant",
+      name: "Restaurant Food Listings",
+      component: RestaurantHomeView,
+      meta: { requiresAuth: true },
+      beforeEnter: (to, from) => {
+        const { isDonor } = storeToRefs(useUserStore());
+        if (!isDonor.value) {
+          return { name: "Home" };
+        }
+      },
+    },
+    {
+      path: "/recipient",
+      name: "Recipient Feed",
+      component: RecipientFeedView,
+      meta: { requiresAuth: true },
+      beforeEnter: (to, from) => {
+        const { isRecipient } = storeToRefs(useUserStore());
+        if (!isRecipient.value) {
+          return { name: "Home" };
+        }
+      },
     },
     {
       path: "/setting",

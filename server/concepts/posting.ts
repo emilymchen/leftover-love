@@ -24,6 +24,9 @@ export default class PostingConcept {
   }
 
   async create(author: ObjectId, food_item: string, expiration_time: Date, quantity: number) {
+    if (expiration_time < new Date()) {
+      throw new InvalidExpirationTimeError();
+    }
     const _id = await this.posts.createOne({ author, food_item, expiration_time, quantity });
     return { msg: "Post successfully created!", post: await this.posts.readOne({ _id }) };
   }
@@ -80,5 +83,11 @@ export class PostAuthorNotMatchError extends NotAllowedError {
     public readonly _id: ObjectId,
   ) {
     super("{0} is not the author of post {1}!", author, _id);
+  }
+}
+
+export class InvalidExpirationTimeError extends NotAllowedError {
+  constructor() {
+    super("Expiration time must be in the future!");
   }
 }

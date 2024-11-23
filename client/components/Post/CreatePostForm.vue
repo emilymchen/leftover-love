@@ -33,7 +33,7 @@ const emptyForm = () => {
     <h2>List a Meal</h2>
     <div class="form-group">
       <label for="food_item">Food Item</label>
-      <textarea id="food_item" v-model="food_item" placeholder="Unnamed Food" required></textarea>
+      <input id="food_item" v-model="food_item" placeholder="Unnamed Food" required />
     </div>
     <div class="form-group">
       <label for="qty">Quantity</label>
@@ -55,15 +55,6 @@ const emptyForm = () => {
 </template>
 
 <style scoped>
-/* form {
-  background-color: var(--base-bg);
-  border-radius: 1em;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5em;
-  padding: 1em;
-} */
-
 textarea {
   font-family: inherit;
   font-size: inherit;
@@ -73,13 +64,16 @@ textarea {
   resize: none;
 }
 form {
-  background-color: var(--light-bg);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
   gap: 1em;
   padding: 1.5em;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-color: black;
+  max-width: 30em;
+  background: white;
+  padding: 50px;
 }
 
 h2 {

@@ -13,35 +13,29 @@ function isExpired(expiration_time: string) {
 </script>
 
 <template>
-  <div class="food-item-post">
-    <div class="top-section">
-      <div class="food-name">{{ props.post.food_item }}</div>
-    </div>
-    <div class="author-details">
-      <div class="author">{{ props.post.author }}</div>
-    </div>
-    <div class="qty-expiration-details">
-      <div class="quantity">Qty: {{ props.post.quantity }}</div>
-      <div class="expiration-time">Expires: {{ formatDate(props.post.expiration_item) }}</div>
-    </div>
-    <div class="base">
-      <div class="donor-buttons">
-        <menu v-if="isExpired(props.post.expiration_time)">
-          <button class="edit-button">Expired</button>
-        </menu>
-        <menu v-else-if="props.post.author == currentUsername && isDonor">
-          <button class="edit-button" @click="emit('editPost', props.post._id)">Edit</button>
-        </menu>
-      </div>
+  <div class="top-section">
+    <div class="food-name">{{ props.post.food_item }}</div>
+  </div>
+  <div class="author-details">
+    <div class="author">{{ props.post.author }}</div>
+  </div>
+  <div class="qty-expiration-details">
+    <div class="quantity">Qty: {{ props.post.quantity }}</div>
+    <div class="expiration-time">Expires: {{ formatDate(props.post.expiration_item) }}</div>
+  </div>
+  <div class="base">
+    <div class="donor-buttons">
+      <menu v-if="isExpired(props.post.expiration_time)">
+        <button class="edit-button">Expired</button>
+      </menu>
+      <menu v-else-if="props.post.author == currentUsername && isDonor">
+        <button class="edit-button" @click="emit('editPost', props.post._id)">Edit</button>
+      </menu>
     </div>
   </div>
 </template>
 
 <style scoped>
-p {
-  margin: 0em;
-}
-
 .author {
   font-weight: bold;
   font-size: 1.2em;
@@ -73,33 +67,25 @@ p {
 
   .edit-button {
     width: 100%;
-    margin-top: 8px;
-    width: 100%;
     padding: 12px;
-    border: none;
     border-radius: 8px;
-    color: white;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     text-align: center;
-    border-radius: 8px;
+    background-color: var(--orange);
+    transition: transform 0.2s ease;
+    position: relative;
+    bottom: 0;
+  }
+
+  .edit-button:hover {
+    transform: scale(1.05);
   }
 }
 
 .base article:only-child {
   margin-left: auto;
-}
-
-.food-item-post {
-  display: flex;
-  flex-direction: column;
-  width: 300px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 16px;
-  font-family: Arial, sans-serif;
-  background-color: var(--light-bg);
 }
 
 .top-section {

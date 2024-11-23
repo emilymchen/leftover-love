@@ -3,6 +3,7 @@
 :root {
   --red: rgb(208, 67, 12);
   --beige: #d4c8a9;
+  --light-beige: #f1e6c9;
   --light-bg: rgba(255, 255, 255, 28%);
   --green: #b0b470;
   --dark-green: #58823A;
@@ -56,9 +57,9 @@ body {
   background-color: var(--beige);
   color: var(--text);
 
-  font-family: 'Averia Serif Libre';
+  font-family: 'Libre Baskerville', serif;
 }
 
 * {
-  font-family: 'Averia Serif Libre';
+  font-family: 'Libre Baskerville', serif;
 }
