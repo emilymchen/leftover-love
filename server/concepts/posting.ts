@@ -40,6 +40,10 @@ export default class PostingConcept {
     return await this.posts.readMany({ author });
   }
 
+  async getById(_id: ObjectId) {
+    return await this.posts.readOne({ _id });
+  }
+
   async update(_id: ObjectId, food_item?: string, expiration_time?: Date, quantity?: number) {
     // Note that if content or options is undefined, those fields will *not* be updated
     // since undefined values for partialUpdateOne are ignored.

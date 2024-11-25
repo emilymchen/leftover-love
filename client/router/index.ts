@@ -2,16 +2,17 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
-import RestaurantHomeView from "../views/Feeds/RestaurantHomeView.vue";
+import ClaimView from "../views/ClaimView.vue";
 import RecipientFeedView from "../views/Feeds/RecipientFeedView.vue";
+import RestaurantHomeView from "../views/Feeds/RestaurantHomeView.vue";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
-import SettingView from "../views/SettingView.vue";
-import WelcomeView from "../views/WelcomeView.vue";
 import DonorRegistrationView from "../views/Registration/DonorRegistrationView.vue";
 import RecipientRegistrationView from "../views/Registration/RecipientRegistrationView.vue";
 import VolunteerRegistrationView from "../views/Registration/VolunteerRegistrationView.vue";
+import SettingView from "../views/SettingView.vue";
+import WelcomeView from "../views/WelcomeView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -75,6 +76,18 @@ const router = createRouter({
         const { isLoggedIn } = storeToRefs(useUserStore());
         if (isLoggedIn.value) {
           return { name: "Settings" };
+        }
+      },
+    },
+    {
+      path: "/claims",
+      name: "Claims",
+      component: ClaimView,
+      meta: { requiresAuth: true },
+      beforeEnter: (to, from) => {
+        const { isRecipient } = storeToRefs(useUserStore());
+        if (!isRecipient.value) {
+          return { name: "Home" };
         }
       },
     },

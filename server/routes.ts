@@ -150,12 +150,12 @@ class Routes {
   @Router.get("/posts/non-expired")
   async getAllNonExpiredPosts() {
     const posts = await Posting.getPosts();
-    const result = [];
-    for (const post of posts) {
-      if (!(await Posting.isPostExpired(post._id))) {
-        result.push(post);
-      }
-    }
+    const checkPromises = posts.map(async (post) => {
+      const isExpired = await Posting.isPostExpired(post._id);
+      return { post, isExpired };
+    });
+    const results = await Promise.all(checkPromises);
+    const result = results.filter((result) => !result.isExpired).map((result) => result.post);
     return Responses.posts(result);
   }
 
@@ -166,13 +166,12 @@ class Routes {
   @Router.get("/posts/non-expired-non-claimed")
   async getAllNonExpiredNonClaimedPosts() {
     const posts = await Posting.getPosts();
-    const result = [];
-    for (const post of posts) {
+    const checkPromises = posts.map(async (post) => {
       const [isExpired, isClaimed] = await Promise.all([Posting.isPostExpired(post._id), Claiming.isItemClaimed(post._id)]);
-      if (!isExpired && !isClaimed) {
-        result.push(post);
-      }
-    }
+      return { post, isExpired, isClaimed };
+    });
+    const results = await Promise.all(checkPromises);
+    const result = results.filter((result) => !result.isExpired && !result.isClaimed).map((result) => result.post);
     return Responses.posts(result);
   }
 
@@ -250,12 +249,19 @@ class Routes {
   /**
    * Gets claims by user.
    * @param session the session of the user
-   * @returns the claims by the user
+   * @returns the claims by the user with full item details packed inside
    */
   @Router.get("/claims")
   async getUserClaims(session: SessionDoc) {
     const user = Sessioning.getUser(session);
-    return Claiming.getClaimsByUser(user);
+    const allClaims = await Claiming.getClaimsByUser(user);
+    const fullClaims = allClaims.map(async (claim) => {
+      const oid = new ObjectId(claim.item);
+      const post = await Posting.getById(oid);
+      const postWithAuthor = await Responses.post(post);
+      return { ...claim, post: postWithAuthor };
+    });
+    return Responses.claims(await Promise.all(fullClaims));
   }
 
   /**

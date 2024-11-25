@@ -74,7 +74,9 @@ onBeforeMount(async () => {
 
 <template>
   <div class="posts-outer-container">
+    <p v-if="!loaded">Loading...</p>
     <section class="posts" v-if="loaded">
+      <p v-if="posts.length === 0">No posts available!</p>
       <article v-if="isDonor" class="create-post-box" @click="isCreatingPost = true">
         <div class="create-post-content">
           <span class="plus-icon">+</span>
