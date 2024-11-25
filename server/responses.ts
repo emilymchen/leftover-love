@@ -1,7 +1,8 @@
 import { Authing } from "./app";
+import { ClaimDoc } from "./concepts/claiming";
+import { MessageDoc, MessageSenderNotMatchError } from "./concepts/messaging";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/posting";
 import { Router } from "./framework/router";
-import { MessageSenderNotMatchError, MessageDoc } from "./concepts/messaging";
 
 /**
  * This class does useful conversions for the frontend.
@@ -25,6 +26,25 @@ export default class Responses {
   static async posts(posts: PostDoc[]) {
     const authors = await Authing.idsToUsernames(posts.map((post) => post.author));
     return posts.map((post, i) => ({ ...post, author: authors[i] }));
+  }
+
+  /**
+   * Convert ClaimDoc into more readable format for the frontend by converting the claimUser id into a username.
+   */
+  static async claim(claim: ClaimDoc | null) {
+    if (!claim) {
+      return claim;
+    }
+    const claimUser = await Authing.getUserById(claim.claimUser);
+    return { ...claim, claimUser: claimUser.username };
+  }
+
+  /**
+   * Same as {@link claim} but for an array of ClaimDoc for improved performance.
+   */
+  static async claims(claims: ClaimDoc[]) {
+    const claimUsers = await Authing.idsToUsernames(claims.map((claim) => claim.claimUser));
+    return claims.map((claim, i) => ({ ...claim, claimUser: claimUsers[i] }));
   }
 
   /**

@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Messaging, Posting, Sessioning } from "./app";
+import { Authing, Claiming, Messaging, Posting, Sessioning } from "./app";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
 
@@ -138,8 +138,106 @@ class Routes {
     const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Donor");
     await Posting.assertAuthorIsUser(oid, user);
-    //TODO: Add in claim, delivery, & tag syncs
+    await Claiming.deleteClaim(oid);
+    //TODO: Add in delivery, & tag syncs
     return Posting.delete(oid);
+  }
+
+  /**
+   * Gets all non-expired posts.
+   * @returns all non-expired posts
+   */
+  async getAllNonExpiredPosts() {
+    return Posting.getPosts().then((posts) => posts.filter((post) => !Posting.isPostExpired(post._id)));
+  }
+
+  /**
+   * Gets all non-expired and non-claimed posts.
+   * @returns all posts that are both non-expired and non-claimed
+   */
+  async getAllNonExpiredNonClaimedPosts() {
+    return Posting.getPosts().then((posts) => posts.filter((post) => !Posting.isPostExpired(post._id) && !Claiming.isItemClaimed(post._id)));
+  }
+
+  /**
+   * Creates a pickup claim.
+   * @param session The session of the user, the user must be a recipient
+   * @param post The post id.
+   * @returns The created claim.
+   */
+  async createPickupClaim(session: SessionDoc, post: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(post);
+    await Authing.assertIsRole(user, "Recipient");
+    await Posting.assertPostIsNotExpired(oid);
+    await Claiming.assertIsNotClaimed(oid);
+    return Claiming.createPickupClaim(user, oid);
+  }
+
+  /**
+   * Creates a delivery claim.
+   * @param session The session of the user, the user must be a recipient
+   * @param post The post id
+   * @param address The address of the recipient.
+   * @returns The created claim.
+   */
+  async createDeliveryClaim(session: SessionDoc, post: string, address: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(post);
+    await Authing.assertIsRole(user, "Recipient");
+    await Posting.assertPostIsNotExpired(oid);
+    await Claiming.assertIsNotClaimed(oid);
+    return Claiming.createDeliveryClaim(user, oid, address);
+  }
+
+  /**
+   * Deletes claim.
+   * @param session the session of the user, the user must be a recipient
+   * @param post the post id of the food item
+   * @returns message of deleted claim
+   */
+  async deleteClaim(session: SessionDoc, post: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(post);
+    await Authing.assertIsRole(user, "Recipient");
+    await Claiming.assertClaimerIsUser(oid, user);
+    //TODO: Add in delivery sync
+    return Claiming.deleteClaim(oid);
+  }
+
+  /**
+   * Completes a pickup claim.
+   * @param session The session of the user, the user must be a recipient
+   * @param claim The claim id
+   * @returns A message of the completed claim
+   */
+  async pickupClaim(session: SessionDoc, claim: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(claim);
+    await Authing.assertIsRole(user, "Recipient");
+    await Claiming.assertClaimerIsUser(oid, user);
+    await Claiming.assertIsPickupClaim(oid);
+    return Claiming.completeClaim(oid);
+  }
+
+  /**
+   * Gets claims by user.
+   * @param session the session of the user
+   * @returns the claims by the user
+   */
+  async getUserClaims(session: SessionDoc) {
+    const user = Sessioning.getUser(session);
+    return Claiming.getClaimsByUser(user);
+  }
+
+  /**
+   * Gets the claimer of the post.
+   * @param post The post id
+   * @returns the user who claimed the post
+   */
+  async getPostClaimer(post: string) {
+    const oid = new ObjectId(post);
+    return Claiming.getItemClaimer(oid);
   }
 
   @Router.get("/messages")
