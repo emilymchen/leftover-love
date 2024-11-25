@@ -26,6 +26,7 @@ h1 {
   font-size: 2em;
   margin: 0;
   font-weight: 900;
+  padding: 0em 2em;
 }
 h2 {
   text-align: center;

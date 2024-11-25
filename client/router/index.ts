@@ -91,6 +91,20 @@ const router = createRouter({
         }
       },
     },
+
+    {
+      path: "/restaurant",
+      name: "MyFoodListings",
+      component: RestaurantHomeView,
+      meta: { requiresAuth: true },
+      beforeEnter: (to, from) => {
+        const { isDonor } = storeToRefs(useUserStore());
+        if (!isDonor.value) {
+          return { name: "Home" };
+        }
+      },
+    },
+
     {
       path: "/register-recipient",
       name: "Recipient-Registration",

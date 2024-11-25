@@ -42,7 +42,7 @@ const emptyForm = () => {
     </div>
     <div class="form-group">
       <label for="expiration_time">Expiration Date</label>
-      <input type="datetime-local" id="expiration_time" v-model="expiration_time" required />
+      <input type="date" id="expiration_time" v-model="expiration_time" required />
     </div>
     <div class="form-group">
       <label for="tags">Tags</label>

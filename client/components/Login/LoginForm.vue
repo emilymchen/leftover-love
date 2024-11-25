@@ -28,6 +28,8 @@ async function login() {
       </div>
       <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary">Submit</button>
+
+  
       </div>
     </fieldset>
   </form>
@@ -37,5 +39,11 @@ async function login() {
 h3 {
   display: flex;
   justify-content: center;
+}
+
+.pure-button-primary {
+  background-color: var(--red); /* Red background */
+  border-color: var(--red); /* Red border */
+  color: white; /* White text */
 }
 </style>

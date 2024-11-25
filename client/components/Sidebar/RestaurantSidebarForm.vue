@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import RestaurantSidebarForm from "@/components/Sidebar/RestaurantSidebarForm.vue";
 import router from "@/router";
 import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { computed, onBeforeMount, ref } from "vue";
-import { RouterLink, RouterView, useRoute } from "vue-router";
-
-
+import { computed, ref } from "vue";
+import { RouterLink, useRoute } from "vue-router";
 
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
@@ -28,57 +25,34 @@ async function logout() {
   void router.push({ name: "Home" });
 }
 
-// Make sure to update the session before mounting the app in case the user is already logged in
-onBeforeMount(async () => {
-  try {
-    await userStore.updateSession();
-  } catch {
-    // User is not logged in
-  }
-});
 </script>
+
 <template>
-  <header>
-    <nav>
-      <div class="title">
-        <img src="@/assets/images/logo.png" alt="Logo" />
-        <RouterLink :to="{ name: 'Home' }">
-          <h1>Leftover Love</h1>
-        </RouterLink>
-      </div>
-      <ul>
-    
-        <li v-if="isLoggedIn && isRecipient">
-          <RouterLink :to="{ name: 'Claims' }" :class="{ underline: currentRouteName == 'Claims' }"> Claims </RouterLink>
+    <RouterLink :to="{ name: 'Claims' }" :class="{ underline: currentRouteName == 'Claims' }"> Claims </RouterLink>
+    <button class="sidebar-button" @click="toggleSidebar">
+    <img class="sidebar-icon" src="@/assets/images/lines.png" />
+    </button>
+    <div v-if="isSidebarOpen" class="overlay" @click="toggleSidebar"></div>
+    <aside class="sidebar" :class="{ open: isSidebarOpen }">
+    <ul>
+        <li class="sidebar-username">
+        {{ userStore.currentUsername }}
         </li>
-
-        <li v-if="isLoggedIn && isDonor">
-          <RestaurantSidebarForm/>
+        <li class="sidebar-items">
+        <RouterLink :to="{ name: 'MyFoodListings' }" @click="toggleSidebar" class="sidebar-item"> my food donations </RouterLink>
         </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
+        <li class="sidebar-items">
+        <RouterLink :to="{ name: 'Settings' }" @click="toggleSidebar" class="sidebar-item"> account settings </RouterLink>
         </li>
-        <li v-else>
-          <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
-        </li>
-      </ul>
-    </nav>
-    <article v-if="toast !== null" class="toast" :class="toast.style">
-      <p>{{ toast.message }}</p>
-    </article>
-  </header>
-
-  
-
-  <RouterView />
+    </ul>
+    <button class="logout-button" @click="logout">Sign Out</button>
+    </aside>
 </template>
 
 
 <style scoped>
-/* Sidebar Styles */
 nav {
   padding: 1em 4em;
-  /* background-color: lightgray; */
   background-color: var(--beige);
   display: flex;
   align-items: center;
