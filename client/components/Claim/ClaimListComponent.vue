@@ -64,7 +64,7 @@ onBeforeMount(async () => {
 
 .claims {
   display: grid;
-  grid-template-columns: repeat(4, minmax(250px, 1fr));
+  grid-template-columns: repeat(3, minmax(300px, 1fr));
   margin-top: 1em;
   flex-grow: 1;
 }
@@ -110,8 +110,8 @@ article {
   gap: 0.5em;
   padding: 1em;
   background-color: var(--light-beige);
-  width: 200px;
-  height: 150px;
+  width: 250px;
+  height: 160px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.2s ease;
