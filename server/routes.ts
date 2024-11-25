@@ -147,16 +147,39 @@ class Routes {
    * Gets all non-expired posts.
    * @returns all non-expired posts
    */
+  @Router.get("/posts/non-expired")
   async getAllNonExpiredPosts() {
-    return Posting.getPosts().then((posts) => posts.filter((post) => !Posting.isPostExpired(post._id)));
+    const posts = await Posting.getPosts();
+    const result = [];
+    for (const post of posts) {
+      if (!(await Posting.isPostExpired(post._id))) {
+        result.push(post);
+      }
+    }
+    return Responses.posts(result);
   }
 
   /**
    * Gets all non-expired and non-claimed posts.
    * @returns all posts that are both non-expired and non-claimed
    */
+  @Router.get("/posts/non-expired-non-claimed")
   async getAllNonExpiredNonClaimedPosts() {
-    return Posting.getPosts().then((posts) => posts.filter((post) => !Posting.isPostExpired(post._id) && !Claiming.isItemClaimed(post._id)));
+    const posts = await Posting.getPosts();
+    const result = [];
+    for (const post of posts) {
+      const [isExpired, isClaimed] = await Promise.all([Posting.isPostExpired(post._id), Claiming.isItemClaimed(post._id)]);
+      if (!isExpired && !isClaimed) {
+        result.push(post);
+      }
+    }
+    return Responses.posts(result);
+  }
+
+  @Router.get("/claims/:post")
+  async getPostClaim(post: string) {
+    const oid = new ObjectId(post);
+    return await Claiming.getItemClaim(oid);
   }
 
   /**
@@ -165,6 +188,7 @@ class Routes {
    * @param post The post id.
    * @returns The created claim.
    */
+  @Router.post("/claims/pickup")
   async createPickupClaim(session: SessionDoc, post: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(post);
@@ -181,6 +205,7 @@ class Routes {
    * @param address The address of the recipient.
    * @returns The created claim.
    */
+  @Router.post("/claims/delivery")
   async createDeliveryClaim(session: SessionDoc, post: string, address: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(post);
@@ -196,6 +221,7 @@ class Routes {
    * @param post the post id of the food item
    * @returns message of deleted claim
    */
+  @Router.delete("/claims/:post")
   async deleteClaim(session: SessionDoc, post: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(post);
@@ -211,6 +237,7 @@ class Routes {
    * @param claim The claim id
    * @returns A message of the completed claim
    */
+  @Router.patch("/claims/pickup/:claim")
   async pickupClaim(session: SessionDoc, claim: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(claim);
@@ -225,6 +252,7 @@ class Routes {
    * @param session the session of the user
    * @returns the claims by the user
    */
+  @Router.get("/claims")
   async getUserClaims(session: SessionDoc) {
     const user = Sessioning.getUser(session);
     return Claiming.getClaimsByUser(user);
@@ -235,9 +263,10 @@ class Routes {
    * @param post The post id
    * @returns the user who claimed the post
    */
+  @Router.get("/claims/:post")
   async getPostClaimer(post: string) {
     const oid = new ObjectId(post);
-    return Claiming.getItemClaimer(oid);
+    return Claiming.getItemClaim(oid);
   }
 
   @Router.get("/messages")

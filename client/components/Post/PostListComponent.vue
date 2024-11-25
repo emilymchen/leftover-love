@@ -32,6 +32,16 @@ async function getPosts(author?: string) {
   }
 }
 
+async function getAllAvailablePosts() {
+  let postResults;
+  try {
+    postResults = await fetchy("/api/posts/non-expired-non-claimed", "GET");
+  } catch {
+    return;
+  }
+  posts.value = postResults;
+}
+
 function startEditing(post: Record<string, any>) {
   currentPost.value = post;
   isEditingPost.value = true;
@@ -43,10 +53,18 @@ async function updatePosts() {
     await getPosts(currentUsername.value);
   } else if (isRecipient.value) {
     // If it's a recipient, we want them to see all the available non-claimed food listings
-    // TODO: we need to replace this endpoint later
-    await getPosts();
+    await getAllAvailablePosts();
   }
   loaded.value = true;
+}
+
+async function claimPost(post: Record<string, any>) {
+  try {
+    await fetchy(`/api/claims/pickup`, "POST", { body: { post: post._id } });
+  } catch {
+    return;
+  }
+  await updatePosts();
 }
 
 onBeforeMount(async () => {
@@ -64,7 +82,7 @@ onBeforeMount(async () => {
       </article>
 
       <article v-for="post in posts" :key="post._id" class="post-item">
-        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="startEditing(post)" />
+        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="startEditing(post)" @claimPost="claimPost(post)" />
       </article>
     </section>
 

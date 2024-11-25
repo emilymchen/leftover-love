@@ -1,15 +1,35 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
+import { fetchy } from "@/utils/fetchy";
 import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
+import { onMounted, ref } from "vue";
 
 const props = defineProps(["post"]);
-const emit = defineEmits(["editPost", "refreshPosts"]);
-const { currentUsername, isDonor } = storeToRefs(useUserStore());
+const emit = defineEmits(["editPost", "refreshPosts", "claimPost"]);
+const { currentUsername, isDonor, isRecipient } = storeToRefs(useUserStore());
 
 function isExpired(expiration_time: string) {
   return new Date(expiration_time) < new Date();
 }
+
+async function checkIfClaimed(postId: string) {
+  let claim;
+  try {
+    claim = await fetchy(`/api/claims/${postId}`, "GET");
+  } catch {
+    return false;
+  }
+  pickup.value = claim.method === "Pickup" ? "Pickup" : "Delivery";
+  return claim !== null;
+}
+
+const claimed = ref(false);
+const pickup = ref("");
+
+onMounted(async () => {
+  claimed.value = await checkIfClaimed(props.post._id);
+});
 </script>
 
 <template>
@@ -23,15 +43,22 @@ function isExpired(expiration_time: string) {
     <div class="quantity">Qty: {{ props.post.quantity }}</div>
     <div class="expiration-time">Expires: {{ formatDate(new Date(props.post.expiration_time)) }}</div>
   </div>
-  <div class="base">
-    <div class="donor-buttons">
-      <menu v-if="isExpired(props.post.expiration_time)">
-        <button class="expired-button">Expired</button>
-      </menu>
-      <menu v-else-if="props.post.author == currentUsername && isDonor">
-        <button class="edit-button" @click="emit('editPost', props.post._id)">Edit</button>
-      </menu>
-    </div>
+
+  <div class="donor-buttons base">
+    <menu v-if="isExpired(props.post.expiration_time)">
+      <button class="expired-button">Expired</button>
+    </menu>
+    <menu v-else-if="props.post.author == currentUsername && isDonor">
+      <div v-if="claimed">
+        <button class="expired-button">Claimed for {{ pickup }}</button>
+      </div>
+      <div v-else>
+        <button class="edit-button" @click="emit('editPost', props.post)">Edit</button>
+      </div>
+    </menu>
+    <menu v-else-if="isRecipient">
+      <button class="edit-button" @click="emit('claimPost', props.post._id)">Claim</button>
+    </menu>
   </div>
 </template>
 

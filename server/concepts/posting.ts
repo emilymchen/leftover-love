@@ -67,7 +67,7 @@ export default class PostingConcept {
     if (!post) {
       throw new NotFoundError(`Post ${_id} does not exist!`);
     }
-    return post.expiration_time < new Date();
+    return new Date(post.expiration_time).toISOString() < new Date().toISOString();
   }
 
   async assertPostIsNotExpired(_id: ObjectId) {

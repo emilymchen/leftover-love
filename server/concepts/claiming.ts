@@ -51,7 +51,7 @@ export default class ClaimingConcept {
     return await this.claims.readMany({ claimUser });
   }
 
-  async getItemClaimer(item: ObjectId) {
+  async getItemClaim(item: ObjectId) {
     return await this.claims.readOne({ item });
   }
 
