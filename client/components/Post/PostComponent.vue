@@ -45,20 +45,18 @@ onMounted(async () => {
   </div>
 
   <div class="base">
-    <menu v-if="isExpired(props.post.expiration_time)">
-      <button class="expired-button">Expired</button>
-    </menu>
-    <menu v-else-if="props.post.author == currentUsername && isDonor">
+    <button v-if="isExpired(props.post.expiration_time)" class="expired-button">Expired</button>
+    <div v-else-if="props.post.author == currentUsername && isDonor">
       <div v-if="claimed">
         <button class="expired-button">Claimed for {{ pickup }}</button>
       </div>
       <div v-else>
         <button class="edit-button" @click="emit('editPost', props.post)">Edit</button>
       </div>
-    </menu>
-    <menu v-else-if="isRecipient">
+    </div>
+    <div v-else-if="isRecipient">
       <button class="edit-button" @click="emit('claimPost', props.post._id)">Claim</button>
-    </menu>
+    </div>
   </div>
 </template>
 

@@ -118,7 +118,7 @@ onBeforeMount(async () => {
 
 .posts {
   display: grid;
-  grid-template-columns: repeat(4, minmax(250px, 1fr));
+  grid-template-columns: repeat(3, minmax(250px, 1fr));
   margin-top: 1em;
   flex-grow: 1;
 }
@@ -130,8 +130,8 @@ onBeforeMount(async () => {
   text-align: center;
   background-color: var(--pink);
   color: white;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 16px;
+  border-radius: 16px;
   cursor: pointer;
 }
 
@@ -164,8 +164,8 @@ article {
   gap: 0.5em;
   padding: 1em;
   background-color: var(--light-beige);
-  width: 200px;
-  height: 150px;
+  width: 250px;
+  height: 160px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.2s ease;
