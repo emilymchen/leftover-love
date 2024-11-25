@@ -34,20 +34,15 @@ onMounted(async () => {});
   </div>
 
   <div class="donor-buttons base">
-    <menu v-if="isExpired(props.claim.post.expiration_time)">
+    <div v-if="props.category === 'pending'">
+      <button class="edit-button">Track Order</button>
+    </div>
+    <div v-else-if="props.category === 'completed'">
+      <button class="expired-button">Completed</button>
+    </div>
+    <div v-else-if="props.category === 'expired'">
       <button class="expired-button">Expired</button>
-    </menu>
-    <menu>
-      <div v-if="props.category === 'pending'">
-        <button class="edit-button">Track Order</button>
-      </div>
-      <div v-else-if="props.category === 'completed'">
-        <button class="expired-button">Completed</button>
-      </div>
-      <div v-else-if="props.category === 'expired'">
-        <button class="expired-button">Expired</button>
-      </div>
-    </menu>
+    </div>
   </div>
 </template>
 
