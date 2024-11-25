@@ -44,7 +44,7 @@ onMounted(async () => {
     <div class="expiration-time">Expires: {{ formatDate(new Date(props.post.expiration_time)) }}</div>
   </div>
 
-  <div class="donor-buttons base">
+  <div class="base">
     <menu v-if="isExpired(props.post.expiration_time)">
       <button class="expired-button">Expired</button>
     </menu>
@@ -88,8 +88,6 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     width: 100%;
-    padding: 0;
-    margin: 0;
   }
 
   .edit-button {
