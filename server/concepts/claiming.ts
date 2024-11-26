@@ -61,7 +61,7 @@ export default class ClaimingConcept {
       throw new NotFoundError(`Claim ${_id} does not exist!`);
     }
     if (claim?.claimUser.toString() !== user.toString()) {
-      throw new NotAllowedError(`Claim ${_id} does not belong to user ${user}!`);
+      throw new ClaimUserNotMatchError(claim.claimUser, _id);
     }
   }
 
@@ -111,5 +111,14 @@ export default class ClaimingConcept {
     if (claim.method !== "Delivery") {
       throw new NotAllowedError(`Claim ${_id} is not a delivery claim!`);
     }
+  }
+}
+
+export class ClaimUserNotMatchError extends NotAllowedError {
+  constructor(
+    public readonly claimUser: ObjectId,
+    public readonly _id: ObjectId,
+  ) {
+    super("{0} is not the claimer of claim {1}!", claimUser, _id);
   }
 }
