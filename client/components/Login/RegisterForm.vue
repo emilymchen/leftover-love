@@ -8,7 +8,9 @@ const password = ref("");
 const address = ref(""); // TODO: not sure how to validate it's a real address? placeholder for now
 const { createUser, loginUser, updateSession } = useUserStore();
 
-const props = defineProps({ role: "Recipient" | "Volunteer" | "Donor" });
+const props = defineProps<{
+  role: "Recipient" | "Volunteer" | "Donor";
+}>();
 
 async function register() {
   await createUser(username.value, password.value, props.role, address.value);

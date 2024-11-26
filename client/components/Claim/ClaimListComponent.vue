@@ -14,12 +14,10 @@ const filterType = ref<"pickup" | "delivery" | "all">("all");
 
 let filteredClaims = ref<Array<Record<string, string>>>([]);
 
-
 async function getClaims() {
   let claimResults;
   try {
     claimResults = await fetchy("/api/claims", "GET");
-
   } catch {
     return;
   }
@@ -31,7 +29,6 @@ async function getClaims() {
   } else {
     claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.post.expiration_time).toISOString() >= new Date().toISOString() && claim.status === "Requested");
   }
-
 }
 function filterClaims() {
   if (filterType.value === "pickup") {
@@ -42,7 +39,6 @@ function filterClaims() {
     filteredClaims.value = claims.value;
   }
 }
-
 
 async function updateClaims() {
   await getClaims();
@@ -59,11 +55,43 @@ onBeforeMount(async () => {
   <div class="claims-outer-container">
     <p v-if="!loaded">Loading...</p>
 
-    <div class="filter-buttons"> 
-      <button :class="{ active: filterType === 'all' }" class="button-click" @click="() => { filterType = 'all'; filterClaims(); }"> All </button>
-      <button :class="{ active: filterType === 'pickup' }" class="button-click" @click="() => { filterType = 'pickup'; filterClaims(); }"> Pickup </button>
-      <button :class="{ active: filterType === 'delivery' }" class="button-click" @click="() => { filterType = 'delivery'; filterClaims(); }"> Delivery </button>
-
+    <div class="filter-buttons">
+      <button
+        :class="{ active: filterType === 'all' }"
+        class="button-click"
+        @click="
+          () => {
+            filterType = 'all';
+            filterClaims();
+          }
+        "
+      >
+        All
+      </button>
+      <button
+        :class="{ active: filterType === 'pickup' }"
+        class="button-click"
+        @click="
+          () => {
+            filterType = 'pickup';
+            filterClaims();
+          }
+        "
+      >
+        Pickup
+      </button>
+      <button
+        :class="{ active: filterType === 'delivery' }"
+        class="button-click"
+        @click="
+          () => {
+            filterType = 'delivery';
+            filterClaims();
+          }
+        "
+      >
+        Delivery
+      </button>
     </div>
 
     <section class="claims" v-if="loaded">
@@ -174,33 +202,34 @@ article {
 .filter-buttons {
   display: flex;
   flex-direction: row;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
-  gap: 15px; 
+  gap: 15px;
   margin-top: 20px;
 }
 
 .button-click {
-  background-color: var(--green); 
-  color: white; 
-  border: 2px solid var(--green); 
-  padding: 10px 20px; 
+  background-color: var(--green);
+  color: white;
+  border: 2px solid var(--green);
+  padding: 10px 20px;
   border-radius: 20px;
   font-size: 16px;
-  cursor: pointer; 
-  transition: background-color 0.3s ease, transform 0.2s ease; 
+  cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
 }
 
 .button-click:hover {
-  background-color: #e0e0e0; 
-  color: black; 
+  background-color: #e0e0e0;
+  color: black;
 }
 
 .button-click.active {
-  background-color: var(--lighter-green); 
-  color: black; 
-  border: 2px solid var(--lighter-green); 
-  transform: scale(1.05); 
+  background-color: var(--lighter-green);
+  color: black;
+  border: 2px solid var(--lighter-green);
+  transform: scale(1.05);
 }
-
 </style>
