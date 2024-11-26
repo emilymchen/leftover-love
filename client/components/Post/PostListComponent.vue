@@ -263,15 +263,11 @@ article {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-
-  /* Move higher on the screen */
-  margin-top: 11px; /* Adjust as needed */
-  margin-left: -400px;
-  position: relative; /* Optional: Use absolute if needed */
-  top: -80px; /* Negative value moves it higher */
-  color: black; /* Replace with your desired text color */
-  gap: 10px;
-
+  margin-top: 11px; 
+  margin-left: -600px;
+  position: relative; 
+  top: -80px; 
+  color: black; 
 
 }
 .button-click {
@@ -281,6 +277,7 @@ article {
   padding: 10px 20px;
   border-radius: 20px;
   cursor: pointer;
+  gap: 10px;
   transition: background-color 0.3s ease; /* Smooth transition */
 }
 

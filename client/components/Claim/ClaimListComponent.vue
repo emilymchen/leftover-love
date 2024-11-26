@@ -10,10 +10,16 @@ const loaded = ref(false);
 let claims = ref<Array<Record<string, string>>>([]);
 let currentClaim = ref<Record<string, any> | null>(null);
 
+const filterType = ref<"pickup" | "delivery" | "all">("all");
+
+let filteredClaims = ref<Array<Record<string, string>>>([]);
+
+
 async function getClaims() {
   let claimResults;
   try {
     claimResults = await fetchy("/api/claims", "GET");
+
   } catch {
     return;
   }
@@ -25,10 +31,22 @@ async function getClaims() {
   } else {
     claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.post.expiration_time).toISOString() >= new Date().toISOString() && claim.status === "Requested");
   }
+
 }
+function filterClaims() {
+  if (filterType.value === "pickup") {
+    filteredClaims.value = claims.value.filter((claim) => claim.method === "Pickup");
+  } else if (filterType.value === "delivery") {
+    filteredClaims.value = claims.value.filter((claim) => claim.method === "Delivery");
+  } else {
+    filteredClaims.value = claims.value;
+  }
+}
+
 
 async function updateClaims() {
   await getClaims();
+  filterClaims();
   loaded.value = true;
 }
 
@@ -40,12 +58,20 @@ onBeforeMount(async () => {
 <template>
   <div class="claims-outer-container">
     <p v-if="!loaded">Loading...</p>
-    <section class="claims" v-if="loaded">
-      <p v-if="claims.length === 0 && props.category === 'pending'">You have no pending claims!</p>
-      <p v-if="claims.length === 0 && props.category === 'completed'">You have no completed claims!</p>
-      <p v-if="claims.length === 0 && props.category === 'expired'">You have no expired claims!</p>
 
-      <article v-for="claim in claims" :key="claim._id" class="claim-item">
+    <div class="filter-buttons"> 
+      <button :class="{ active: filterType === 'all' }" class="button-click" @click="() => { filterType = 'all'; filterClaims(); }"> All </button>
+      <button :class="{ active: filterType === 'pickup' }" class="button-click" @click="() => { filterType = 'pickup'; filterClaims(); }"> Pickup </button>
+      <button :class="{ active: filterType === 'delivery' }" class="button-click" @click="() => { filterType = 'delivery'; filterClaims(); }"> Delivery </button>
+
+    </div>
+
+    <section class="claims" v-if="loaded">
+      <p v-if="filteredClaims.length === 0 && props.category === 'pending'">You have no pending claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'completed'">You have no completed claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'expired'">You have no expired claims!</p>
+
+      <article v-for="claim in filteredClaims" :key="claim._id" class="claim-item">
         <ClaimComponent v-if="currentClaim?._id !== claim._id" :claim="claim" :category="props.category" @refreshClaims="updateClaims" />
       </article>
     </section>
@@ -149,4 +175,37 @@ article {
   font-weight: bold;
   margin-bottom: 0.5em;
 }
+
+.filter-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; /* Align buttons in the center */
+  align-items: center;
+  gap: 15px; /* Space between buttons */
+  margin-top: 20px;
+}
+
+.button-click {
+  background-color: var(--green); /* Default button color */
+  color: white; /* Default text color */
+  border: 2px solid var(--green); /* Border color matching background */
+  padding: 10px 20px; /* Button padding */
+  border-radius: 20px; /* Rounded corners */
+  font-size: 16px; /* Font size for readability */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+.button-click:hover {
+  background-color: #e0e0e0; /* Light gray background on hover */
+  color: black; /* Dark text on hover */
+}
+
+.button-click.active {
+  background-color: var(--lighter-green); /* Highlighted background for active state */
+  color: black; /* Text color for active state */
+  border: 2px solid var(--lighter-green); /* Border matches background */
+  transform: scale(1.05); /* Slightly enlarge active button */
+}
+
 </style>

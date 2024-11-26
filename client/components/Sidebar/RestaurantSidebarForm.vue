@@ -36,7 +36,7 @@ async function logout() {
     <aside class="sidebar" :class="{ open: isSidebarOpen }">
     <ul>
         <li class="sidebar-username">
-            {{ userStore.currentUsername }} <span class="recipient">recipient</span>
+            {{ userStore.currentUsername }} <span class="restaurant">restaurant</span>
         </li>
         <li class="sidebar-items">
             <RouterLink :to="{ name: 'MyFoodListings' }" @click="toggleSidebar" class="sidebar-item"> my food donations </RouterLink>
@@ -188,7 +188,7 @@ ul {
 .logout-button:hover {
   color: black; 
 }
-.recipient {
+.restaurant {
     font-size:20px; /* Adjust the size relative to the parent */
     color: black; /* Optional: change color to differentiate further */
 }
