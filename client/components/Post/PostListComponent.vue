@@ -228,7 +228,6 @@ p,
 }
 
 article {
-  
   border-radius: 1em;
   display: flex;
   flex-direction: column;
@@ -289,20 +288,20 @@ article {
   gap: 10px;
 }
 .button-click {
-  background-color: var(--green); 
-  color: black; 
+  background-color: var(--green);
+  color: black;
   border: 2px solid var(--green);
   padding: 10px 20px;
   border-radius: 20px;
   cursor: pointer;
-  transition: background-color 0.3s ease; 
+  transition: background-color 0.3s ease;
 }
 
 .button-click:hover {
-  background-color: #e0e0e0; 
+  background-color: #e0e0e0;
 }
 .button-click.active {
-  background-color: var(--lighter-green); 
-  color: black; 
+  background-color: var(--lighter-green);
+  color: black;
 }
 </style>
