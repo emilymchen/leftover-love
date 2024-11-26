@@ -212,6 +212,7 @@ p,
 }
 
 article {
+  
   border-radius: 1em;
   display: flex;
   flex-direction: column;
@@ -227,6 +228,8 @@ article {
 
 .row {
   display: flex;
+  position: fixed;
+
   justify-content: space-between;
   margin: 0 auto;
   max-width: 60em;
@@ -246,6 +249,7 @@ article {
 }
 
 .modal {
+  position: fixed;
   padding: 2em;
   border-radius: 12px;
   min-width: 400px;
@@ -260,34 +264,30 @@ article {
 
 .filter-buttons {
   display: flex;
+  position: fixed;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-top: 11px; 
-  margin-left: -600px;
-  position: relative; 
-  top: -80px; 
-  color: black; 
-
+  margin-top: -70px;
+  margin-left: 400px;
+  gap: 10px;
 }
 .button-click {
-  background-color: var(--green); /* Default background color */
-  color: black; /* Default text color */
+  background-color: var(--green); 
+  color: black; 
   border: 2px solid var(--green);
   padding: 10px 20px;
   border-radius: 20px;
   cursor: pointer;
-  gap: 10px;
-  transition: background-color 0.3s ease; /* Smooth transition */
+  transition: background-color 0.3s ease; 
 }
 
 .button-click:hover {
-  background-color: #e0e0e0; /* Hover background color */
+  background-color: #e0e0e0; 
 }
-
 .button-click.active {
-  background-color: var(--lighter-green); /* Active state background color */
-  color: black; /* Active state text color */
+  background-color: var(--lighter-green); 
+  color: black; 
 }
 
 </style>

@@ -82,11 +82,6 @@ onBeforeMount(async () => {
 .claims-outer-container {
   margin-bottom: 50px;
 }
-/* .claims-outer-container {
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100vh;
-} */
 
 .claims {
   display: grid;
@@ -179,33 +174,33 @@ article {
 .filter-buttons {
   display: flex;
   flex-direction: row;
-  justify-content: center; /* Align buttons in the center */
+  justify-content: center; 
   align-items: center;
-  gap: 15px; /* Space between buttons */
+  gap: 15px; 
   margin-top: 20px;
 }
 
 .button-click {
-  background-color: var(--green); /* Default button color */
-  color: white; /* Default text color */
-  border: 2px solid var(--green); /* Border color matching background */
-  padding: 10px 20px; /* Button padding */
-  border-radius: 20px; /* Rounded corners */
-  font-size: 16px; /* Font size for readability */
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  background-color: var(--green); 
+  color: white; 
+  border: 2px solid var(--green); 
+  padding: 10px 20px; 
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer; 
+  transition: background-color 0.3s ease, transform 0.2s ease; 
 }
 
 .button-click:hover {
-  background-color: #e0e0e0; /* Light gray background on hover */
-  color: black; /* Dark text on hover */
+  background-color: #e0e0e0; 
+  color: black; 
 }
 
 .button-click.active {
-  background-color: var(--lighter-green); /* Highlighted background for active state */
-  color: black; /* Text color for active state */
-  border: 2px solid var(--lighter-green); /* Border matches background */
-  transform: scale(1.05); /* Slightly enlarge active button */
+  background-color: var(--lighter-green); 
+  color: black; 
+  border: 2px solid var(--lighter-green); 
+  transform: scale(1.05); 
 }
 
 </style>
