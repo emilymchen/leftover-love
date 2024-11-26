@@ -39,7 +39,7 @@ const deletePost = async () => {
     </div>
     <div class="form-group">
       <label for="qty">Quantity</label>
-      <input type="number" id="qty" v-model="qty" min="1" placeholder="Quantity" required />
+      <input type="number" id="qty" v-model="qty" min="1" max="5" placeholder="Quantity" required />
     </div>
     <div class="form-group">
       <label for="expiration_time">Expiration Date</label>
