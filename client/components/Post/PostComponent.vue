@@ -30,6 +30,7 @@ const pickup = ref("");
 onMounted(async () => {
   claimed.value = await checkIfClaimed(props.post._id);
 });
+
 </script>
 
 <template>

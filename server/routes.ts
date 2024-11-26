@@ -175,6 +175,23 @@ class Routes {
     return Responses.posts(result);
   }
 
+  /**
+   * Gets all non-expired and claimed posts.
+   * @returns all posts that are both non-expired and claimed
+   */
+  @Router.get("/posts/non-expired-claimed")
+  async getAllNonExpiredClaimedPosts() {
+    const posts = await Posting.getPosts();
+    const checkPromises = posts.map(async (post) => {
+      const [isExpired, isClaimed] = await Promise.all([Posting.isPostExpired(post._id), Claiming.isItemClaimed(post._id)]);
+      return { post, isExpired, isClaimed };
+    });
+    const results = await Promise.all(checkPromises);
+    const result = results.filter((result) => !result.isExpired && result.isClaimed).map((result) => result.post);
+    console.log("hi claimed", result);
+    return Responses.posts(result);
+  }
+
   @Router.get("/claims/:post")
   async getPostClaim(post: string) {
     const oid = new ObjectId(post);

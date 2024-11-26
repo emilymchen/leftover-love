@@ -25,15 +25,15 @@ const router = createRouter({
       beforeEnter: (to, from) => {
         const { isRecipient, isDonor } = storeToRefs(useUserStore());
         if (isDonor.value) {
-          return { name: "Restaurant Food Listings" };
+          return { name: "Restaurant-Food-Listings" };
         } else if (isRecipient.value) {
-          return { name: "Recipient Feed" };
+          return { name: "Recipient-Feed" };
         }
       },
     },
     {
       path: "/restaurant",
-      name: "Restaurant Food Listings",
+      name: "Restaurant-Food-Listings",
       component: RestaurantHomeView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {
@@ -45,7 +45,7 @@ const router = createRouter({
     },
     {
       path: "/recipient",
-      name: "Recipient Feed",
+      name: "Recipient-Feed",
       component: RecipientFeedView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {

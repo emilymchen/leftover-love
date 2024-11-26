@@ -28,7 +28,7 @@ async function logout() {
 </script>
 
 <template>
-    <!-- <RouterLink :to="{ name: 'Claims' }" :class="{ underline: currentRouteName == 'Claims' }"> Claims </RouterLink> -->
+    <!-- <RouterLink :to="{ name: 'Recipient-Feed' }" :class="{ underline: currentRouteName == 'Recipient-Feed' }"> Available Orders </RouterLink> -->
     <button class="sidebar-button" @click="toggleSidebar">
     <img class="sidebar-icon" src="@/assets/images/lines.png" />
     </button>
@@ -39,7 +39,10 @@ async function logout() {
             {{ userStore.currentUsername }} <span class="recipient">recipient</span>
         </li>
         <li class="sidebar-items">
-            <RouterLink :to="{ name: 'MyFoodListings' }" @click="toggleSidebar" class="sidebar-item"> my food donations </RouterLink>
+            <RouterLink :to="{ name: 'Recipient-Feed' }" @click="toggleSidebar" class="sidebar-item"> available claims </RouterLink>
+        </li>
+        <li class="sidebar-items">
+            <RouterLink :to="{ name: 'Claims' }" @click="toggleSidebar" class="sidebar-item"> my claims </RouterLink>
         </li>
         <li class="sidebar-items">
             <RouterLink :to="{ name: 'Settings' }" @click="toggleSidebar" class="sidebar-item"> account settings </RouterLink>

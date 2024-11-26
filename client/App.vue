@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import RecipientSidebarForm from "@/components/Sidebar/RecipientSidebarForm.vue";
 import RestaurantSidebarForm from "@/components/Sidebar/RestaurantSidebarForm.vue";
 import router from "@/router";
 import { useToastStore } from "@/stores/toast";
@@ -49,7 +50,7 @@ onBeforeMount(async () => {
       <ul>
     
         <li v-if="isLoggedIn && isRecipient">
-          <RouterLink :to="{ name: 'Claims' }" :class="{ underline: currentRouteName == 'Claims' }"> Claims </RouterLink>
+          <RecipientSidebarForm/>
         </li>
 
         <li v-if="isLoggedIn && isDonor">
@@ -75,10 +76,8 @@ onBeforeMount(async () => {
 
 
 <style scoped>
-/* Sidebar Styles */
 nav {
   padding: 1em 4em;
-  /* background-color: lightgray; */
   background-color: var(--beige);
   display: flex;
   align-items: center;

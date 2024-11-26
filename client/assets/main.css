@@ -7,6 +7,7 @@
   --beige: #d4c8a9;
   --light-beige: #f1e6c9;
   --light-bg: rgba(255, 255, 255, 28%);
+  --lighter-green: #d4d6b0;
   --green: #b0b470;
   --dark-green: #58823A;
   --darker-green: #43603B;
@@ -45,6 +46,7 @@ button {
   color: white;
   cursor: pointer;
 }
+
 
 
 .column {

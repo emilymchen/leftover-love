@@ -10,11 +10,40 @@ import { onBeforeMount, ref } from "vue";
 const { isDonor, currentUsername, isRecipient } = storeToRefs(useUserStore());
 
 const loaded = ref(false);
-let posts = ref<Array<Record<string, string>>>([]);
+let posts = ref<Array<Record<string, any>>>([]);
 let currentPost = ref<Record<string, any> | null>(null);
 let searchAuthor = ref("");
 let isCreatingPost = ref(false);
 let isEditingPost = ref(false);
+
+// State for toggle filter
+const filterType = ref<"all" | "claimed" | "unclaimed">("all");
+let postIdtoClaimStatus = new Map<string, boolean>();
+let filteredPosts = ref<Array<Record<string, any>>>([]);
+
+// Computed filtered posts
+function filterPosts() {
+  if (filterType.value === "claimed") {
+    filteredPosts.value = posts.value.filter((post) => postIdtoClaimStatus.get(post._id));
+  } else if (filterType.value === "unclaimed") {
+    for (const post of posts.value) {
+    }
+    filteredPosts.value = posts.value.filter((post) => !postIdtoClaimStatus.get(post._id));
+  } else {
+    filteredPosts.value =  posts.value; 
+  }
+}
+
+async function checkIfClaimed(postId: string) {
+  let claim;
+  try {
+    claim = await fetchy(`/api/claims/${postId}`, "GET");
+  } catch {
+    return false;
+  }
+  return claim !== null;
+}
+
 
 async function getPosts(author?: string) {
   let query: Record<string, string> = author !== undefined ? { author } : {};
@@ -51,10 +80,14 @@ async function updatePosts() {
   if (isDonor.value) {
     // If it's a donor, we only want to have them see their food listings
     await getPosts(currentUsername.value);
+    for (const post of posts.value) {
+      postIdtoClaimStatus.set(post._id, await checkIfClaimed(post._id));
+    }
   } else if (isRecipient.value) {
     // If it's a recipient, we want them to see all the available non-claimed food listings
     await getAllAvailablePosts();
   }
+  filterPosts();
   loaded.value = true;
 }
 
@@ -67,25 +100,45 @@ async function claimPost(post: Record<string, any>) {
   await updatePosts();
 }
 
+
 onBeforeMount(async () => {
   await updatePosts();
+  console.log(filteredPosts.value)
 });
-</script>
 
+
+
+</script>
 <template>
   <div class="posts-outer-container">
     <p v-if="!loaded">Loading...</p>
+
+
+    <div v-if="isDonor" class="filter-buttons">
+      <button :class="{ active: filterType === 'all' }" class = "button-click" @click="() => {filterType = 'all'; filterPosts()}">All</button>
+      <button :class="{ active: filterType === 'claimed' }" class = "button-click" @click="() => {filterType = 'claimed'; filterPosts()}">Claimed</button>
+      <button :class="{ active: filterType === 'unclaimed' }" class = "button-click"  @click="() => {filterType = 'unclaimed'; filterPosts()}">Unclaimed</button>
+    </div>
+
     <section class="posts" v-if="loaded">
-      <p v-if="posts.length === 0">No posts available!</p>
+      <p v-if="filteredPosts.length === 0">No posts available!</p>
       <article v-if="isDonor" class="create-post-box" @click="isCreatingPost = true">
         <div class="create-post-content">
           <span class="plus-icon">+</span>
         </div>
       </article>
 
-      <article v-for="post in posts" :key="post._id" class="post-item">
-        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="startEditing(post)" @claimPost="claimPost(post)" />
+      <article v-for="post in filteredPosts" :key="post._id" class="post-item">
+        <PostComponent
+          v-if="!isEditingPost || currentPost?._id !== post._id"
+          :post="post"
+          @refreshPosts="updatePosts"
+          @editPost="startEditing(post)"
+          @claimPost="claimPost(post)"
+        />
       </article>
+
+    
     </section>
 
     <div v-if="isDonor && isCreatingPost" class="modal-background">
@@ -108,6 +161,7 @@ onBeforeMount(async () => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .posts-outer-container {
@@ -203,4 +257,40 @@ article {
   font-weight: bold;
   margin-bottom: 0.5em;
 }
+
+.filter-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  /* Move higher on the screen */
+  margin-top: 11px; /* Adjust as needed */
+  margin-left: -400px;
+  position: relative; /* Optional: Use absolute if needed */
+  top: -80px; /* Negative value moves it higher */
+  color: black; /* Replace with your desired text color */
+  gap: 10px;
+
+
+}
+.button-click {
+  background-color: var(--green); /* Default background color */
+  color: black; /* Default text color */
+  border: 2px solid var(--green);
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.button-click:hover {
+  background-color: #e0e0e0; /* Hover background color */
+}
+
+.button-click.active {
+  background-color: var(--lighter-green); /* Active state background color */
+  color: black; /* Active state text color */
+}
+
 </style>
