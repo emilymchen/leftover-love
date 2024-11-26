@@ -33,16 +33,18 @@ async function logout() {
   <div v-if="isSidebarOpen" class="overlay" @click="toggleSidebar"></div>
   <aside class="sidebar" :class="{ open: isSidebarOpen }">
     <ul>
-      <li class="sidebar-username">{{ userStore.currentUsername }} <span class="recipient">recipient</span></li>
-      <li class="sidebar-items">
-        <RouterLink :to="{ name: 'Recipient-Feed' }" @click="toggleSidebar" class="sidebar-item"> available claims </RouterLink>
-      </li>
-      <li class="sidebar-items">
-        <RouterLink :to="{ name: 'Claims' }" @click="toggleSidebar" class="sidebar-item"> my claims </RouterLink>
-      </li>
-      <li class="sidebar-items">
-        <RouterLink :to="{ name: 'Settings' }" @click="toggleSidebar" class="sidebar-item"> account settings </RouterLink>
-      </li>
+        <li class="sidebar-username">
+            {{ userStore.currentUsername }} <span class="volunteer">volunteer</span>
+        </li>
+        <li class="sidebar-items">
+            <RouterLink :to="{ name: 'Recipient-Feed' }" @click="toggleSidebar" class="sidebar-item"> available claims </RouterLink>
+        </li>
+        <li class="sidebar-items">
+            <RouterLink :to="{ name: 'Claims' }" @click="toggleSidebar" class="sidebar-item"> my claims </RouterLink>
+        </li>
+        <li class="sidebar-items">
+            <RouterLink :to="{ name: 'Settings' }" @click="toggleSidebar" class="sidebar-item"> account settings </RouterLink>
+        </li>
     </ul>
     <button class="logout-button" @click="logout">Sign Out</button>
   </aside>
@@ -189,8 +191,8 @@ ul {
 .logout-button:hover {
   color: black;
 }
-.recipient {
-  font-size: 20px;
-  color: black;
+.volunteer {
+    font-size:20px; /* Adjust the size relative to the parent */
+    color: black; /* Optional: change color to differentiate further */
 }
 </style>
