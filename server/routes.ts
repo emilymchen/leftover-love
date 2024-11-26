@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Claiming, Messaging, Posting, Sessioning } from "./app";
+import { Authing, Claiming, Messaging, Posting, Sessioning, Delivering } from "./app";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
 
@@ -138,8 +138,9 @@ class Routes {
     const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Donor");
     await Posting.assertAuthorIsUser(oid, user);
-    await Claiming.deleteClaim(oid);
-    //TODO: Add in delivery, & tag syncs
+    const deleted_claim = await Claiming.deleteClaim(oid);
+    await Delivering.deleteDeliveryByRequest(await deleted_claim.claim);
+    //TODO: Add in tag syncs
     return Posting.delete(oid);
   }
 
@@ -238,25 +239,27 @@ class Routes {
    * @returns message of deleted claim
    */
   @Router.delete("/claims/:post")
-  async deleteClaim(session: SessionDoc, post: string) {
+  async deleteClaim(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
-    const oid = new ObjectId(post);
+    const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Recipient");
     await Claiming.assertClaimerIsUser(oid, user);
-    //TODO: Add in delivery sync
-    return Claiming.deleteClaim(oid);
+
+    const deleted_claim = await Claiming.deleteClaim(oid);
+    await Delivering.deleteDeliveryByRequest(await deleted_claim.claim);
+    return deleted_claim.msg;
   }
 
   /**
    * Completes a pickup claim.
    * @param session The session of the user, the user must be a recipient
-   * @param claim The claim id
+   * @param id The claim id
    * @returns A message of the completed claim
    */
   @Router.patch("/claims/pickup/:claim")
-  async pickupClaim(session: SessionDoc, claim: string) {
+  async pickupClaim(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
-    const oid = new ObjectId(claim);
+    const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Recipient");
     await Claiming.assertClaimerIsUser(oid, user);
     await Claiming.assertIsPickupClaim(oid);
@@ -292,6 +295,90 @@ class Routes {
     return Claiming.getItemClaim(oid);
   }
 
+  /**
+   * Creates a delivery claim.
+   * @param session The session of the user, the user must be a volunteer
+   * @param request The claim request id
+   * @returns The created delivery.
+   */
+  @Router.post("/deliveries")
+  async acceptDelivery(session: SessionDoc, request: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(request);
+    await Authing.assertIsRole(user, "Volunteer");
+    await Claiming.assertClaimIsNotCompleted(oid);
+    await Claiming.assertIsDeliveryClaim(oid);
+    return Delivering.acceptDelivery(user, oid);
+  }
+
+  /**
+   * Unaccepts a delivery.
+   * @param session  the session of the user, the user must be a volunteer and the deliverer of the original delivery
+   * @param id the id of the delivery
+   * @returns a message of the unaccepted delivery
+   */
+  @Router.delete("/deliveries/:request")
+  async unacceptDelivery(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    await Authing.assertIsRole(user, "Volunteer");
+    await Delivering.assertDelivererIsUser(oid, user);
+    await Delivering.assertIsNotDelivered(oid);
+    return Delivering.unacceptDelivery(oid);
+  }
+
+  /**
+   * Completes a delivery.
+   * @param session  the session of the user, the user must be a volunteer and the deliverer of the original delivery
+   * @param id the id of the delivery
+   * @returns a message of the completed delivery
+   */
+  @Router.post("/deliveries/start")
+  async startDelivery(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    await Authing.assertIsRole(user, "Volunteer");
+    await Delivering.assertDelivererIsUser(oid, user);
+    await Delivering.assertHasNotStartedDelivery(oid);
+    return Delivering.startDelivery(oid);
+  }
+
+  /**
+   * Completes a delivery.
+   * @param session  the session of the user, the user must be a volunteer and the deliverer of the original delivery
+   * @param id the id of the delivery
+   * @returns a message of the completed delivery
+   */
+  @Router.post("/deliveries/complete")
+  async completeDelivery(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    await Authing.assertIsRole(user, "Volunteer");
+    await Delivering.assertDelivererIsUser(oid, user);
+    await Delivering.assertIsInProgressDelivery(oid);
+    return Delivering.completeDelivery(oid);
+  }
+
+  @Router.get("/deliveries")
+  @Router.validate(z.object({ deliverer: z.string().optional() }))
+  async getDeliveries(deliverer?: string) {
+    let deliveries;
+    if (deliverer) {
+      const id = (await Authing.getUserByUsername(deliverer))._id;
+      deliveries = await Delivering.getDeliveriesByUser(id);
+    } else {
+      deliveries = await Delivering.getDeliveries();
+    }
+    return Responses.deliveries(deliveries);
+  }
+
+  @Router.get("/deliveries/user")
+  async getUserDeliveries(session: SessionDoc) {
+    const user = Sessioning.getUser(session);
+    return Responses.deliveries(await Delivering.getDeliveriesByUser(user));
+  }
+
+  @Router.get("/deliveries/user")
   @Router.get("/messages")
   @Router.validate(z.object({ currentUser: z.string(), otherUser: z.string() }))
   async getMessages(currentUser: string, otherUser: string) {

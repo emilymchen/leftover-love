@@ -26,11 +26,9 @@ function filterPosts() {
   if (filterType.value === "claimed") {
     filteredPosts.value = posts.value.filter((post) => postIdtoClaimStatus.get(post._id));
   } else if (filterType.value === "unclaimed") {
-    for (const post of posts.value) {
-    }
     filteredPosts.value = posts.value.filter((post) => !postIdtoClaimStatus.get(post._id));
   } else {
-    filteredPosts.value =  posts.value; 
+    filteredPosts.value = posts.value;
   }
 }
 
@@ -43,7 +41,6 @@ async function checkIfClaimed(postId: string) {
   }
   return claim !== null;
 }
-
 
 async function getPosts(author?: string) {
   let query: Record<string, string> = author !== undefined ? { author } : {};
@@ -100,24 +97,52 @@ async function claimPost(post: Record<string, any>) {
   await updatePosts();
 }
 
-
 onBeforeMount(async () => {
   await updatePosts();
-  console.log(filteredPosts.value)
+  console.log(filteredPosts.value);
 });
-
-
-
 </script>
 <template>
   <div class="posts-outer-container">
     <p v-if="!loaded">Loading...</p>
 
-
     <div v-if="isDonor" class="filter-buttons">
-      <button :class="{ active: filterType === 'all' }" class = "button-click" @click="() => {filterType = 'all'; filterPosts()}">All</button>
-      <button :class="{ active: filterType === 'claimed' }" class = "button-click" @click="() => {filterType = 'claimed'; filterPosts()}">Claimed</button>
-      <button :class="{ active: filterType === 'unclaimed' }" class = "button-click"  @click="() => {filterType = 'unclaimed'; filterPosts()}">Unclaimed</button>
+      <button
+        :class="{ active: filterType === 'all' }"
+        class="button-click"
+        @click="
+          () => {
+            filterType = 'all';
+            filterPosts();
+          }
+        "
+      >
+        All
+      </button>
+      <button
+        :class="{ active: filterType === 'claimed' }"
+        class="button-click"
+        @click="
+          () => {
+            filterType = 'claimed';
+            filterPosts();
+          }
+        "
+      >
+        Claimed
+      </button>
+      <button
+        :class="{ active: filterType === 'unclaimed' }"
+        class="button-click"
+        @click="
+          () => {
+            filterType = 'unclaimed';
+            filterPosts();
+          }
+        "
+      >
+        Unclaimed
+      </button>
     </div>
 
     <section class="posts" v-if="loaded">
@@ -129,16 +154,8 @@ onBeforeMount(async () => {
       </article>
 
       <article v-for="post in filteredPosts" :key="post._id" class="post-item">
-        <PostComponent
-          v-if="!isEditingPost || currentPost?._id !== post._id"
-          :post="post"
-          @refreshPosts="updatePosts"
-          @editPost="startEditing(post)"
-          @claimPost="claimPost(post)"
-        />
+        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="startEditing(post)" @claimPost="claimPost(post)" />
       </article>
-
-    
     </section>
 
     <div v-if="isDonor && isCreatingPost" class="modal-background">
@@ -161,7 +178,6 @@ onBeforeMount(async () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .posts-outer-container {
@@ -271,8 +287,6 @@ article {
   top: -80px; /* Negative value moves it higher */
   color: black; /* Replace with your desired text color */
   gap: 10px;
-
-
 }
 .button-click {
   background-color: var(--green); /* Default background color */
@@ -292,5 +306,4 @@ article {
   background-color: var(--lighter-green); /* Active state background color */
   color: black; /* Active state text color */
 }
-
 </style>

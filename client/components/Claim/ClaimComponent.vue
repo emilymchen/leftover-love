@@ -1,19 +1,9 @@
 <script setup lang="ts">
-import { useUserStore } from "@/stores/user";
 import { formatDate } from "@/utils/formatDate";
-import { storeToRefs } from "pinia";
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 
 const props = defineProps(["claim", "category"]);
 const emit = defineEmits(["editClaim", "refreshClaims", "claimClaim"]);
-const { currentUsername, isDonor, isRecipient } = storeToRefs(useUserStore());
-
-function isExpired(expiration_time: string) {
-  return new Date(expiration_time) < new Date();
-}
-
-const pickup = ref("");
-
 onMounted(async () => {});
 </script>
 

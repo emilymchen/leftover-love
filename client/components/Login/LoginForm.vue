@@ -28,8 +28,6 @@ async function login() {
       </div>
       <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary">Submit</button>
-
-  
       </div>
     </fieldset>
   </form>

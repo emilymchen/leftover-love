@@ -76,7 +76,7 @@ export default class DeliveringConcept {
       throw new NotFoundError(`Delivery ${_id} does not exist!`);
     }
     if (delivery?.deliverer.toString() !== user.toString()) {
-      throw new NotAllowedError(`Claim ${_id} does not belong to user ${user}!`);
+      throw new DelivererNotMatchError(user, _id);
     }
   }
 
@@ -99,5 +99,14 @@ export default class DeliveringConcept {
     if (delivery?.status != "In Progress") {
       throw new NotAllowedError(`Delivery for request ${request} is not in progress!`);
     }
+  }
+}
+
+export class DelivererNotMatchError extends NotAllowedError {
+  constructor(
+    public readonly deliverer: ObjectId,
+    public readonly _id: ObjectId,
+  ) {
+    super("{0} is not the deliverer of delivery {1}!", deliverer, _id);
   }
 }

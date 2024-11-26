@@ -1,7 +1,10 @@
 import { Authing } from "./app";
 import { ClaimDoc } from "./concepts/claiming";
+import { DeliveryDoc } from "./concepts/delivering";
 import { MessageDoc, MessageSenderNotMatchError } from "./concepts/messaging";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/posting";
+import { ClaimUserNotMatchError } from "./concepts/claiming";
+import { DelivererNotMatchError } from "./concepts/delivering";
 import { Router } from "./framework/router";
 
 /**
@@ -48,6 +51,25 @@ export default class Responses {
   }
 
   /**
+   * Convert DeliveryDoc into more readable format for the frontend by converting the deliverer id into a username.
+   */
+  static async delivery(delivery: DeliveryDoc | null) {
+    if (!delivery) {
+      return delivery;
+    }
+    const deliverer = await Authing.getUserById(delivery.deliverer);
+    return { ...delivery, deliverer: deliverer.username };
+  }
+
+  /**
+   * Same as {@link delivery} but for an array of DeliveryDoc for improved performance.
+   */
+  static async deliveries(deliveries: DeliveryDoc[]) {
+    const deliverers = await Authing.idsToUsernames(deliveries.map((delivery) => delivery.deliverer));
+    return deliveries.map((delivery, i) => ({ ...delivery, deliverer: deliverers[i] }));
+  }
+
+  /**
    * Convert MessageDoc into more readable format for the frontend by converting the sender/receiver id into a username.
    */
   static async message(message: MessageDoc | null) {
@@ -77,5 +99,15 @@ Router.registerError(PostAuthorNotMatchError, async (e) => {
 
 Router.registerError(MessageSenderNotMatchError, async (e) => {
   const username = (await Authing.getUserById(e.sender)).username;
+  return e.formatWith(username, e._id);
+});
+
+Router.registerError(ClaimUserNotMatchError, async (e) => {
+  const username = (await Authing.getUserById(e.claimUser)).username;
+  return e.formatWith(username, e._id);
+});
+
+Router.registerError(DelivererNotMatchError, async (e) => {
+  const username = (await Authing.getUserById(e.deliverer)).username;
   return e.formatWith(username, e._id);
 });

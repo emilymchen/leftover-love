@@ -35,7 +35,7 @@ export default class ClaimingConcept {
 
   async deleteClaim(item: ObjectId) {
     await this.claims.deleteOne({ item });
-    return { msg: "Claim deleted successfully!" };
+    return { msg: "Claim deleted successfully!", claim: item };
   }
 
   async completeClaim(_id: ObjectId) {
