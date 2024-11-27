@@ -24,52 +24,24 @@ const router = createRouter({
       name: "Home",
       component: HomeView,
       meta: { requiresAuth: true },
-      beforeEnter: (to, from) => {
-        const { isDonor, isRecipient } = storeToRefs(useUserStore());
-        if (isDonor.value) {
-          return { name: "Restaurant-Food-Listings" };
-        } else if (isRecipient.value) {
-          return { name: "Recipient-Feed" };
-        } else {
-          return { name: "Volunteer-Feed" };
-        }
-      },
     },
     {
       path: "/restaurant",
       name: "Restaurant-Food-Listings",
       component: RestaurantHomeView,
       meta: { requiresAuth: true },
-      beforeEnter: (to, from) => {
-        const { isDonor } = storeToRefs(useUserStore());
-        if (!isDonor.value) {
-          return { name: "Home" };
-        }
-      },
     },
     {
       path: "/recipient",
       name: "Recipient-Feed",
       component: RecipientFeedView,
       meta: { requiresAuth: true },
-      beforeEnter: (to, from) => {
-        const { isRecipient } = storeToRefs(useUserStore());
-        if (!isRecipient.value) {
-          return { name: "Home" };
-        }
-      },
     },
     {
       path: "/volunteer",
       name: "Volunteer-Feed",
       component: DeliveryView,
       meta: { requiresAuth: true },
-      beforeEnter: (to, from) => {
-        const { isVolunteer } = storeToRefs(useUserStore());
-        if (!isVolunteer.value) {
-          return { name: "Home" };
-        }
-      },
     },
     {
       path: "/order-tracker",
@@ -180,10 +152,30 @@ const router = createRouter({
  * Navigation guards to prevent user from accessing wrong pages.
  */
 router.beforeEach((to, from) => {
-  const { isLoggedIn } = storeToRefs(useUserStore());
+  const { isLoggedIn, isVolunteer, isDonor, isRecipient } = storeToRefs(useUserStore());
 
   if (to.meta.requiresAuth && !isLoggedIn.value) {
     return { name: "Welcome" };
+  }
+  if (to.path === "/" && isLoggedIn.value) {
+    if (isDonor.value) return { name: "Restaurant-Food-Listings" };
+    if (isRecipient.value) return { name: "Recipient-Feed" };
+    if (isVolunteer.value) return { name: "Volunteer-Feed" };
+  }
+  if (to.name === "Login" || to.name === "Recipient-Registration" || to.name === "Donor-Registration" || to.name === "Volunteer-Registration") {
+    if (isLoggedIn.value) return { name: "Home" };
+  }
+
+  if (to.name === "Restaurant-Food-Listings" && !isDonor.value) {
+    return { name: "Home" };
+  }
+
+  if (to.name === "Recipient-Feed" && !isRecipient.value) {
+    return { name: "Home" };
+  }
+
+  if (to.name === "Volunteer-Feed" && !isVolunteer.value) {
+    return { name: "Home" };
   }
 });
 
