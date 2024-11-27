@@ -11,8 +11,11 @@ import NotFoundView from "../views/NotFoundView.vue";
 import DonorRegistrationView from "../views/Registration/DonorRegistrationView.vue";
 import RecipientRegistrationView from "../views/Registration/RecipientRegistrationView.vue";
 import VolunteerRegistrationView from "../views/Registration/VolunteerRegistrationView.vue";
+import DeliveryView from "../views/DeliveryView.vue";
 import SettingView from "../views/SettingView.vue";
 import WelcomeView from "../views/WelcomeView.vue";
+
+const { isRecipient, isDonor, isVolunteer } = storeToRefs(useUserStore());
 
 const router = createRouter({
   history: createWebHistory(),
@@ -23,7 +26,6 @@ const router = createRouter({
       component: HomeView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {
-        const { isRecipient, isDonor } = storeToRefs(useUserStore());
         if (isDonor.value) {
           return { name: "Restaurant-Food-Listings" };
         } else if (isRecipient.value) {
@@ -37,7 +39,6 @@ const router = createRouter({
       component: RestaurantHomeView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {
-        const { isDonor } = storeToRefs(useUserStore());
         if (!isDonor.value) {
           return { name: "Home" };
         }
@@ -49,8 +50,18 @@ const router = createRouter({
       component: RecipientFeedView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {
-        const { isRecipient } = storeToRefs(useUserStore());
         if (!isRecipient.value) {
+          return { name: "Home" };
+        }
+      },
+    },
+    {
+      path: "/volunteer",
+      name: "Volunteer-Feed",
+      component: DeliveryView,
+      meta: { requiresAuth: true },
+      beforeEnter: (to, from) => {
+        if (!isVolunteer.value) {
           return { name: "Home" };
         }
       },
@@ -91,7 +102,6 @@ const router = createRouter({
         }
       },
     },
-
     {
       path: "/restaurant",
       name: "MyFoodListings",

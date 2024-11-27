@@ -47,12 +47,38 @@ export default class ClaimingConcept {
     return await this.claims.readMany({}, { sort: { _id: -1 } });
   }
 
+  async getClaimUser(_id: ObjectId) {
+    const claim = await this.claims.readOne({ _id });
+    if (!claim) {
+      throw new NotFoundError(`Claim ${_id} does not exist!`);
+    }
+    return claim.claimUser;
+  }
+
+  /**
+   * Given a claim, returns the item associated with it.
+   */
+  async getClaimItem(_id: ObjectId) {
+    const claim = await this.claims.readOne({ _id });
+    if (!claim) {
+      throw new NotFoundError(`Claim ${_id} does not exist!`);
+    }
+    return claim.item;
+  }
+
   async getClaimsByUser(claimUser: ObjectId) {
     return await this.claims.readMany({ claimUser });
   }
 
+  /**
+   * Given an item, returns the claim associated with it.
+   */
   async getItemClaim(item: ObjectId) {
     return await this.claims.readOne({ item });
+  }
+
+  async getClaimsByItem(item: ObjectId) {
+    return await this.claims.readMany({ item });
   }
 
   async assertClaimerIsUser(_id: ObjectId, user: ObjectId) {

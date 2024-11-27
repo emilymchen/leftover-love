@@ -6,6 +6,9 @@ export interface DeliveryDoc extends BaseDoc {
   status: "Not Started" | "In Progress" | "Completed";
   request: ObjectId;
   deliverer: ObjectId;
+  address: string;
+  time: Date;
+  receiver: ObjectId;
 }
 
 /**
@@ -21,9 +24,14 @@ export default class DeliveringConcept {
     this.deliveries = new DocCollection<DeliveryDoc>(collectionName);
   }
 
-  async acceptDelivery(deliverer: ObjectId, request: ObjectId) {
-    const _id = await this.deliveries.createOne({ status: "Not Started", request, deliverer });
+  async acceptDelivery(deliverer: ObjectId, request: ObjectId, address: string, time: Date, receiver: ObjectId) {
+    const _id = await this.deliveries.createOne({ status: "Not Started", request, deliverer, address, time, receiver });
     return { msg: "Delivery successfully created!", delivery: await this.deliveries.readOne({ _id }) };
+  }
+
+  async updateDelivery(_id: ObjectId, address?: string, time?: Date, receiver?: ObjectId) {
+    await this.deliveries.partialUpdateOne({ _id }, { address, time, receiver });
+    return { msg: "Delivery successfully updated!" };
   }
 
   async unacceptDelivery(_id: ObjectId) {
@@ -40,11 +48,19 @@ export default class DeliveringConcept {
     return await this.deliveries.readMany({}, { sort: { _id: -1 } });
   }
 
+  async getDeliveryAddress(_id: ObjectId) {
+    return this.deliveries.readOne({ _id }).then((delivery) => delivery?.address);
+  }
+
   async getDeliveriesByUser(deliverer: ObjectId) {
     return await this.deliveries.readMany({ deliverer });
   }
 
-  async getActiveDeliveriesByUser(deliverer: ObjectId) {
+  async getDeliveriesByRequest(request: ObjectId) {
+    return await this.deliveries.readMany({ request });
+  }
+
+  async getIncompleteDeliveriesByUser(deliverer: ObjectId) {
     return await this.deliveries.readMany({ deliverer, status: { $ne: "Completed" } });
   }
 

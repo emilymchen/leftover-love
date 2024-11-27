@@ -52,6 +52,13 @@ class Routes {
   @Router.patch("/users/address")
   async updateAddress(session: SessionDoc, address: string) {
     const user = Sessioning.getUser(session);
+    const associatedClaims = await Claiming.getClaimsByUser(user);
+    for (const claim of associatedClaims) {
+      const associatedDeliveries = await Delivering.getDeliveriesByRequest(claim._id);
+      for (const delivery of associatedDeliveries) {
+        await Delivering.updateDelivery(delivery._id, address);
+      }
+    }
     return await Authing.updateLocation(user, address);
   }
 
@@ -103,28 +110,36 @@ class Routes {
   /**
    * Creates a food donation post with the given food item, expiration time, quantity, and tags.
    * @param session  the session of the user, the user must be a donor
-   * @param food_item  the name of the food item
+   * @param food_name  the name of the food item
    * @param expiration_time  the expiration time of the food item, must be in the future
    * @param quantity the quantity of the food item
    * @param t  the tags of the food item
    * @returns the created post
    */
   @Router.post("/posts")
-  async createPost(session: SessionDoc, food_item: string, expiration_time: Date, quantity: number) {
+  async createPost(session: SessionDoc, food_name: string, expiration_time: Date, quantity: number) {
     const user = Sessioning.getUser(session);
-    const created = await Posting.create(user, food_item, expiration_time, quantity);
+    const created = await Posting.create(user, food_name, expiration_time, quantity);
     await Authing.assertIsRole(user, "Donor");
     // TODO: Add tags
     return { msg: created.msg, post: await Responses.post(created.post) };
   }
 
   @Router.patch("/posts/:id")
-  async updatePost(session: SessionDoc, id: string, food_item?: string, expiration_time?: Date, quantity?: number) {
+  async updatePost(session: SessionDoc, id: string, food_name?: string, expiration_time?: Date, quantity?: number) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Donor");
     await Posting.assertAuthorIsUser(oid, user);
-    return await Posting.update(oid, food_item, expiration_time, quantity);
+    const associatedClaims = await Claiming.getClaimsByItem(oid);
+    for (const claim of associatedClaims) {
+      const associatedDeliveries = await Delivering.getDeliveriesByRequest(claim._id);
+      for (const delivery of associatedDeliveries) {
+        const previousAddress = await Delivering.getDeliveryAddress(delivery._id);
+        await Delivering.updateDelivery(delivery._id, previousAddress, expiration_time);
+      }
+    }
+    return await Posting.update(oid, food_name, expiration_time, quantity);
   }
 
   /**
@@ -303,12 +318,23 @@ class Routes {
    */
   @Router.post("/deliveries")
   async acceptDelivery(session: SessionDoc, request: string) {
-    const user = Sessioning.getUser(session);
+    const currentUser = Sessioning.getUser(session);
     const oid = new ObjectId(request);
-    await Authing.assertIsRole(user, "Volunteer");
+    await Authing.assertIsRole(currentUser, "Volunteer");
     await Claiming.assertClaimIsNotCompleted(oid);
     await Claiming.assertIsDeliveryClaim(oid);
-    return Delivering.acceptDelivery(user, oid);
+    const claimUser = await Claiming.getClaimUser(oid);
+    let claimUserAddress = "";
+    const address = await Authing.getUserLocation(claimUser);
+    if (address) {
+      claimUserAddress = address;
+    }
+    const claimedItem = await Claiming.getClaimItem(oid);
+    let expiration_date = new Date();
+    if (claimedItem) {
+      expiration_date = await Posting.getExpirationTime(claimedItem);
+    }
+    return Delivering.acceptDelivery(currentUser, oid, claimUserAddress, expiration_date, claimUser);
   }
 
   /**

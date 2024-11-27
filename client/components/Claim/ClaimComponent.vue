@@ -3,7 +3,6 @@ import { formatDate } from "@/utils/formatDate";
 import { onMounted } from "vue";
 
 const props = defineProps(["claim", "category"]);
-const emit = defineEmits(["editClaim", "refreshClaims", "claimClaim"]);
 onMounted(async () => {});
 </script>
 

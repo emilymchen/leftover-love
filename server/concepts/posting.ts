@@ -5,7 +5,7 @@ import { NotAllowedError, NotFoundError } from "./errors";
 
 export interface PostDoc extends BaseDoc {
   author: ObjectId;
-  food_item: string;
+  food_name: string;
   expiration_time: Date;
   quantity: number;
 }
@@ -23,11 +23,11 @@ export default class PostingConcept {
     this.posts = new DocCollection<PostDoc>(collectionName);
   }
 
-  async create(author: ObjectId, food_item: string, expiration_time: Date, quantity: number) {
+  async create(author: ObjectId, food_name: string, expiration_time: Date, quantity: number) {
     if (expiration_time < new Date()) {
       throw new InvalidExpirationTimeError();
     }
-    const _id = await this.posts.createOne({ author, food_item, expiration_time, quantity });
+    const _id = await this.posts.createOne({ author, food_name, expiration_time, quantity });
     return { msg: "Post successfully created!", post: await this.posts.readOne({ _id }) };
   }
 
@@ -44,10 +44,18 @@ export default class PostingConcept {
     return await this.posts.readOne({ _id });
   }
 
-  async update(_id: ObjectId, food_item?: string, expiration_time?: Date, quantity?: number) {
+  async getExpirationTime(_id: ObjectId) {
+    const post = await this.posts.readOne({ _id });
+    if (!post) {
+      throw new NotFoundError(`Post ${_id} does not exist!`);
+    }
+    return post.expiration_time;
+  }
+
+  async update(_id: ObjectId, food_name?: string, expiration_time?: Date, quantity?: number) {
     // Note that if content or options is undefined, those fields will *not* be updated
     // since undefined values for partialUpdateOne are ignored.
-    await this.posts.partialUpdateOne({ _id }, { food_item, expiration_time, quantity });
+    await this.posts.partialUpdateOne({ _id }, { food_name, expiration_time, quantity });
     return { msg: "Post successfully updated!" };
   }
 

@@ -2,16 +2,16 @@
 import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
-const food_item = ref("");
+const food_name = ref("");
 const qty = ref(1);
 const expiration_time = ref("");
 const tags = ref("");
 const emit = defineEmits(["refreshPosts", "closeCreatePost"]);
 
-const createPost = async (food_item: string, quantity: number, expiration_time: string) => {
+const createPost = async (food_name: string, quantity: number, expiration_time: string) => {
   try {
     await fetchy("/api/posts", "POST", {
-      body: { food_item: food_item, quantity: quantity, expiration_time: expiration_time },
+      body: { food_name: food_name, quantity: quantity, expiration_time: expiration_time },
     });
   } catch {
     return;
@@ -22,7 +22,7 @@ const createPost = async (food_item: string, quantity: number, expiration_time: 
 };
 
 const emptyForm = () => {
-  food_item.value = "";
+  food_name.value = "";
   qty.value = 1;
   expiration_time.value = "";
   tags.value = "";
@@ -30,11 +30,11 @@ const emptyForm = () => {
 </script>
 
 <template>
-  <form @submit.prevent="createPost(food_item, qty, expiration_time)">
+  <form @submit.prevent="createPost(food_name, qty, expiration_time)">
     <h2>List a Meal</h2>
     <div class="form-group">
-      <label for="food_item">Food Item</label>
-      <input id="food_item" v-model="food_item" placeholder="Unnamed Food" required />
+      <label for="food_name">Food Name</label>
+      <input id="food_name" v-model="food_name" placeholder="Unnamed Food" required />
     </div>
     <div class="form-group">
       <label for="qty">Quantity</label>
