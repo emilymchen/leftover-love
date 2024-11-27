@@ -55,8 +55,8 @@ export default class DeliveringConcept {
     return await this.deliveries.readMany({ deliverer });
   }
 
-  async getDeliveriesByRequest(request: ObjectId) {
-    return await this.deliveries.readMany({ request });
+  async getDeliveryByRequest(request: ObjectId) {
+    return await this.deliveries.readOne({ request });
   }
 
   async getIncompleteDeliveriesByUser(deliverer: ObjectId) {

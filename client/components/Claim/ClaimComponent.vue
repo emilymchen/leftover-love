@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { formatDate } from "@/utils/formatDate";
 import { onMounted } from "vue";
+import { defineProps } from "vue";
+import router from "@/router";
 
 const props = defineProps(["claim", "category"]);
 onMounted(async () => {});
+
+async function track_order() {
+  void router.push(`/order-tracker/${props.claim._id}`);
+}
 </script>
 
 <template>
@@ -24,9 +30,12 @@ onMounted(async () => {});
 
   <div class="donor-buttons base">
     <div v-if="props.category === 'pending'">
-      <RouterLink :to="{ name: 'Order-Tracker' }">
-        <button class="edit-button">Track Order</button>
-      </RouterLink>
+      <div v-if="props.claim.method === 'Delivery'">
+        <button class="edit-button" @click="track_order">Track Order</button>
+      </div>
+      <div v-else>
+        <button class="edit-button">Please pick it up!</button>
+      </div>
     </div>
     <div v-else-if="props.category === 'completed'">
       <button class="expired-button">Completed</button>

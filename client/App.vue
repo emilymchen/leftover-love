@@ -1,33 +1,18 @@
 <script setup lang="ts">
 import RecipientSidebarForm from "@/components/Sidebar/RecipientSidebarForm.vue";
 import RestaurantSidebarForm from "@/components/Sidebar/RestaurantSidebarForm.vue";
-import router from "@/router";
+import VolunteerSidebarForm from "./components/Sidebar/VolunteerSidebarForm.vue";
 import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { computed, onBeforeMount, ref } from "vue";
+import { computed, onBeforeMount } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
-
-
 
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
 const userStore = useUserStore();
-const { isLoggedIn, isDonor, isRecipient } = storeToRefs(userStore);
+const { isLoggedIn, isDonor, isRecipient, isVolunteer } = storeToRefs(userStore);
 const { toast } = storeToRefs(useToastStore());
-const { logoutUser, deleteUser } = useUserStore();
-
-
-const isSidebarOpen = ref(false);
-
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value;
-};
-
-async function logout() {
-  await logoutUser();
-  void router.push({ name: "Home" });
-}
 
 // Make sure to update the session before mounting the app in case the user is already logged in
 onBeforeMount(async () => {
@@ -48,13 +33,15 @@ onBeforeMount(async () => {
         </RouterLink>
       </div>
       <ul>
-    
         <li v-if="isLoggedIn && isRecipient">
-          <RecipientSidebarForm/>
+          <RecipientSidebarForm />
         </li>
 
         <li v-if="isLoggedIn && isDonor">
-          <RestaurantSidebarForm/>
+          <RestaurantSidebarForm />
+        </li>
+        <li v-if="isLoggedIn && isVolunteer">
+          <VolunteerSidebarForm />
         </li>
         <li v-if="isLoggedIn">
           <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
@@ -68,12 +55,8 @@ onBeforeMount(async () => {
       <p>{{ toast.message }}</p>
     </article>
   </header>
-
-  
-
   <RouterView />
 </template>
-
 
 <style scoped>
 nav {
@@ -121,23 +104,26 @@ ul {
 .sidebar {
   position: fixed;
   top: 0;
-  left: -300px; 
+  left: -300px;
   width: 300px;
   height: 100%;
   padding: 1em;
   overflow-y: auto;
-  transition: left 0.3s ease-in-out, background-color 0.3s ease-in-out, overlay 0.3s ease-in-out; 
-  z-index: 20; 
-  text-align: left; 
+  transition:
+    left 0.3s ease-in-out,
+    background-color 0.3s ease-in-out,
+    overlay 0.3s ease-in-out;
+  z-index: 20;
+  text-align: left;
   display: flex;
-  flex-direction: column; 
-  align-items: flex-start
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .sidebar.open {
   background-color: var(--green);
   transition: left 0.3s ease-in-out;
-  left: 0; 
+  left: 0;
 }
 
 .overlay {
@@ -146,9 +132,9 @@ ul {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(86, 86, 86, 0.5); 
+  background: rgba(86, 86, 86, 0.5);
   transition: left 0.3s ease-in-out;
-  z-index: 10; 
+  z-index: 10;
 }
 
 .sidebar ul {
@@ -156,30 +142,30 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 1em;
-  width: 100%; 
+  width: 100%;
 }
 
 .sidebar-items {
-  text-align: left; 
+  text-align: left;
   padding: 1em, 1em;
-  width: 100%; 
+  width: 100%;
 }
 
 .sidebar-item:hover {
-  color: black; 
+  color: black;
 }
 
 .sidebar-item {
-  color: var(--darker-green)
+  color: var(--darker-green);
 }
 
 .sidebar-username {
   font-size: 40px;
   color: var(--darker-green);
   margin-bottom: 0.5em;
-  width: 100%; 
+  width: 100%;
   padding-left: 1em;
-  padding-top: 0.05em
+  padding-top: 0.05em;
 }
 
 .sidebar-button {
@@ -187,32 +173,30 @@ ul {
   border: none;
   cursor: pointer;
   display: inline-block;
-  position: fixed; 
-  top: 1.5em; 
-  left: 1em; 
+  position: fixed;
+  top: 1.5em;
+  left: 1em;
   z-index: 1000;
 }
 
 .sidebar-icon {
-  width: 20px; 
+  width: 20px;
   height: 25px;
   display: block;
 }
 .logout-button {
   position: absolute;
-  bottom: 2em; 
-  left: 1em; 
-  background: none; 
+  bottom: 2em;
+  left: 1em;
+  background: none;
   border: none;
-  color: var(--darker-green); 
+  color: var(--darker-green);
   text-decoration: underline;
-  font-size: 15px; 
+  font-size: 15px;
   cursor: pointer;
 }
 
 .logout-button:hover {
-  color: black; 
+  color: black;
 }
-
 </style>
-

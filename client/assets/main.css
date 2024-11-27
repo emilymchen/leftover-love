@@ -17,6 +17,7 @@
   --medium-grey: #b1a892;
   --dark-grey: #264528;
   --pink: #ab5c53;
+  --light-pink: #b28883;
 }
 
 button.btn-small {
@@ -69,4 +70,24 @@ h1 {
 
 * {
   font-family: 'Averia Serif Libre', serif;
+}
+
+.toast {
+  position: fixed;
+  top: 1em;
+  left: 50%;
+  transform: translate(-50%, 0);
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  max-width: 60em;
+  margin: 0 auto;
+
+  color: #fff;
+}
+
+.error {
+  background-color: #fa5252;
+}
+.success {
+  background-color: #40c057;
 }

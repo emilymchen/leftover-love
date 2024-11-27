@@ -29,9 +29,7 @@ async function onKeyDown(event: KeyboardEvent) {
 <template>
   <form @submit.prevent="sendMessage(message, props.toUser)" class="message-form">
     <textarea v-model="message" id="message" name="message" rows="4" required placeholder="Type your message here..." class="message-input" @keydown="onKeyDown">></textarea>
-    <button type="submit" class="btn-small pure-button send-button">
-      <img src="@/assets/images/deliver.png" alt="send icon" />
-    </button>
+    <button type="submit" class="btn-small pure-button send-button">Send</button>
   </form>
 </template>
 

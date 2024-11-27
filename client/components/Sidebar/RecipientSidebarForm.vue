@@ -94,20 +94,19 @@ ul {
   padding: 1em;
   overflow-y: auto;
   transition:
-    left 0.3s ease-in-out,
-    background-color 0.3s ease-in-out,
-    overlay 0.3s ease-in-out;
+    transform 0.3s ease-in-out,
+    background-color 0.3s ease-in-out;
   z-index: 20;
   text-align: left;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  transform: translateX(-100%);
 }
 
 .sidebar.open {
   background-color: var(--green);
-  transition: left 0.3s ease-in-out;
-  left: 0;
+  transform: translateX(90%);
 }
 
 .overlay {
@@ -150,6 +149,8 @@ ul {
   width: 100%;
   padding-left: 1em;
   padding-top: 0.05em;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .sidebar-button {

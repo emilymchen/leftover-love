@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { defineProps, defineEmits } from "vue";
 import { fetchy } from "@/utils/fetchy";
+import { formatDate } from "@/utils/formatDate";
 
 const props = defineProps(["delivery", "own"]);
 const emit = defineEmits(["refreshDeliveries"]);
-onMounted(async () => {});
 
 async function markAsPickedUp() {
   try {
@@ -48,7 +47,7 @@ async function claimDelivery() {
   </div>
   <div class="qty-expiration-details">
     <div class="quantity">Qty: {{ props.delivery.quantity }}</div>
-    <div class="expiration-time">Expires: {{ props.delivery.expiration_time }}</div>
+    <div class="expiration-time">Expires: {{ formatDate(props.delivery.expiration_time) }}</div>
   </div>
   <div class="base">
     <div v-if="props.own && props.delivery.status == 'Not Started'">

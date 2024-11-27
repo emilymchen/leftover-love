@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import DeliveryOrderTracker from "@/components/Delivery/DeliveryOrderTracker.vue";
 
 const { isLoggedIn, isRecipient } = storeToRefs(useUserStore());
 </script>
@@ -9,6 +10,7 @@ const { isLoggedIn, isRecipient } = storeToRefs(useUserStore());
   <main>
     <div class="header-container">
       <h1 v-if="isLoggedIn && isRecipient">Order Tracker</h1>
+      <DeliveryOrderTracker />
     </div>
   </main>
 </template>

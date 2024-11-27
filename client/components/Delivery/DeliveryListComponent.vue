@@ -1,43 +1,15 @@
 <script setup lang="ts">
-import { fetchy } from "@/utils/fetchy";
-import { onBeforeMount, ref } from "vue";
 import DeliveryComponent from "./DeliveryComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
 const { isVolunteer } = storeToRefs(useUserStore());
-const props = defineProps(["own"]);
+const props = defineProps(["loaded", "deliveries", "own"]);
+const emit = defineEmits(["refreshDeliveries"]);
 
-const loaded = ref(false);
-let deliveries = ref<Array<Record<string, string>>>([]);
-
-async function getDeliveries() {
-  let deliveryResults;
-  if (!props.own) {
-    deliveryResults = await fetchy("/api/deliveries/requests", "GET");
-  } else {
-    try {
-      deliveryResults = await fetchy("/api/deliveries/user", "GET");
-    } catch {
-      return;
-    }
-  }
-  deliveries.value = deliveryResults;
-  console.log(deliveries.value, props.own);
+async function refreshDeliveries() {
+  emit("refreshDeliveries");
 }
-
-async function updateDeliveries() {
-  if (props.own) {
-    await getDeliveries();
-  } else {
-    await getDeliveries();
-  }
-  loaded.value = true;
-}
-
-onBeforeMount(async () => {
-  await updateDeliveries();
-});
 </script>
 
 <template>
@@ -46,8 +18,8 @@ onBeforeMount(async () => {
     <section class="deliveries" v-if="loaded">
       <p v-if="deliveries.length === 0">There are no deliveries!</p>
 
-      <article v-for="delivery in deliveries" :key="delivery._id">
-        <DeliveryComponent :delivery="delivery" :own="props.own" @refreshDeliveries="updateDeliveries" />
+      <article v-for="delivery in props.deliveries" :key="delivery._id">
+        <DeliveryComponent :delivery="delivery" :own="props.own" @refreshDeliveries="refreshDeliveries" />
       </article>
     </section>
   </div>

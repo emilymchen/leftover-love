@@ -1,17 +1,11 @@
 <script setup lang="ts">
 import router from "@/router";
-import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
-import { storeToRefs } from "pinia";
-import { computed, ref } from "vue";
-import { RouterLink, useRoute } from "vue-router";
+import { ref } from "vue";
+import { RouterLink } from "vue-router";
 
-const currentRoute = useRoute();
-const currentRouteName = computed(() => currentRoute.name);
 const userStore = useUserStore();
-const { isLoggedIn, isDonor, isRecipient } = storeToRefs(userStore);
-const { toast } = storeToRefs(useToastStore());
-const { logoutUser, deleteUser } = useUserStore();
+const { logoutUser } = useUserStore();
 
 const isSidebarOpen = ref(false);
 
@@ -31,7 +25,7 @@ async function logout() {
     <img class="sidebar-icon" src="@/assets/images/lines.png" />
   </button>
   <div v-if="isSidebarOpen" class="overlay" @click="toggleSidebar"></div>
-  <aside class="sidebar" :class="{ open: isSidebarOpen }">
+  <aside v-if="isSidebarOpen" class="sidebar" :class="{ open: isSidebarOpen }">
     <ul>
       <li class="sidebar-username">{{ userStore.currentUsername }} <span class="restaurant">restaurant</span></li>
       <li class="sidebar-items">

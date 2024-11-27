@@ -193,12 +193,6 @@ class Routes {
     return Responses.posts(result);
   }
 
-  @Router.get("/claims/:post")
-  async getPostClaim(post: string) {
-    const oid = new ObjectId(post);
-    return await Claiming.getItemClaim(oid);
-  }
-
   /**
    * Creates a pickup claim.
    * @param session The session of the user, the user must be a recipient
@@ -369,6 +363,13 @@ class Routes {
       deliveries = await Delivering.getDeliveries();
     }
     return Responses.deliveries(await deliveries);
+  }
+
+  @Router.get("/deliveries/status/:id")
+  async getDeliveryStatus(id: string) {
+    const oid = new ObjectId(id);
+    const delivery = await Delivering.getDeliveryByRequest(oid);
+    return Responses.delivery(delivery);
   }
 
   /**

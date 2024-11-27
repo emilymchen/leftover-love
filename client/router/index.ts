@@ -15,6 +15,7 @@ import DeliveryView from "../views/DeliveryView.vue";
 import SettingView from "../views/SettingView.vue";
 import OrderTrackerView from "../views/OrderTrackerView.vue";
 import WelcomeView from "../views/WelcomeView.vue";
+//import MessageView from "../views/MessageView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -24,6 +25,16 @@ const router = createRouter({
       name: "Home",
       component: HomeView,
       meta: { requiresAuth: true },
+      beforeEnter: (to, from) => {
+        const { isDonor, isRecipient } = storeToRefs(useUserStore());
+        if (isDonor.value) {
+          return { name: "Restaurant-Food-Listings" };
+        } else if (isRecipient.value) {
+          return { name: "Recipient-Feed" };
+        } else {
+          return { name: "Volunteer-Feed" };
+        }
+      },
     },
     {
       path: "/restaurant",
@@ -44,10 +55,11 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/order-tracker",
+      path: "/order-tracker/:claimId",
       name: "Order-Tracker",
       component: OrderTrackerView,
       meta: { requiresAuth: true },
+      props: true,
       beforeEnter: (to, from) => {
         const { isRecipient } = storeToRefs(useUserStore());
         if (!isRecipient.value) {
