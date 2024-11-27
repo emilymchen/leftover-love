@@ -21,14 +21,15 @@ async function getClaims() {
   } catch {
     return;
   }
-
-  if (props.category === "expired") {
+  console.log(claimResults);
+  if (props.category === "completed") {
+    claims.value = claimResults.filter((claim: Record<string, any>) => claim.status === "Completed");
+  } else if (props.category === "expired") {
     claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.post.expiration_time).toISOString() < new Date().toISOString());
-  } else if (props.category === "completed") {
-    claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.post.expiration_time).toISOString() >= new Date().toISOString() && claim.status === "Completed");
   } else {
     claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.post.expiration_time).toISOString() >= new Date().toISOString() && claim.status === "Requested");
   }
+  console.log(props.category, claims.value);
 }
 function filterClaims() {
   if (filterType.value === "pickup") {

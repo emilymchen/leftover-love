@@ -29,6 +29,10 @@ async function getClaim() {
   loaded.value = true;
   console.log(claimResults);
 }
+
+function expiredDuringTransit() {
+  return claim.value.status !== "Completed" && new Date(claim.value.expiration_time) < new Date();
+}
 onBeforeMount(async () => {
   await getClaim();
 });
@@ -36,7 +40,8 @@ onBeforeMount(async () => {
 <template>
   <div class="base">
     <div class="status">
-      <h1>Claim Status: {{ claim.status || "Loading..." }}</h1>
+      <h1 v-if="expiredDuringTransit()">Claim Status: Unfortuntately, your claim has expired during transit.</h1>
+      <h1 v-else>Claim Status: {{ claim.status || "Loading..." }}</h1>
     </div>
 
     <div class="progress">

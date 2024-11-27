@@ -349,6 +349,7 @@ class Routes {
     await Delivering.assertIsInProgressDelivery(oid);
     await Authing.assertIsRole(user, "Volunteer");
     await Delivering.assertDelivererIsUser(oid, user);
+    await Claiming.completeClaim(await Delivering.getClaim(oid));
     return await Delivering.completeDelivery(oid);
   }
 

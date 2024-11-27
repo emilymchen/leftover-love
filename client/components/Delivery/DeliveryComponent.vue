@@ -33,6 +33,10 @@ async function claimDelivery() {
   }
   emit("refreshDeliveries");
 }
+
+function isExpired(expiration_time: string) {
+  return new Date(expiration_time) < new Date();
+}
 </script>
 
 <template>
@@ -50,6 +54,9 @@ async function claimDelivery() {
     <div class="expiration-time">Expires: {{ formatDate(props.delivery.expiration_time) }}</div>
   </div>
   <div class="base">
+    <div v-if="isExpired(props.delivery.expiration_time)">
+      <button class="expired-button">Expired</button>
+    </div>
     <div v-if="props.own && props.delivery.status == 'Not Started'">
       <button class="edit-button" @click="markAsPickedUp">Marked as Picked Up From Restaurant</button>
     </div>
