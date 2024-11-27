@@ -46,7 +46,7 @@ export default class AuthenticatingConcept {
 
   async getUserById(_id: ObjectId) {
     const user = await this.users.readOne({ _id });
-    if (user === null) {
+    if (!user) {
       throw new NotFoundError(`User not found!`);
     }
     return this.redactPassword(user);
@@ -54,7 +54,7 @@ export default class AuthenticatingConcept {
 
   async getUserAddress(_id: ObjectId) {
     const user = await this.users.readOne({ _id });
-    if (user === null) {
+    if (!user) {
       throw new NotFoundError(`User not found!`);
     }
     return user.location;
@@ -62,7 +62,7 @@ export default class AuthenticatingConcept {
 
   async getUserByUsername(username: string) {
     const user = await this.users.readOne({ username });
-    if (user === null) {
+    if (!user) {
       throw new NotFoundError(`User not found!`);
     }
     return this.redactPassword(user);

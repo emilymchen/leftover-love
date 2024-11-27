@@ -30,11 +30,17 @@ export default class DeliveringConcept {
   }
 
   async updateDelivery(_id: ObjectId, address?: string, time?: Date, receiver?: ObjectId) {
+    if (!(await this.deliveries.readOne({ _id }))) {
+      throw new NotFoundError(`Delivery ${_id} does not exist!`);
+    }
     await this.deliveries.partialUpdateOne({ _id }, { address, time, receiver });
     return { msg: "Delivery successfully updated!" };
   }
 
   async unacceptDelivery(_id: ObjectId) {
+    if (!(await this.deliveries.readOne({ _id }))) {
+      throw new NotFoundError(`Delivery ${_id} does not exist!`);
+    }
     await this.deliveries.deleteOne({ _id });
     return { msg: "Delivery unaccepted successfully!" };
   }
@@ -69,21 +75,35 @@ export default class DeliveringConcept {
   }
 
   async getDeliveryDeliverer(_id: ObjectId) {
+    const delivery = await this.deliveries.readOne({ _id });
+    if (!delivery) {
+      throw new NotFoundError(`Delivery ${_id} does not exist!`);
+    }
     return this.deliveries.readOne({ _id }).then((delivery) => delivery?.deliverer);
   }
 
   async startDelivery(_id: ObjectId) {
+    if (!(await this.deliveries.readOne({ _id }))) {
+      throw new NotFoundError(`Delivery ${_id} does not exist!`);
+    }
     await this.deliveries.partialUpdateOne({ _id }, { status: "In Progress" });
     return { msg: "Delivery started successfully!" };
   }
 
   async completeDelivery(_id: ObjectId) {
+    if (!(await this.deliveries.readOne({ _id }))) {
+      throw new NotFoundError(`Delivery ${_id} does not exist!`);
+    }
     await this.deliveries.partialUpdateOne({ _id }, { status: "Completed" });
     return { msg: "Delivery completed successfully!" };
   }
 
   async getDeliveryRequest(_id: ObjectId) {
-    return this.deliveries.readOne({ _id }).then((delivery) => delivery?.request);
+    const delivery = await this.deliveries.readOne({ _id });
+    if (!delivery) {
+      throw new NotFoundError(`Delivery ${_id} does not exist!`);
+    }
+    return delivery.request;
   }
 
   async assertDelivererIsUser(_id: ObjectId, user: ObjectId) {
@@ -96,10 +116,10 @@ export default class DeliveringConcept {
     }
   }
 
-  async assertIsNotDelivered(item: ObjectId) {
-    const delivery = await this.deliveries.readOne({ item });
+  async assertIsNotDelivered(request: ObjectId) {
+    const delivery = await this.deliveries.readOne({ request });
     if (delivery?.status === "Completed") {
-      throw new NotAllowedError(`Item ${item} is already delivered!`);
+      throw new NotAllowedError(`Request ${request} is already delivered!`);
     }
   }
 

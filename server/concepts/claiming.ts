@@ -39,6 +39,9 @@ export default class ClaimingConcept {
   }
 
   async completeClaim(_id: ObjectId) {
+    if (!(await this.claims.readOne({ _id }))) {
+      throw new NotFoundError(`Claim ${_id} does not exist!`);
+    }
     await this.claims.partialUpdateOne({ _id }, { status: "Completed" });
     return { msg: "Claim completed successfully!" };
   }
@@ -116,7 +119,7 @@ export default class ClaimingConcept {
   }
 
   async isItemClaimed(item: ObjectId) {
-    return !!(await this.claims.readOne({ item }));
+    return !(await this.claims.readOne({ item }));
   }
 
   async assertIsPickupClaim(_id: ObjectId) {

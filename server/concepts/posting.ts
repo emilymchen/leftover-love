@@ -83,6 +83,10 @@ export default class PostingConcept {
   }
 
   async assertPostIsNotExpired(_id: ObjectId) {
+    const post = await this.posts.readOne({ _id });
+    if (!post) {
+      throw new NotFoundError(`Post ${_id} does not exist!`);
+    }
     if (await this.isPostExpired(_id)) {
       throw new NotAllowedError(`Post ${_id} is expired!`);
     }
