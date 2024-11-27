@@ -34,7 +34,7 @@ onMounted(async () => {
 
 <template>
   <div class="top-section">
-    <div class="food-name">{{ props.post.food_item }}</div>
+    <div class="food-name">{{ props.post.food_name }}</div>
   </div>
   <div class="author-details">
     <div class="author">{{ props.post.author }}</div>

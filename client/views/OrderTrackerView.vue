@@ -1,21 +1,14 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import DeliveryListComponent from "@/components/Delivery/DeliveryListComponent.vue";
 
-const { isLoggedIn, isVolunteer } = storeToRefs(useUserStore());
+const { isLoggedIn, isRecipient } = storeToRefs(useUserStore());
 </script>
 
 <template>
   <main>
     <div class="header-container">
-      <h1 v-if="isLoggedIn && isVolunteer">My Deliveries</h1>
-      <DeliveryListComponent :own="true" />
-    </div>
-
-    <div class="header-container">
-      <h1>Delivery Requests</h1>
-      <DeliveryListComponent :own="false" />
+      <h1 v-if="isLoggedIn && isRecipient">Order Tracker</h1>
     </div>
   </main>
 </template>

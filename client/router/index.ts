@@ -13,9 +13,8 @@ import RecipientRegistrationView from "../views/Registration/RecipientRegistrati
 import VolunteerRegistrationView from "../views/Registration/VolunteerRegistrationView.vue";
 import DeliveryView from "../views/DeliveryView.vue";
 import SettingView from "../views/SettingView.vue";
+import OrderTrackerView from "../views/OrderTrackerView.vue";
 import WelcomeView from "../views/WelcomeView.vue";
-
-const { isRecipient, isDonor, isVolunteer } = storeToRefs(useUserStore());
 
 const router = createRouter({
   history: createWebHistory(),
@@ -26,10 +25,13 @@ const router = createRouter({
       component: HomeView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {
+        const { isDonor, isRecipient } = storeToRefs(useUserStore());
         if (isDonor.value) {
           return { name: "Restaurant-Food-Listings" };
         } else if (isRecipient.value) {
           return { name: "Recipient-Feed" };
+        } else {
+          return { name: "Volunteer-Feed" };
         }
       },
     },
@@ -39,6 +41,7 @@ const router = createRouter({
       component: RestaurantHomeView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {
+        const { isDonor } = storeToRefs(useUserStore());
         if (!isDonor.value) {
           return { name: "Home" };
         }
@@ -50,6 +53,7 @@ const router = createRouter({
       component: RecipientFeedView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {
+        const { isRecipient } = storeToRefs(useUserStore());
         if (!isRecipient.value) {
           return { name: "Home" };
         }
@@ -61,7 +65,20 @@ const router = createRouter({
       component: DeliveryView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {
+        const { isVolunteer } = storeToRefs(useUserStore());
         if (!isVolunteer.value) {
+          return { name: "Home" };
+        }
+      },
+    },
+    {
+      path: "/order-tracker",
+      name: "Order-Tracker",
+      component: OrderTrackerView,
+      meta: { requiresAuth: true },
+      beforeEnter: (to, from) => {
+        const { isRecipient } = storeToRefs(useUserStore());
+        if (!isRecipient.value) {
           return { name: "Home" };
         }
       },

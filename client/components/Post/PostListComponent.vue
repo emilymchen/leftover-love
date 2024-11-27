@@ -90,6 +90,15 @@ async function updatePosts() {
 
 async function claimPost(post: Record<string, any>) {
   try {
+    await fetchy(`/api/claims/delivery`, "POST", { body: { post: post._id } });
+  } catch {
+    return;
+  }
+  await updatePosts();
+}
+
+async function claimPostForPickup(post: Record<string, any>) {
+  try {
     await fetchy(`/api/claims/pickup`, "POST", { body: { post: post._id } });
   } catch {
     return;

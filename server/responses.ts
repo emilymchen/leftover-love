@@ -1,4 +1,4 @@
-import { Authing } from "./app";
+import { Authing, Claiming, Posting, Delivering } from "./app";
 import { ClaimDoc } from "./concepts/claiming";
 import { DeliveryDoc } from "./concepts/delivering";
 import { MessageDoc, MessageSenderNotMatchError } from "./concepts/messaging";
@@ -47,7 +47,26 @@ export default class Responses {
    */
   static async claims(claims: ClaimDoc[]) {
     const claimUsers = await Authing.idsToUsernames(claims.map((claim) => claim.claimUser));
-    return claims.map((claim, i) => ({ ...claim, claimUser: claimUsers[i] }));
+    const claimsWithDetails = await Promise.all(
+      claims.map(async (claim, i) => {
+        const claimedItem = await Claiming.getClaimItem(claim._id);
+        const expiration_time = claimedItem ? await Posting.getExpirationTime(claimedItem) : null;
+        const postUser = claimedItem ? (await Authing.idsToUsernames([await Posting.getAuthor(claimedItem)]))[0] : null;
+        const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
+        const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;
+        const address = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
+        return {
+          ...claim,
+          claimUser: claimUsers[i],
+          postUser: postUser,
+          expiration_time,
+          food_name: food_name,
+          quantity: quantity,
+          address: address,
+        };
+      }),
+    );
+    return claimsWithDetails;
   }
 
   /**
@@ -66,7 +85,30 @@ export default class Responses {
    */
   static async deliveries(deliveries: DeliveryDoc[]) {
     const deliverers = await Authing.idsToUsernames(deliveries.map((delivery) => delivery.deliverer));
-    return deliveries.map((delivery, i) => ({ ...delivery, deliverer: deliverers[i] }));
+    const deliveriesWithDetails = await Promise.all(
+      deliveries.map(async (delivery, i) => {
+        const deliveryClaim = await Delivering.getClaim(delivery._id);
+        const claimedItem = await Claiming.getClaimItem(deliveryClaim);
+        const expiration_time = claimedItem ? await Posting.getExpirationTime(claimedItem) : null;
+        const claimUser = claimedItem ? await Claiming.getClaimUser(claimedItem) : null;
+        const postUser = claimedItem ? (await Authing.idsToUsernames([await Posting.getAuthor(claimedItem)]))[0] : null;
+        const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
+        const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;
+        const address = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
+        return {
+          ...delivery,
+          claimUser: claimUser,
+          postUser: postUser,
+          deliverer: deliverers[i],
+          expiration_time,
+          food_name: food_name,
+          quantity: quantity,
+          address: address,
+        };
+      }),
+    );
+
+    return deliveriesWithDetails;
   }
 
   /**

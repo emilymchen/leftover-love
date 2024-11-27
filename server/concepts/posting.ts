@@ -37,7 +37,7 @@ export default class PostingConcept {
   }
 
   async getByAuthor(author: ObjectId) {
-    return await this.posts.readMany({ author });
+    return await this.posts.readMany({ author }, { sort: { expiration_time: -1 } });
   }
 
   async getById(_id: ObjectId) {
@@ -50,6 +50,30 @@ export default class PostingConcept {
       throw new NotFoundError(`Post ${_id} does not exist!`);
     }
     return post.expiration_time;
+  }
+
+  async getFoodName(_id: ObjectId) {
+    const post = await this.posts.readOne({ _id });
+    if (!post) {
+      throw new NotFoundError(`Post ${_id} does not exist!`);
+    }
+    return post.food_name;
+  }
+
+  async getAuthor(_id: ObjectId) {
+    const post = await this.posts.readOne({ _id });
+    if (!post) {
+      throw new NotFoundError(`Post ${_id} does not exist!`);
+    }
+    return post.author;
+  }
+
+  async getQuantity(_id: ObjectId) {
+    const post = await this.posts.readOne({ _id });
+    if (!post) {
+      throw new NotFoundError(`Post ${_id} does not exist!`);
+    }
+    return post.quantity;
   }
 
   async update(_id: ObjectId, food_name?: string, expiration_time?: Date, quantity?: number) {

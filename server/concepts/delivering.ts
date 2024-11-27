@@ -6,9 +6,6 @@ export interface DeliveryDoc extends BaseDoc {
   status: "Not Started" | "In Progress" | "Completed";
   request: ObjectId;
   deliverer: ObjectId;
-  address: string;
-  time: Date;
-  receiver: ObjectId;
 }
 
 /**
@@ -24,17 +21,9 @@ export default class DeliveringConcept {
     this.deliveries = new DocCollection<DeliveryDoc>(collectionName);
   }
 
-  async acceptDelivery(deliverer: ObjectId, request: ObjectId, address: string, time: Date, receiver: ObjectId) {
-    const _id = await this.deliveries.createOne({ status: "Not Started", request, deliverer, address, time, receiver });
+  async acceptDelivery(deliverer: ObjectId, request: ObjectId) {
+    const _id = await this.deliveries.createOne({ status: "Not Started", request, deliverer });
     return { msg: "Delivery successfully created!", delivery: await this.deliveries.readOne({ _id }) };
-  }
-
-  async updateDelivery(_id: ObjectId, address?: string, time?: Date, receiver?: ObjectId) {
-    if (!(await this.deliveries.readOne({ _id }))) {
-      throw new NotFoundError(`Delivery ${_id} does not exist!`);
-    }
-    await this.deliveries.partialUpdateOne({ _id }, { address, time, receiver });
-    return { msg: "Delivery successfully updated!" };
   }
 
   async unacceptDelivery(_id: ObjectId) {
@@ -50,12 +39,16 @@ export default class DeliveringConcept {
     return { msg: "Deliveries associated with this request deleted successfully!" };
   }
 
-  async getDeliveries() {
-    return await this.deliveries.readMany({}, { sort: { _id: -1 } });
+  async getClaim(_id: ObjectId) {
+    const delivery = await this.deliveries.readOne({ _id });
+    if (!delivery) {
+      throw new NotFoundError(`Delivery ${_id} does not exist!`);
+    }
+    return delivery.request;
   }
 
-  async getDeliveryAddress(_id: ObjectId) {
-    return this.deliveries.readOne({ _id }).then((delivery) => delivery?.address);
+  async getDeliveries() {
+    return await this.deliveries.readMany({}, { sort: { _id: -1 } });
   }
 
   async getDeliveriesByUser(deliverer: ObjectId) {
@@ -96,6 +89,14 @@ export default class DeliveringConcept {
     }
     await this.deliveries.partialUpdateOne({ _id }, { status: "Completed" });
     return { msg: "Delivery completed successfully!" };
+  }
+
+  /**
+   * Given a request, returns whether a delivery has been processed for it.
+   */
+  async doesRequestForDeliveryExist(request: ObjectId) {
+    const deliveries = await this.deliveries.readMany({ request });
+    return deliveries.length > 0;
   }
 
   async getDeliveryRequest(_id: ObjectId) {

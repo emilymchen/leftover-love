@@ -52,13 +52,6 @@ class Routes {
   @Router.patch("/users/address")
   async updateAddress(session: SessionDoc, address: string) {
     const user = Sessioning.getUser(session);
-    const associatedClaims = await Claiming.getClaimsByUser(user);
-    for (const claim of associatedClaims) {
-      const associatedDeliveries = await Delivering.getDeliveriesByRequest(claim._id);
-      for (const delivery of associatedDeliveries) {
-        await Delivering.updateDelivery(delivery._id, address);
-      }
-    }
     return await Authing.updateLocation(user, address);
   }
 
@@ -131,14 +124,6 @@ class Routes {
     const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Donor");
     await Posting.assertAuthorIsUser(oid, user);
-    const associatedClaims = await Claiming.getClaimsByItem(oid);
-    for (const claim of associatedClaims) {
-      const associatedDeliveries = await Delivering.getDeliveriesByRequest(claim._id);
-      for (const delivery of associatedDeliveries) {
-        const previousAddress = await Delivering.getDeliveryAddress(delivery._id);
-        await Delivering.updateDelivery(delivery._id, previousAddress, expiration_time);
-      }
-    }
     return await Posting.update(oid, food_name, expiration_time, quantity);
   }
 
@@ -234,17 +219,16 @@ class Routes {
    * Creates a delivery claim.
    * @param session The session of the user, the user must be a recipient
    * @param post The post id
-   * @param address The address of the recipient.
    * @returns The created claim.
    */
   @Router.post("/claims/delivery")
-  async createDeliveryClaim(session: SessionDoc, post: string, address: string) {
+  async createDeliveryClaim(session: SessionDoc, post: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(post);
     await Authing.assertIsRole(user, "Recipient");
     await Posting.assertPostIsNotExpired(oid);
     await Claiming.assertIsNotClaimed(oid);
-    return Claiming.createDeliveryClaim(user, oid, address);
+    return Claiming.createDeliveryClaim(user, oid);
   }
 
   /**
@@ -307,7 +291,7 @@ class Routes {
   @Router.get("/claims/:post")
   async getPostClaimer(post: string) {
     const oid = new ObjectId(post);
-    return Claiming.getItemClaim(oid);
+    return await Claiming.getItemClaim(oid);
   }
 
   /**
@@ -323,18 +307,7 @@ class Routes {
     await Authing.assertIsRole(currentUser, "Volunteer");
     await Claiming.assertClaimIsNotCompleted(oid);
     await Claiming.assertIsDeliveryClaim(oid);
-    const claimUser = await Claiming.getClaimUser(oid);
-    let claimUserAddress = "";
-    const address = await Authing.getUserLocation(claimUser);
-    if (address) {
-      claimUserAddress = address;
-    }
-    const claimedItem = await Claiming.getClaimItem(oid);
-    let expiration_date = new Date();
-    if (claimedItem) {
-      expiration_date = await Posting.getExpirationTime(claimedItem);
-    }
-    return Delivering.acceptDelivery(currentUser, oid, claimUserAddress, expiration_date, claimUser);
+    return await Delivering.acceptDelivery(currentUser, oid);
   }
 
   /**
@@ -350,7 +323,7 @@ class Routes {
     await Authing.assertIsRole(user, "Volunteer");
     await Delivering.assertDelivererIsUser(oid, user);
     await Delivering.assertIsNotDelivered(oid);
-    return Delivering.unacceptDelivery(oid);
+    return await Delivering.unacceptDelivery(oid);
   }
 
   /**
@@ -359,14 +332,14 @@ class Routes {
    * @param id the id of the delivery
    * @returns a message of the completed delivery
    */
-  @Router.post("/deliveries/start")
+  @Router.post("/deliveries/start/:id")
   async startDelivery(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Volunteer");
     await Delivering.assertDelivererIsUser(oid, user);
     await Delivering.assertHasNotStartedDelivery(oid);
-    return Delivering.startDelivery(oid);
+    return await Delivering.startDelivery(oid);
   }
 
   /**
@@ -375,14 +348,14 @@ class Routes {
    * @param id the id of the delivery
    * @returns a message of the completed delivery
    */
-  @Router.post("/deliveries/complete")
+  @Router.post("/deliveries/complete/:id")
   async completeDelivery(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Volunteer");
     await Delivering.assertDelivererIsUser(oid, user);
     await Delivering.assertIsInProgressDelivery(oid);
-    return Delivering.completeDelivery(oid);
+    return await Delivering.completeDelivery(oid);
   }
 
   @Router.get("/deliveries")
@@ -395,7 +368,28 @@ class Routes {
     } else {
       deliveries = await Delivering.getDeliveries();
     }
-    return Responses.deliveries(deliveries);
+    return Responses.deliveries(await deliveries);
+  }
+
+  /**
+   * Gets all non-completed claims available to deliver.
+   * This includes all delivery claims that are not completed and have not been claimed by another volunteer.
+   */
+  @Router.get("/deliveries/requests")
+  async getClaimsAvailableToDeliver(session: SessionDoc) {
+    const user = Sessioning.getUser(session);
+    await Authing.assertIsRole(user, "Volunteer");
+    const availableClaims = await Claiming.getIncompleteDeliveryClaims();
+    const unclaimedClaims = await Promise.all(
+      availableClaims.map(async (claim) => ({
+        claim,
+        isUnclaimed: !(await Delivering.doesRequestForDeliveryExist(claim._id)),
+      })),
+    );
+
+    const filteredClaims = unclaimedClaims.filter(({ isUnclaimed }) => isUnclaimed).map(({ claim }) => claim);
+
+    return Responses.claims(filteredClaims);
   }
 
   @Router.get("/deliveries/user")

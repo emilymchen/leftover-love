@@ -1,38 +1,64 @@
 <script setup lang="ts">
-import { formatDate } from "@/utils/formatDate";
 import { onMounted } from "vue";
+import { defineProps, defineEmits } from "vue";
+import { fetchy } from "@/utils/fetchy";
 
-const props = defineProps(["claim", "category"]);
+const props = defineProps(["delivery", "own"]);
+const emit = defineEmits(["refreshDeliveries"]);
 onMounted(async () => {});
+
+async function markAsPickedUp() {
+  try {
+    await fetchy(`/api/deliveries/start/${props.delivery._id}`, "POST");
+  } catch {
+    return;
+  }
+  emit("refreshDeliveries");
+}
+
+async function markAsCompleted() {
+  try {
+    await fetchy(`/api/deliveries/complete/${props.delivery._id}`, "POST");
+  } catch {
+    return;
+  }
+  emit("refreshDeliveries");
+}
+
+async function claimDelivery() {
+  let query: Record<string, string> = { request: props.delivery };
+  try {
+    await fetchy(`/api/deliveries`, "POST", { query });
+  } catch {
+    return;
+  }
+  emit("refreshDeliveries");
+}
 </script>
 
 <template>
   <div class="top-section">
-    <div class="food-name">{{ props.claim.post.food_item }}</div>
+    <div class="restaurant-name">{{ props.delivery.postUser }}</div>
   </div>
-  <div class="author-details">
-    <div class="author">{{ props.claim.post.author }}</div>
+  <div class="food_name">
+    <div class="food_name">{{ props.delivery.food_name }}</div>
+  </div>
+  <div class="address">
+    <div class="address">{{ props.delivery.address }}</div>
   </div>
   <div class="qty-expiration-details">
-    <div class="quantity">Qty: {{ props.claim.post.quantity }}</div>
-    <div class="expiration-time">Expires: {{ formatDate(new Date(props.claim.post.expiration_time)) }}</div>
+    <div class="quantity">Qty: {{ props.delivery.quantity }}</div>
+    <div class="expiration-time">Expires: {{ props.delivery.expiration_date }}</div>
   </div>
-
-  <div class="pickup-delivery-details">
-    <div>Claimed for {{ props.claim.method }}</div>
-  </div>
-
   <div class="donor-buttons base">
-    <div v-if="props.category === 'pending'">
-      <RouterLink :to="{ name: 'Order-Tracker' }">
-        <button class="edit-button">Track Order</button>
-      </RouterLink>
+    <div v-if="props.own.value == true && props.delivery.status == 'Not Started'">
+      <button class="edit-button" @click="markAsPickedUp">Marked as Picked Up From Restaurant</button>
     </div>
-    <div v-else-if="props.category === 'completed'">
-      <button class="expired-button">Completed</button>
+    <div v-else-if="props.own.value == true && props.delivery.status == 'Completed'">
+      <button class="expired-button" @click="markAsCompleted">Completed</button>
     </div>
-    <div v-else-if="props.category === 'expired'">
-      <button class="expired-button">Expired</button>
+    <div v-else>
+      <button class="expired-button" @click="claimDelivery">Claim</button>
     </div>
   </div>
 </template>

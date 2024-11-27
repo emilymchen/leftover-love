@@ -7,7 +7,6 @@ export interface ClaimDoc extends BaseDoc {
   status: "Requested" | "Completed";
   claimUser: ObjectId;
   method: "Pickup" | "Delivery";
-  claimAddress: string;
 }
 
 /**
@@ -28,8 +27,8 @@ export default class ClaimingConcept {
     return { msg: "Claim successfully created!", claim: await this.claims.readOne({ _id }) };
   }
 
-  async createDeliveryClaim(claimUser: ObjectId, item: ObjectId, claimAddress: string) {
-    const _id = await this.claims.createOne({ item, status: "Requested", claimUser, method: "Delivery", claimAddress });
+  async createDeliveryClaim(claimUser: ObjectId, item: ObjectId) {
+    const _id = await this.claims.createOne({ item, status: "Requested", claimUser, method: "Delivery" });
     return { msg: "Claim successfully created!", claim: await this.claims.readOne({ _id }) };
   }
 
@@ -84,6 +83,14 @@ export default class ClaimingConcept {
     return await this.claims.readMany({ item });
   }
 
+  async getIncompleteDeliveryClaims() {
+    return await this.claims.readMany({ status: "Requested", method: "Delivery" });
+  }
+
+  async getClaimById(_id: ObjectId) {
+    return await this.claims.readOne({ _id });
+  }
+
   async assertClaimerIsUser(_id: ObjectId, user: ObjectId) {
     const claim = await this.claims.readOne({ _id });
     if (!claim) {
@@ -119,7 +126,7 @@ export default class ClaimingConcept {
   }
 
   async isItemClaimed(item: ObjectId) {
-    return !(await this.claims.readOne({ item }));
+    return await this.claims.readOne({ item });
   }
 
   async assertIsPickupClaim(_id: ObjectId) {
