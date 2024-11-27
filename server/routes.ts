@@ -338,7 +338,7 @@ class Routes {
     const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Volunteer");
     await Delivering.assertDelivererIsUser(oid, user);
-    await Delivering.assertHasNotStartedDelivery(oid);
+    await Delivering.assertIsNotStartedDelivery(oid);
     return await Delivering.startDelivery(oid);
   }
 
@@ -352,9 +352,9 @@ class Routes {
   async completeDelivery(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
+    await Delivering.assertIsInProgressDelivery(oid);
     await Authing.assertIsRole(user, "Volunteer");
     await Delivering.assertDelivererIsUser(oid, user);
-    await Delivering.assertIsInProgressDelivery(oid);
     return await Delivering.completeDelivery(oid);
   }
 

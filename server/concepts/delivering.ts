@@ -117,24 +117,24 @@ export default class DeliveringConcept {
     }
   }
 
-  async assertIsNotDelivered(request: ObjectId) {
-    const delivery = await this.deliveries.readOne({ request });
+  async assertIsNotDelivered(_id: ObjectId) {
+    const delivery = await this.deliveries.readOne({ _id });
     if (delivery?.status === "Completed") {
-      throw new NotAllowedError(`Request ${request} is already delivered!`);
+      throw new NotAllowedError(`Delivery has already been delivered!`);
     }
   }
 
-  async assertHasNotStartedDelivery(request: ObjectId) {
-    const delivery = await this.deliveries.readOne({ request });
-    if (delivery?.status == "Not Started") {
-      throw new NotAllowedError(`Delivery for request ${request} has already started!`);
+  async assertIsNotStartedDelivery(_id: ObjectId) {
+    const delivery = await this.deliveries.readOne({ _id });
+    if (delivery?.status != "Not Started") {
+      throw new NotAllowedError(`Delivery ${_id} has already started!`);
     }
   }
 
-  async assertIsInProgressDelivery(request: ObjectId) {
-    const delivery = await this.deliveries.readOne({ request });
+  async assertIsInProgressDelivery(_id: ObjectId) {
+    const delivery = await this.deliveries.readOne({ _id });
     if (delivery?.status != "In Progress") {
-      throw new NotAllowedError(`Delivery for request ${request} is not in progress!`);
+      throw new NotAllowedError(`Delivery ${_id} is not in progress!`);
     }
   }
 }

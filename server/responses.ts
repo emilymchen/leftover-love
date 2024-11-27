@@ -90,7 +90,7 @@ export default class Responses {
         const deliveryClaim = await Delivering.getClaim(delivery._id);
         const claimedItem = await Claiming.getClaimItem(deliveryClaim);
         const expiration_time = claimedItem ? await Posting.getExpirationTime(claimedItem) : null;
-        const claimUser = claimedItem ? await Claiming.getClaimUser(claimedItem) : null;
+        const claimUser = claimedItem ? await Claiming.getClaimUser(deliveryClaim) : null;
         const postUser = claimedItem ? (await Authing.idsToUsernames([await Posting.getAuthor(claimedItem)]))[0] : null;
         const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
         const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;

@@ -26,7 +26,7 @@ async function markAsCompleted() {
 }
 
 async function claimDelivery() {
-  let query: Record<string, string> = { request: props.delivery };
+  let query: Record<string, string> = { request: props.delivery._id };
   try {
     await fetchy(`/api/deliveries`, "POST", { query });
   } catch {
@@ -40,36 +40,39 @@ async function claimDelivery() {
   <div class="top-section">
     <div class="restaurant-name">{{ props.delivery.postUser }}</div>
   </div>
-  <div class="food_name">
-    <div class="food_name">{{ props.delivery.food_name }}</div>
+  <div class="food-name-details">
+    <div class="food-name">{{ props.delivery.food_name }}</div>
   </div>
   <div class="address">
     <div class="address">{{ props.delivery.address }}</div>
   </div>
   <div class="qty-expiration-details">
     <div class="quantity">Qty: {{ props.delivery.quantity }}</div>
-    <div class="expiration-time">Expires: {{ props.delivery.expiration_date }}</div>
+    <div class="expiration-time">Expires: {{ props.delivery.expiration_time }}</div>
   </div>
-  <div class="donor-buttons base">
-    <div v-if="props.own.value == true && props.delivery.status == 'Not Started'">
+  <div class="base">
+    <div v-if="props.own && props.delivery.status == 'Not Started'">
       <button class="edit-button" @click="markAsPickedUp">Marked as Picked Up From Restaurant</button>
     </div>
-    <div v-else-if="props.own.value == true && props.delivery.status == 'Completed'">
-      <button class="expired-button" @click="markAsCompleted">Completed</button>
+    <div v-else-if="props.own && props.delivery.status == 'In Progress'">
+      <button class="edit-button" @click="markAsCompleted">Marked as Delivered</button>
+    </div>
+    <div v-else-if="props.own && props.delivery.status == 'Completed'">
+      <button class="expired-button">Completed</button>
     </div>
     <div v-else>
-      <button class="expired-button" @click="claimDelivery">Claim</button>
+      <button class="edit-button" @click="claimDelivery">Claim</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.author {
+.restaurant-name {
   font-weight: bold;
   font-size: 1.2em;
 }
 
-.timestamp {
+.expiration-time {
   display: flex;
   justify-content: flex-end;
   font-size: 0.9em;
@@ -95,7 +98,6 @@ async function claimDelivery() {
 
   .edit-button {
     width: 100%;
-    /* padding: 12px; */
     border-radius: 8px;
     font-size: 16px;
     font-weight: bold;
@@ -113,7 +115,6 @@ async function claimDelivery() {
 
   .expired-button {
     width: 100%;
-    /* padding: 12px; */
     border-radius: 8px;
     font-size: 16px;
     font-weight: bold;
@@ -150,13 +151,13 @@ async function claimDelivery() {
   text-align: right;
 }
 
-.author-details {
+.food-name-details {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.author {
+.food-name {
   font-size: 16px;
   color: var(--darker-green);
 }
