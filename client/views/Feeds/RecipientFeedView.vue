@@ -10,7 +10,7 @@ const { isLoggedIn, isRecipient } = storeToRefs(useUserStore());
   <main class="main-container">
     <section v-if="isLoggedIn && isRecipient" class="listing-section">
       <div class="header-container">
-        <h1>Delivery</h1>
+        <h1>Available Donations</h1>
       </div>
       <div class="spacer"></div>
 

@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { fetchy } from "@/utils/fetchy";
-import { defineEmits, defineProps, ref } from "vue";
+import { defineEmits, defineProps, nextTick, ref, watch } from "vue";
 
 const props = defineProps(["post"]);
 const emit = defineEmits(["refreshPosts", "closeClaimPost"]);
 const address = ref("");
+const addressInput = ref<HTMLInputElement | null>(null);
 const instructions = ref("");
 const deliveryOption = ref("pickup");
+const mapApiKey = process.env.MAP_API_KEY;
 
 async function claimPostDelivery(post: Record<string, any>, address: string, instructions: string) {
   try {
@@ -35,6 +37,81 @@ async function claimPost(post: Record<string, any>) {
     await claimPostDelivery(post, address.value, instructions.value);
   }
 }
+
+watch(deliveryOption, (newValue) => {
+  if (newValue === 'delivery') {
+    // Only initialize the autocomplete when the delivery option is selected
+    nextTick(() => {
+      initAutocomplete();
+      debouncedAddress.value = "";
+    });
+  }
+});
+
+let googleMapsApiPromise : any = null;
+
+function loadGoogleMapsApi(apiKey: string) {
+  if (!googleMapsApiPromise) {
+    googleMapsApiPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.async = true;
+      script.onload = () => {
+        console.log("Google Maps API loaded successfully");
+        resolve(null);
+      };
+      script.onerror = (error) => {
+        console.error("Error loading Google Maps API:", error);
+        reject(error);
+      };
+      document.head.appendChild(script);
+    });
+  }
+  return googleMapsApiPromise;
+}
+
+async function initAutocomplete() {
+  if (mapApiKey === undefined) {
+    console.error("Map API key is undefined");
+    return;
+  }
+  try {
+    await loadGoogleMapsApi(mapApiKey);
+    const addressInput = document.getElementById('address') as HTMLInputElement;
+    if (addressInput) {
+    const autocomplete = new google.maps.places.Autocomplete(addressInput);
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place.geometry && place.formatted_address) {
+        address.value = place.formatted_address;
+      }
+    });
+    } else {
+      console.error("Address input element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing autocomplete:", error);
+  }
+}
+
+const debouncedAddress = ref("");
+
+function debounce(func: Function, wait: number) {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  return (...args: any[]) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
+const updateDebouncedAddress = debounce((newValue: string) => {
+  debouncedAddress.value = newValue;
+}, 2000); // 2000ms delay
+
+watch(address, (newValue) => {
+  updateDebouncedAddress(newValue);
+});
+
 </script>
 
 <template>
@@ -55,16 +132,42 @@ async function claimPost(post: Record<string, any>) {
     <div>
       <h3>{{ props.post.food_name }} from {{ props.post.author }}</h3>
     </div>
-    <div v-if="deliveryOption == 'delivery'" class="form-group">
-      <label for="address"> Address </label>
-      <input id="address" v-model="address" placeholder="Your address" required />
-    </div>
-    <div v-if="deliveryOption == 'delivery'" class="form-group">
-      <label for="instructions"> Instructions </label>
-      <input id="instructions" v-model="instructions" placeholder="e.g. leave at door" required />
-    </div>
+   
     <div v-if="deliveryOption == 'pickup'" class="form-group">
       <label> Pick up at {{ props.post.location }}</label>
+      <iframe
+        width="420"
+        height="450"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${props.post.location}`"
+      >
+      </iframe>
+    </div>
+    <div v-else class="form-group"> 
+      <label> Deliver from  {{ props.post.location }} to: </label>
+      <div v-if="deliveryOption == 'delivery'" class="form-group">
+        <label for="address"> Address </label>
+        <input ref="addressInput" id="address" v-model="address" placeholder="Your address" required />
+      </div>
+      <div class="form-group">
+        <label for="instructions"> Instructions </label>
+        <input id="instructions" v-model="instructions" placeholder="e.g. leave at door" required />
+      </div>
+      <iframe v-if="debouncedAddress" class="form-group"
+        width="300"
+        height="300"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/directions?key=${mapApiKey}
+              &origin=${props.post.location}
+              &destination=${debouncedAddress}`"
+      >
+      </iframe>
     </div>
     <div class="create-post-buttons">
       <button class="btn-small pure-button-primary pure-button" type="submit">Claim</button>

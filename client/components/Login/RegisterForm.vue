@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
-import { defineProps, ref } from "vue";
+import { defineProps, onMounted, ref } from "vue";
 
 const username = ref("");
 const password = ref("");
-const address = ref(""); // TODO: not sure how to validate it's a real address? placeholder for now
+const address = ref("");
 const { createUser, loginUser, updateSession } = useUserStore();
+const mapApiKey = process.env.MAP_API_KEY;
 
 const props = defineProps<{
   role: "Recipient" | "Volunteer" | "Donor";
@@ -18,6 +19,59 @@ async function register() {
   await updateSession();
   void router.push({ name: "Home" });
 }
+
+let googleMapsApiPromise : any = null;
+
+function loadGoogleMapsApi(apiKey: string) {
+  if (!googleMapsApiPromise) {
+    googleMapsApiPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.async = true;
+      script.onload = () => {
+        console.log("Google Maps API loaded successfully");
+        resolve(null);
+      };
+      script.onerror = (error) => {
+        console.error("Error loading Google Maps API:", error);
+        reject(error);
+      };
+      document.head.appendChild(script);
+    });
+  }
+  return googleMapsApiPromise;
+}
+
+async function initAutocomplete() {
+  if (mapApiKey === undefined) {
+    console.error("Map API key is undefined");
+    return;
+  }
+  try {
+    await loadGoogleMapsApi(mapApiKey);
+    const addressInput = document.getElementById('aligned-address') as HTMLInputElement;
+    if (addressInput) {
+    const autocomplete = new google.maps.places.Autocomplete(addressInput);
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place.geometry && place.formatted_address) {
+        address.value = place.formatted_address;
+      }
+    });
+    } else {
+      console.error("Address input element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing autocomplete:", error);
+  }
+}
+
+onMounted(() => {
+  if (props.role === 'Donor') {
+    initAutocomplete();
+  }
+});
+
 </script>
 
 <template>
