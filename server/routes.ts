@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Claiming, Delivering, Messaging, Posting, Sessioning } from "./app";
+import { Authing, Claiming, Delivering, Messaging, Posting, Sessioning, Tagging } from "./app";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
 
@@ -446,6 +446,96 @@ class Routes {
     const oid = new ObjectId(id);
     await Messaging.assertSenderIsUser(oid, user);
     return Messaging.delete(oid);
+  }
+  /**
+   * Gets tags for a specific post.
+   * Ensures the post is not expired before retrieving tags.
+   *
+   * @param session The session of the user.
+   * @param post The ID of the post.
+   * @returns The tags associated with the post.
+   */
+  @Router.get("/tags/:post")
+  async getTags(session: SessionDoc, post: string) {
+    const oid = new ObjectId(post);
+
+    // Ensure the post is not expired
+    await Posting.assertPostIsNotExpired(oid);
+
+    // Get tags for the post
+    return await Tagging.getItemTags(oid);
+  }
+
+  /**
+   * Gets all items (posts) with a specific array of tags.
+   * Ensures that all provided tags are present in the item's tags.
+   *
+   * @param tags The array of tags to match.
+   * @returns A list of posts matching the specified tags.
+   */
+  @Router.get("/tags/items")
+  @Router.validate(z.object({ tags: z.array(z.string()).min(1) }))
+  async getItemsWithTags(tags: string[]) {
+    const matchingItems = await Tagging.getItemsWithTags(tags);
+    return matchingItems;
+  }
+
+  /**
+   * Adds a tag to a specific post.
+   * Ensures the user is a donor, the post author, and the post is not expired.
+   *
+   * @param session The session of the user.
+   * @param post The ID of the post.
+   * @param tag The tag to add.
+   * @returns A message indicating the tag was added.
+   */
+  @Router.post("/tags/:post")
+  async addTag(session: SessionDoc, post: string, tag: string) {
+    const oid = new ObjectId(post);
+    const user = Sessioning.getUser(session);
+
+    // Ensure the user is a donor
+    await Authing.assertIsRole(user, "Donor");
+
+    // Ensure the user is the author of the post
+    await Posting.assertAuthorIsUser(oid, user);
+
+    // Ensure the post is not expired
+    await Posting.assertPostIsNotExpired(oid);
+
+    // Add the tag to the post
+    await Tagging.addTag(tag, oid);
+
+    return { msg: `Tag "${tag}" added to post ${post}` };
+  }
+
+  /**
+   * Deletes a tag from a specific post.
+   * Ensures the user is a donor, the post author, and the post is not expired.
+   *
+   * @param session The session of the user.
+   * @param post The ID of the post.
+   * @param tag The tag to delete.
+   * @returns A message indicating the tag was deleted.
+   */
+  @Router.delete("/tags/:post/:tag")
+  async deleteTag(session: SessionDoc, post: string, tag: string) {
+    const oid = new ObjectId(post);
+    const user = Sessioning.getUser(session);
+
+    // Ensure the user is a donor
+    await Authing.assertIsRole(user, "Donor");
+
+    // Ensure the user is the author of the post
+    await Posting.assertAuthorIsUser(oid, user);
+
+    // Ensure the post is not expired
+    await Posting.assertPostIsNotExpired(oid);
+
+    // Delete the tag from the post
+    await Tagging.delTag(tag, oid);
+
+    return { msg: `Tag "${tag}" deleted from post ${post}` };
   }
 }
 
