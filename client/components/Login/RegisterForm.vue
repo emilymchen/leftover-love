@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
-import { defineProps, onMounted, ref } from "vue";
+import { defineProps, onMounted, ref, watch } from "vue";
 
 const username = ref("");
 const password = ref("");
@@ -72,6 +72,24 @@ onMounted(() => {
   }
 });
 
+const debouncedAddress = ref("");
+
+function debounce(func: Function, wait: number) {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  return (...args: any[]) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
+const updateDebouncedAddress = debounce((newValue: string) => {
+  debouncedAddress.value = newValue;
+}, 2000); // 2000ms delay
+
+watch(address, (newValue) => {
+  updateDebouncedAddress(newValue);
+});
+
 </script>
 
 <template>
@@ -91,6 +109,16 @@ onMounted(() => {
         <label for="aligned-address">Address</label>
         <input type="text" v-model.trim="address" id="aligned-address" placeholder="Address" required />
       </div>
+      <iframe v-if="debouncedAddress"
+        width="500"
+        height="300"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${debouncedAddress}`"
+      >
+      </iframe>
       <div class="pure-controls">
         <button type="submit" class="pure-button pure-button-primary">Register</button>
       </div>
