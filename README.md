@@ -1,9 +1,13 @@
 # 6.1040 Leftover Love: Final Project
 
+Figma Design Mockup: https://www.figma.com/design/4jja6UpmibCmcGxuCgmQk0/LeftoverLove?node-id=0-1&t=jUjCMIrbpwJxqTPb-0
+
 ## Quick Start
 
 `npm install`
+
 `npm run dev:client`
+
 `npm run dev:server`
 
 ## Getting Started
