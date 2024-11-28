@@ -81,6 +81,22 @@ export default class ClaimingConcept {
     return await this.claims.readOne({ item });
   }
 
+  async getClaimDestinationAddress(_id: ObjectId) {
+    const claim = await this.claims.readOne({ _id });
+    if (!claim) {
+      throw new NotFoundError(`Claim ${_id} does not exist!`);
+    }
+    return claim.destinationAddress;
+  }
+
+  async getClaimInstructions(_id: ObjectId) {
+    const claim = await this.claims.readOne({ _id });
+    if (!claim) {
+      throw new NotFoundError(`Claim ${_id} does not exist!`);
+    }
+    return claim.instructions;
+  }
+
   async getClaimsByItem(item: ObjectId) {
     return await this.claims.readMany({ item });
   }

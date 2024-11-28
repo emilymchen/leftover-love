@@ -1,4 +1,14 @@
-# 6.1040 Social Media Frontend Starter Code
+# 6.1040 Leftover Love: Final Project
+
+Figma Design Mockup: https://www.figma.com/design/4jja6UpmibCmcGxuCgmQk0/LeftoverLove?node-id=0-1&t=jUjCMIrbpwJxqTPb-0
+
+## Quick Start
+
+`npm install`
+
+`npm run dev:client`
+
+`npm run dev:server`
 
 ## Getting Started
 
@@ -38,34 +48,7 @@ In active server development, we recommend you run `npm start:server`.
 Run `npm run dev:client` to start the client server.
 Changes to the client code should automatically recompile and hot-reload without needing to restart the client server.
 
-## Local Development
-You should copy over your `concepts/` folder, `app.ts`, `responses.ts`, and `routes.ts` from your backend assignment code into the relevant places in `server/`.
-
-Keep in mind that we are using `MongoStore` for session management,
-so your session will be persisted across server restarts.
-
-Under the `client/` directory, you can find the frontend starter code and locate to `http://localhost:5173` (or whatever port the client server shows in your terminal) to see your app.
-
-## Deploying to Vercel
-
-1. Create a new project on Vercel and link it to your GitHub project.
-2. Under "Build & Development Settings", change "Framework Preset" to `Vue.js` and "Build Command" to `npm run build`.
-3. Add the following environment variables to your Vercel project:
-Key: `MONGO_SRV`, Value: `<your mongo connection string from .env file>`
-Note: only paste the right hand value after `=` (without `<` and `>`), i.e. `MONGO_SRV=<your mongo connection string>`
-4. Deploy!
-5. After deploying, go to `Settings`, then the `Deployment Protection` tab. Change `Vercel Authentication` from `Standard Protection` to `Only Preview Documents`. This will allow us to see your previous deployments when you submit your A5 alpha. 
-
-## Understanding the Structure
-
-The main entry point to the server is `api/index.ts`.
-This is how the server is started and how the routes are registered.
-We would usually put this file under `server/`,
-but Vercel requires the entry point to be under `api/` directory.
-
 ### Client Server
-The code for the client server is under the `client/` directory, which includes the [Vue 3](https://vuejs.org/guide/introduction.html) reactive framework, Single Page Application (SPA) Routing via [Vue Router](https://router.vuejs.org/introduction.html), and persistent store and state management via [Pinia](https://pinia.vuejs.org/introduction.html).
-
 Here's an overview of the files and directories:
 - `client/assets` contains `main.css` for defining styles that are applied globally to your app and `images/` to store any image files used. 
 - `client/components` contains reusable Vue components used throughout your app to build and compose different parts of the UI.

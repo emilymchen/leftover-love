@@ -19,6 +19,7 @@ async function getMyDeliveries() {
     return;
   }
   myDeliveries.value = deliveryResults;
+  console.log(myDeliveries.value);
 }
 
 async function getDeliveryRequests() {
@@ -29,6 +30,7 @@ async function getDeliveryRequests() {
     return;
   }
   deliveryRequests.value = deliveryResults;
+  console.log(deliveryRequests.value);
 }
 
 async function updateDeliveries() {

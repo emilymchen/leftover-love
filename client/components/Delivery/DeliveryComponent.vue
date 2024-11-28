@@ -4,7 +4,7 @@ import { fetchy } from "@/utils/fetchy";
 import { formatDate } from "@/utils/formatDate";
 
 const props = defineProps(["delivery", "own"]);
-const emit = defineEmits(["refreshDeliveries"]);
+const emit = defineEmits(["refreshDeliveries", "claimDelivery"]);
 
 async function markAsPickedUp() {
   try {
@@ -24,18 +24,17 @@ async function markAsCompleted() {
   emit("refreshDeliveries");
 }
 
-async function claimDelivery() {
-  let query: Record<string, string> = { request: props.delivery._id };
+function isExpired(expiration_time: string) {
+  return new Date(expiration_time) < new Date();
+}
+
+async function unacceptDelivery() {
   try {
-    await fetchy(`/api/deliveries`, "POST", { query });
+    await fetchy(`/api/deliveries/${props.delivery._id}`, "DELETE");
   } catch {
     return;
   }
   emit("refreshDeliveries");
-}
-
-function isExpired(expiration_time: string) {
-  return new Date(expiration_time) < new Date();
 }
 </script>
 
@@ -47,7 +46,8 @@ function isExpired(expiration_time: string) {
     <div class="food-name">{{ props.delivery.food_name }}</div>
   </div>
   <div class="address">
-    <div class="address">{{ props.delivery.address }}</div>
+    <div class="address">Pickup Location: {{ props.delivery.donorAddress }}</div>
+    <div class="address">Delivery Location: {{ props.delivery.destinationAddress }}</div>
   </div>
   <div class="qty-expiration-details">
     <div class="quantity">Qty: {{ props.delivery.quantity }}</div>
@@ -67,7 +67,10 @@ function isExpired(expiration_time: string) {
       <button class="expired-button">Completed</button>
     </div>
     <div v-else>
-      <button class="edit-button" @click="claimDelivery">Claim</button>
+      <button class="edit-button" @click="emit('claimDelivery', props.delivery._id)">Claim</button>
+    </div>
+    <div v-if="props.own && props.delivery.status == 'Not Started'">
+      <button class="expired-button" @click="unacceptDelivery">Unclaim</button>
     </div>
   </div>
 </template>
