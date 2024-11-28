@@ -1,10 +1,8 @@
-import { Authing, Claiming, Posting, Delivering } from "./app";
-import { ClaimDoc } from "./concepts/claiming";
-import { DeliveryDoc } from "./concepts/delivering";
+import { Authing, Claiming, Delivering, Posting } from "./app";
+import { ClaimDoc, ClaimUserNotMatchError } from "./concepts/claiming";
+import { DelivererNotMatchError, DeliveryDoc } from "./concepts/delivering";
 import { MessageDoc, MessageSenderNotMatchError } from "./concepts/messaging";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/posting";
-import { ClaimUserNotMatchError } from "./concepts/claiming";
-import { DelivererNotMatchError } from "./concepts/delivering";
 import { Router } from "./framework/router";
 
 /**
@@ -20,7 +18,8 @@ export default class Responses {
       return post;
     }
     const author = await Authing.getUserById(post.author);
-    return { ...post, author: author.username };
+    const location = await Authing.getUserAddress(post.author);
+    return { ...post, author: author.username, location };
   }
 
   /**
@@ -28,7 +27,8 @@ export default class Responses {
    */
   static async posts(posts: PostDoc[]) {
     const authors = await Authing.idsToUsernames(posts.map((post) => post.author));
-    return posts.map((post, i) => ({ ...post, author: authors[i] }));
+    const locations = await Promise.all(posts.map(async (post) => await Authing.getUserAddress(post.author)));
+    return posts.map((post, i) => ({ ...post, author: authors[i], location: locations[i] }));
   }
 
   /**

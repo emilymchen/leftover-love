@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ClaimConfirmationForm from "@/components/Claim/ClaimConfirmationForm.vue";
 import CreatePostForm from "@/components/Post/CreatePostForm.vue";
 import EditPostForm from "@/components/Post/EditPostForm.vue";
 import PostComponent from "@/components/Post/PostComponent.vue";
@@ -15,6 +16,7 @@ let currentPost = ref<Record<string, any> | null>(null);
 let searchAuthor = ref("");
 let isCreatingPost = ref(false);
 let isEditingPost = ref(false);
+let isClaimingPost = ref(false);
 
 // State for toggle filter
 const filterType = ref<"all" | "claimed" | "unclaimed">("all");
@@ -88,22 +90,9 @@ async function updatePosts() {
   loaded.value = true;
 }
 
-async function claimPost(post: Record<string, any>) {
-  try {
-    await fetchy(`/api/claims/delivery`, "POST", { body: { post: post._id } });
-  } catch {
-    return;
-  }
-  await updatePosts();
-}
-
-async function claimPostForPickup(post: Record<string, any>) {
-  try {
-    await fetchy(`/api/claims/pickup`, "POST", { body: { post: post._id } });
-  } catch {
-    return;
-  }
-  await updatePosts();
+function startClaiming(post: Record<string, any>) {
+  currentPost.value = post;
+  isClaimingPost.value = true;
 }
 
 onBeforeMount(async () => {
@@ -163,7 +152,7 @@ onBeforeMount(async () => {
       </article>
 
       <article v-for="post in filteredPosts" :key="post._id" class="post-item">
-        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="startEditing(post)" @claimPost="claimPost(post)" />
+        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="startEditing(post)" @claimPost="startClaiming(post)" />
       </article>
     </section>
 
@@ -180,6 +169,19 @@ onBeforeMount(async () => {
           @refreshPosts="updatePosts"
           @closeEditPost="
             isEditingPost = false;
+            currentPost = null;
+          "
+        />
+      </div>
+    </div>
+
+    <div v-if="isRecipient && isClaimingPost" class="modal-background">
+      <div class="modal">
+        <ClaimConfirmationForm
+          :post="currentPost"
+          @refreshPosts="updatePosts"
+          @closeClaimPost="
+            isClaimingPost = false;
             currentPost = null;
           "
         />
@@ -244,7 +246,7 @@ article {
   padding: 1em;
   background-color: var(--light-beige);
   width: 250px;
-  height: 160px;
+  height: 180px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.2s ease;

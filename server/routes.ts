@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Claiming, Messaging, Posting, Sessioning, Delivering } from "./app";
+import { Authing, Claiming, Delivering, Messaging, Posting, Sessioning } from "./app";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
 
@@ -216,13 +216,13 @@ class Routes {
    * @returns The created claim.
    */
   @Router.post("/claims/delivery")
-  async createDeliveryClaim(session: SessionDoc, post: string) {
+  async createDeliveryClaim(session: SessionDoc, post: string, address: string, instructions: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(post);
     await Authing.assertIsRole(user, "Recipient");
     await Posting.assertPostIsNotExpired(oid);
     await Claiming.assertIsNotClaimed(oid);
-    return Claiming.createDeliveryClaim(user, oid);
+    return Claiming.createDeliveryClaim(user, oid, address, instructions);
   }
 
   /**
@@ -232,11 +232,15 @@ class Routes {
    * @returns message of deleted claim
    */
   @Router.delete("/claims/:post")
-  async deleteClaim(session: SessionDoc, id: string) {
+  async deleteClaim(session: SessionDoc, post: string) {
     const user = Sessioning.getUser(session);
-    const oid = new ObjectId(id);
+    const oid = new ObjectId(post);
     await Authing.assertIsRole(user, "Recipient");
-    await Claiming.assertClaimerIsUser(oid, user);
+    const claim = await Claiming.getItemClaim(oid);
+    if (!claim) {
+      return { msg: claim + "does not exist!" };
+    }
+    await Claiming.assertClaimerIsUser(claim._id, user);
 
     const deleted_claim = await Claiming.deleteClaim(oid);
     await Delivering.deleteDeliveryByRequest(await deleted_claim.claim);
@@ -250,9 +254,9 @@ class Routes {
    * @returns A message of the completed claim
    */
   @Router.patch("/claims/pickup/:claim")
-  async pickupClaim(session: SessionDoc, id: string) {
+  async pickupClaim(session: SessionDoc, claim: string) {
     const user = Sessioning.getUser(session);
-    const oid = new ObjectId(id);
+    const oid = new ObjectId(claim);
     await Authing.assertIsRole(user, "Recipient");
     await Claiming.assertClaimerIsUser(oid, user);
     await Claiming.assertIsPickupClaim(oid);
@@ -311,9 +315,9 @@ class Routes {
    * @returns a message of the unaccepted delivery
    */
   @Router.delete("/deliveries/:request")
-  async unacceptDelivery(session: SessionDoc, id: string) {
+  async unacceptDelivery(session: SessionDoc, request: string) {
     const user = Sessioning.getUser(session);
-    const oid = new ObjectId(id);
+    const oid = new ObjectId(request);
     await Authing.assertIsRole(user, "Volunteer");
     await Delivering.assertDelivererIsUser(oid, user);
     await Delivering.assertIsNotDelivered(oid);

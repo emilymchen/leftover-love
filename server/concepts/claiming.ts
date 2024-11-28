@@ -7,6 +7,8 @@ export interface ClaimDoc extends BaseDoc {
   status: "Requested" | "Completed";
   claimUser: ObjectId;
   method: "Pickup" | "Delivery";
+  destinationAddress: string;
+  instructions?: string;
 }
 
 /**
@@ -27,8 +29,8 @@ export default class ClaimingConcept {
     return { msg: "Claim successfully created!", claim: await this.claims.readOne({ _id }) };
   }
 
-  async createDeliveryClaim(claimUser: ObjectId, item: ObjectId) {
-    const _id = await this.claims.createOne({ item, status: "Requested", claimUser, method: "Delivery" });
+  async createDeliveryClaim(claimUser: ObjectId, item: ObjectId, address: string, instructions?: string) {
+    const _id = await this.claims.createOne({ item, status: "Requested", claimUser, method: "Delivery", destinationAddress: address, instructions });
     return { msg: "Claim successfully created!", claim: await this.claims.readOne({ _id }) };
   }
 

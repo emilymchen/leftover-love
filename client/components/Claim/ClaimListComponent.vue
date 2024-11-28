@@ -21,7 +21,6 @@ async function getClaims() {
   } catch {
     return;
   }
-  console.log(claimResults);
   if (props.category === "completed") {
     claims.value = claimResults.filter((claim: Record<string, any>) => claim.status === "Completed");
   } else if (props.category === "expired") {
@@ -29,7 +28,6 @@ async function getClaims() {
   } else {
     claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.post.expiration_time).toISOString() >= new Date().toISOString() && claim.status === "Requested");
   }
-  console.log(props.category, claims.value);
 }
 function filterClaims() {
   if (filterType.value === "pickup") {
@@ -161,7 +159,7 @@ article {
   padding: 1em;
   background-color: var(--light-beige);
   width: 250px;
-  height: 160px;
+  height: 200px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.2s ease;

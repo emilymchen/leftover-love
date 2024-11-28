@@ -1,20 +1,32 @@
 <script setup lang="ts">
-import { formatDate } from "@/utils/formatDate";
-import { onMounted } from "vue";
-import { defineProps } from "vue";
 import router from "@/router";
+import { fetchy } from "@/utils/fetchy";
+import { formatDate } from "@/utils/formatDate";
+import { defineProps, onMounted } from "vue";
 
 const props = defineProps(["claim", "category"]);
+const emit = defineEmits(["refreshClaims"]);
 onMounted(async () => {});
 
 async function track_order() {
   void router.push(`/order-tracker/${props.claim._id}`);
 }
+
+async function unclaim() {
+  console.log(props.claim);
+  console.log(props.claim.post._id);
+  try {
+    await fetchy(`/api/claims/${props.claim.post._id}`, "DELETE");
+  } catch {
+    return;
+  }
+  emit("refreshClaims");
+}
 </script>
 
 <template>
   <div class="top-section">
-    <div class="food-name">{{ props.claim.post.food_item }}</div>
+    <div class="food-name">{{ props.claim.post.food_name }}</div>
   </div>
   <div class="author-details">
     <div class="author">{{ props.claim.post.author }}</div>
@@ -43,6 +55,9 @@ async function track_order() {
     <div v-else-if="props.category === 'expired'">
       <button class="expired-button">Expired</button>
     </div>
+  </div>
+  <div class="base" v-if="props.category === 'pending'">
+    <button class="unclaim-button" @click="unclaim">Unclaim</button>
   </div>
 </template>
 
@@ -91,6 +106,26 @@ async function track_order() {
   }
 
   .edit-button:hover {
+    transform: scale(1.05);
+  }
+
+  .unclaim-button {
+    width: 100%;
+    /* padding: 12px; */
+    border-radius: 8px;
+    background-color: var(--light-beige);
+    color: black;
+    border-color: #333;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: transform 0.2s ease;
+    position: relative;
+    bottom: 0;
+  }
+
+  .unclaim-button:hover {
     transform: scale(1.05);
   }
 

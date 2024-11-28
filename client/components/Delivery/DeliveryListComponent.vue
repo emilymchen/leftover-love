@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import DeliveryComponent from "./DeliveryComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import DeliveryComponent from "./DeliveryComponent.vue";
 
 const { isVolunteer } = storeToRefs(useUserStore());
 const props = defineProps(["loaded", "deliveries", "own"]);
@@ -58,7 +58,7 @@ article {
   padding: 1em;
   background-color: var(--light-beige);
   width: 250px;
-  height: 160px;
+  height: 200px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.2s ease;
