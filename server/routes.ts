@@ -326,7 +326,7 @@ class Routes {
   }
 
   /**
-   * Completes a delivery.
+   * Starts a delivery by picking up from the donor.
    * @param session  the session of the user, the user must be a volunteer and the deliverer of the original delivery
    * @param id the id of the delivery
    * @returns a message of the completed delivery

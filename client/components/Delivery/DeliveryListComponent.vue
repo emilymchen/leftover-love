@@ -80,7 +80,7 @@ article {
   padding: 1em;
   background-color: var(--light-beige);
   width: 250px;
-  height: 200px;
+  height: 250px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.2s ease;
