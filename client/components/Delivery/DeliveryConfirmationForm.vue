@@ -1,0 +1,113 @@
+<script setup lang="ts">
+import { fetchy } from "@/utils/fetchy";
+import { defineEmits, defineProps } from "vue";
+import { formatDate } from "@/utils/formatDate";
+
+const props = defineProps(["delivery"]);
+const emit = defineEmits(["refreshDeliveries", "closeClaimDelivery"]);
+
+async function claimDelivery() {
+  let query: Record<string, string> = { request: props.delivery._id };
+  try {
+    await fetchy(`/api/deliveries`, "POST", { query });
+  } catch {
+    return;
+  }
+  emit("refreshDeliveries");
+  emit("closeClaimDelivery");
+}
+</script>
+
+<template>
+  <form @submit.prevent="claimDelivery()" class="delivery-form">
+    <h2>Confirm Accept Delivery</h2>
+
+    <div>
+      <h3>{{ props.delivery.food_name }} from {{ props.delivery.postUser }}</h3>
+    </div>
+
+    <label for="pickup">Pickup Location</label>
+    <div id="pickup">{{ props.delivery.donorAddress }}</div>
+
+    <label for="delivery">Delivery Location</label>
+    <div id="delivery">{{ props.delivery.destinationAddress }}</div>
+
+    <label for="instructions">Instructions</label>
+    <div id="instructions">{{ props.delivery.instructions }}</div>
+
+    <label for="date">Must be completed by:</label>
+    <div id="date">{{ formatDate(props.delivery.expiration_time) }}</div>
+
+    <!-- Action buttons -->
+    <div class="button-group">
+      <button type="submit">Accept Delivery</button>
+      <button class="close" @click="emit('closeClaimDelivery')">Cancel</button>
+    </div>
+  </form>
+</template>
+
+<style scoped>
+.delivery-form {
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1.5em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ccc;
+  max-width: 30em;
+  background: #fff;
+}
+
+h2 {
+  margin-bottom: 0.5em;
+  font-size: 1.5em;
+  text-align: center;
+}
+
+h3 {
+  margin: 0.5em 0;
+  font-size: 1.2em;
+  color: #333;
+}
+
+label {
+  font-weight: bold;
+  margin-top: 1em;
+}
+
+div {
+  font-size: 1rem;
+  color: #555;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 1.5em;
+}
+
+button {
+  padding: 0.5em 1.5em;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--orange-dark);
+  color: #fff;
+}
+
+.close {
+  background-color: #ccc;
+  color: #333;
+}
+
+.close:hover {
+  background-color: #999;
+}
+</style>

@@ -44,8 +44,10 @@ export default class Responses {
     const postUser = claimedItem ? (await Authing.getUserById(await Posting.getAuthor(claimedItem))).username : null;
     const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
     const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;
-    const address = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
-    return { ...claim, claimUser: claimUser.username, postUser, expiration_time, food_name, quantity, address };
+    const donorAddress = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
+    const destinationAddress = await Claiming.getClaimDestinationAddress(claim._id);
+    const instructions = await Claiming.getClaimInstructions(claim._id);
+    return { ...claim, claimUser: claimUser.username, postUser, expiration_time, food_name, quantity, donorAddress, destinationAddress, instructions };
   }
 
   /**
@@ -60,7 +62,9 @@ export default class Responses {
         const postUser = claimedItem ? (await Authing.getUserById(await Posting.getAuthor(claimedItem))).username : null;
         const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
         const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;
-        const address = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
+        const donorAddress = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
+        const destinationAddress = await Claiming.getClaimDestinationAddress(claim._id);
+        const instructions = await Claiming.getClaimInstructions(claim._id);
         return {
           ...claim,
           claimUser: claimUsers[i],
@@ -68,7 +72,9 @@ export default class Responses {
           expiration_time,
           food_name: food_name,
           quantity: quantity,
-          address: address,
+          donorAddress: donorAddress,
+          destinationAddress: destinationAddress,
+          instructions: instructions,
         };
       }),
     );
@@ -90,8 +96,10 @@ export default class Responses {
     const postUser = claimedItem ? (await Authing.getUserById(await Posting.getAuthor(claimedItem))).username : null;
     const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
     const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;
-    const address = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
-    return { ...delivery, deliverer: deliverer.username, claimUser, postUser, expiration_time, food_name, quantity, address };
+    const donorAdddress = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
+    const destinationAddress = claimedItem ? await Claiming.getClaimDestinationAddress(deliveryClaim) : null;
+    const instructions = claimedItem ? await Claiming.getClaimInstructions(deliveryClaim) : null;
+    return { ...delivery, deliverer: deliverer.username, claimUser, postUser, expiration_time, food_name, quantity, donorAdddress, destinationAddress, instructions };
   }
 
   /**
@@ -108,7 +116,9 @@ export default class Responses {
         const postUser = claimedItem ? (await Authing.getUserById(await Posting.getAuthor(claimedItem))).username : null;
         const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
         const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;
-        const address = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
+        const restaurantAddress = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
+        const destinationAddress = claimedItem ? await Claiming.getClaimDestinationAddress(deliveryClaim) : null;
+        const instructions = claimedItem ? await Claiming.getClaimInstructions(deliveryClaim) : null;
         return {
           ...delivery,
           claimUser: claimUser,
@@ -117,7 +127,9 @@ export default class Responses {
           expiration_time,
           food_name: food_name,
           quantity: quantity,
-          address: address,
+          donorAddress: restaurantAddress,
+          destinationAddress: destinationAddress,
+          instructions: instructions,
         };
       }),
     );

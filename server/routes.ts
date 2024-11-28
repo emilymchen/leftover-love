@@ -189,7 +189,6 @@ class Routes {
     });
     const results = await Promise.all(checkPromises);
     const result = results.filter((result) => !result.isExpired && result.isClaimed).map((result) => result.post);
-    console.log("hi claimed", result);
     return Responses.posts(result);
   }
 
@@ -241,10 +240,12 @@ class Routes {
       return { msg: claim + "does not exist!" };
     }
     await Claiming.assertClaimerIsUser(claim._id, user);
-
-    const deleted_claim = await Claiming.deleteClaim(oid);
-    await Delivering.deleteDeliveryByRequest(await deleted_claim.claim);
-    return deleted_claim.msg;
+    const delivery = await Delivering.getDeliveryByRequest(claim._id);
+    if (delivery) {
+      await Delivering.assertIsNotStartedDelivery(delivery._id);
+    }
+    await Delivering.deleteDeliveryByRequest(claim._id);
+    return await Claiming.deleteClaim(oid);
   }
 
   /**
@@ -314,13 +315,13 @@ class Routes {
    * @param id the id of the delivery
    * @returns a message of the unaccepted delivery
    */
-  @Router.delete("/deliveries/:request")
-  async unacceptDelivery(session: SessionDoc, request: string) {
+  @Router.delete("/deliveries/:id")
+  async unacceptDelivery(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
-    const oid = new ObjectId(request);
+    const oid = new ObjectId(id);
     await Authing.assertIsRole(user, "Volunteer");
     await Delivering.assertDelivererIsUser(oid, user);
-    await Delivering.assertIsNotDelivered(oid);
+    await Delivering.assertIsNotStartedDelivery(oid);
     return await Delivering.unacceptDelivery(oid);
   }
 
@@ -404,7 +405,6 @@ class Routes {
     return Responses.deliveries(await Delivering.getDeliveriesByUser(user));
   }
 
-  @Router.get("/deliveries/user")
   @Router.get("/messages")
   @Router.validate(z.object({ currentUser: z.string(), otherUser: z.string() }))
   async getMessages(currentUser: string, otherUser: string) {

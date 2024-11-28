@@ -19,7 +19,6 @@ async function logout() {
 </script>
 
 <template>
-  <!-- <RouterLink :to="{ name: 'Recipient-Feed' }" :class="{ underline: currentRouteName == 'Recipient-Feed' }"> Available Orders </RouterLink> -->
   <button class="sidebar-button" @click="toggleSidebar">
     <img class="sidebar-icon" src="@/assets/images/lines.png" />
   </button>
@@ -28,10 +27,7 @@ async function logout() {
     <ul>
       <li class="sidebar-username">{{ userStore.currentUsername }} <span class="volunteer">volunteer</span></li>
       <li class="sidebar-items">
-        <RouterLink :to="{ name: 'Recipient-Feed' }" @click="toggleSidebar" class="sidebar-item"> available claims </RouterLink>
-      </li>
-      <li class="sidebar-items">
-        <RouterLink :to="{ name: 'Claims' }" @click="toggleSidebar" class="sidebar-item"> my claims </RouterLink>
+        <RouterLink :to="{ name: 'Volunteer-Feed' }" @click="toggleSidebar" class="sidebar-item"> deliveries </RouterLink>
       </li>
       <li class="sidebar-items">
         <RouterLink :to="{ name: 'Settings' }" @click="toggleSidebar" class="sidebar-item"> account settings </RouterLink>
