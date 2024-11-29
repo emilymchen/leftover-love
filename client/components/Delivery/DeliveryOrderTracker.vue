@@ -6,6 +6,7 @@ import { ref } from "vue";
 
 const route = useRoute();
 const claimId = route.params.claimId;
+const mapApiKey = process.env.MAP_API_KEY;
 
 const loaded = ref(false);
 let claim = ref<Record<string, string>>({});
@@ -36,6 +37,27 @@ function expiredDuringTransit() {
 onBeforeMount(async () => {
   await getClaim();
 });
+
+let googleMapsApiPromise : any = null;
+function loadGoogleMapsApi(apiKey: string) {
+  if (!googleMapsApiPromise) {
+    googleMapsApiPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.async = true;
+      script.onload = () => {
+        console.log("Google Maps API loaded successfully");
+        resolve(null);
+      };
+      script.onerror = (error) => {
+        console.error("Error loading Google Maps API:", error);
+        reject(error);
+      };
+      document.head.appendChild(script);
+    });
+  }
+  return googleMapsApiPromise;
+}
 </script>
 <template>
   <div class="base">
@@ -60,6 +82,19 @@ onBeforeMount(async () => {
       </template>
     </div>
 
+    <iframe class="form-group"
+        width="300"
+        height="300"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/directions?key=${mapApiKey}
+              &origin=${claim.donorAddress}
+              &destination=${claim.destinationAddress}`"
+      >
+      </iframe>
+
     <div class="button-container">
       <button class="large-button">Message Your Driver</button>
     </div>
@@ -83,6 +118,7 @@ onBeforeMount(async () => {
   align-items: center;
   position: relative;
   gap: 10px;
+  margin-bottom: 40px;
 }
 
 .circle {

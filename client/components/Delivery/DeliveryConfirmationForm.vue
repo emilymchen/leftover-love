@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { fetchy } from "@/utils/fetchy";
-import { defineEmits, defineProps } from "vue";
+import { defineEmits, defineProps, nextTick, ref, watch } from "vue";
 import { formatDate } from "@/utils/formatDate";
 
+const mapApiKey = process.env.MAP_API_KEY;
 const props = defineProps(["delivery"]);
 const emit = defineEmits(["refreshDeliveries", "closeClaimDelivery"]);
 
@@ -16,6 +17,26 @@ async function claimDelivery() {
   emit("refreshDeliveries");
   emit("closeClaimDelivery");
 }
+let googleMapsApiPromise : any = null;
+function loadGoogleMapsApi(apiKey: string) {
+  if (!googleMapsApiPromise) {
+    googleMapsApiPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.async = true;
+      script.onload = () => {
+        console.log("Google Maps API loaded successfully");
+        resolve(null);
+      };
+      script.onerror = (error) => {
+        console.error("Error loading Google Maps API:", error);
+        reject(error);
+      };
+      document.head.appendChild(script);
+    });
+  }
+  return googleMapsApiPromise;
+}
 </script>
 
 <template>
@@ -28,9 +49,20 @@ async function claimDelivery() {
 
     <label for="pickup">Pickup Location</label>
     <div id="pickup">{{ props.delivery.donorAddress }}</div>
-
     <label for="delivery">Delivery Location</label>
     <div id="delivery">{{ props.delivery.destinationAddress }}</div>
+    <iframe class="form-group"
+        width="300"
+        height="300"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/directions?key=${mapApiKey}
+              &origin=${props.delivery.donorAddress}
+              &destination=${props.delivery.destinationAddress}`"
+      >
+      </iframe>
 
     <label for="instructions">Instructions</label>
     <div id="instructions">{{ props.delivery.instructions }}</div>
@@ -53,10 +85,6 @@ async function claimDelivery() {
   flex-direction: column;
   gap: 1em;
   padding: 1.5em;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: 1px solid #ccc;
-  max-width: 30em;
-  background: #fff;
 }
 
 h2 {

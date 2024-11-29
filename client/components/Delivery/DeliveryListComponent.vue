@@ -112,7 +112,12 @@ article {
   position: fixed;
   padding: 2em;
   border-radius: 12px;
-  min-width: 400px;
-  max-width: 75vw;
+  width: 90vw; /* Scale dynamically to viewport */
+  max-width: 800px; /* Optional max width */
+  max-height: 80vh; /* Allow vertical scrolling */
+  overflow-y: auto; /* Enable scrolling when content exceeds height */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: #fff;
 }
+
 </style>
