@@ -21,11 +21,17 @@ export default class DeliveringConcept {
     this.deliveries = new DocCollection<DeliveryDoc>(collectionName);
   }
 
+  /**
+   * Accepts a delivery, creating a new delivery in the database.
+   */
   async acceptDelivery(deliverer: ObjectId, request: ObjectId) {
     const _id = await this.deliveries.createOne({ status: "Not Started", request, deliverer });
     return { msg: "Delivery successfully created!", delivery: await this.deliveries.readOne({ _id }) };
   }
 
+  /**
+   * Unaccepts a delivery, removing it from the database.
+   */
   async unacceptDelivery(_id: ObjectId) {
     if (!(await this.deliveries.readOne({ _id }))) {
       throw new NotFoundError(`Delivery ${_id} does not exist!`);
@@ -39,7 +45,7 @@ export default class DeliveringConcept {
     return { msg: "Deliveries associated with this request deleted successfully!" };
   }
 
-  async getClaim(_id: ObjectId) {
+  async getDeliveryRequest(_id: ObjectId) {
     const delivery = await this.deliveries.readOne({ _id });
     if (!delivery) {
       throw new NotFoundError(`Delivery ${_id} does not exist!`);
@@ -93,18 +99,11 @@ export default class DeliveringConcept {
 
   /**
    * Given a request, returns whether a delivery has been processed for it.
+   * This is used to prevent multiple deliveries for the same request.
    */
   async doesRequestForDeliveryExist(request: ObjectId) {
     const deliveries = await this.deliveries.readMany({ request });
     return deliveries.length > 0;
-  }
-
-  async getDeliveryRequest(_id: ObjectId) {
-    const delivery = await this.deliveries.readOne({ _id });
-    if (!delivery) {
-      throw new NotFoundError(`Delivery ${_id} does not exist!`);
-    }
-    return delivery.request;
   }
 
   async assertDelivererIsUser(_id: ObjectId, user: ObjectId) {

@@ -24,11 +24,17 @@ export default class ClaimingConcept {
     this.claims = new DocCollection<ClaimDoc>(collectionName);
   }
 
+  /**
+   * Create a claim for an item using the pickup method.
+   */
   async createPickupClaim(claimUser: ObjectId, item: ObjectId) {
     const _id = await this.claims.createOne({ item, status: "Requested", claimUser, method: "Pickup" });
     return { msg: "Claim successfully created!", claim: await this.claims.readOne({ _id }) };
   }
 
+  /**
+   * Create a claim for an item using the delivery method.
+   */
   async createDeliveryClaim(claimUser: ObjectId, item: ObjectId, address: string, instructions?: string) {
     const _id = await this.claims.createOne({ item, status: "Requested", claimUser, method: "Delivery", destinationAddress: address, instructions });
     return { msg: "Claim successfully created!", claim: await this.claims.readOne({ _id }) };
@@ -39,6 +45,9 @@ export default class ClaimingConcept {
     return { msg: "Claim deleted successfully!", claim: item };
   }
 
+  /**
+   * Changes the status of a claim to "Completed".
+   */
   async completeClaim(_id: ObjectId) {
     if (!(await this.claims.readOne({ _id }))) {
       throw new NotFoundError(`Claim ${_id} does not exist!`);
@@ -47,10 +56,16 @@ export default class ClaimingConcept {
     return { msg: "Claim completed successfully!" };
   }
 
+  /**
+   * Returns all claims.
+   */
   async getClaims() {
     return await this.claims.readMany({}, { sort: { _id: -1 } });
   }
 
+  /**
+   * Given a claim, returns the user who claimed it.
+   */
   async getClaimUser(_id: ObjectId) {
     const claim = await this.claims.readOne({ _id });
     if (!claim) {
@@ -70,6 +85,9 @@ export default class ClaimingConcept {
     return claim.item;
   }
 
+  /**
+   * Given a user, returns all claims made by them.
+   */
   async getClaimsByUser(claimUser: ObjectId) {
     return await this.claims.readMany({ claimUser });
   }
@@ -77,7 +95,7 @@ export default class ClaimingConcept {
   /**
    * Given an item, returns the claim associated with it.
    */
-  async getItemClaim(item: ObjectId) {
+  async getClaimsByItem(item: ObjectId) {
     return await this.claims.readOne({ item });
   }
 
@@ -95,10 +113,6 @@ export default class ClaimingConcept {
       throw new NotFoundError(`Claim ${_id} does not exist!`);
     }
     return claim.instructions;
-  }
-
-  async getClaimsByItem(item: ObjectId) {
-    return await this.claims.readMany({ item });
   }
 
   async getIncompleteDeliveryClaims() {

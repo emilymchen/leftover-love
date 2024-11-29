@@ -146,7 +146,7 @@ class Routes {
 
   /**
    * Gets all non-expired posts.
-   * @returns all non-expired posts
+   * @returns all non-expired posts, meaning the current time is before the expiration time
    */
   @Router.get("/posts/non-expired")
   async getAllNonExpiredPosts() {
@@ -162,7 +162,7 @@ class Routes {
 
   /**
    * Gets all non-expired and non-claimed posts.
-   * @returns all posts that are both non-expired and non-claimed
+   * @returns all posts that are both non-expired and non-claimed by any user
    */
   @Router.get("/posts/non-expired-non-claimed")
   async getAllNonExpiredNonClaimedPosts() {
@@ -235,7 +235,7 @@ class Routes {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(post);
     await Authing.assertIsRole(user, "Recipient");
-    const claim = await Claiming.getItemClaim(oid);
+    const claim = await Claiming.getClaimsByItem(oid);
     if (!claim) {
       return { msg: claim + "does not exist!" };
     }
@@ -290,7 +290,7 @@ class Routes {
   @Router.get("/claims/:post")
   async getPostClaimer(post: string) {
     const oid = new ObjectId(post);
-    return await Claiming.getItemClaim(oid);
+    return await Claiming.getClaimsByItem(oid);
   }
 
   /**
@@ -354,7 +354,7 @@ class Routes {
     await Delivering.assertIsInProgressDelivery(oid);
     await Authing.assertIsRole(user, "Volunteer");
     await Delivering.assertDelivererIsUser(oid, user);
-    await Claiming.completeClaim(await Delivering.getClaim(oid));
+    await Claiming.completeClaim(await Delivering.getDeliveryRequest(oid));
     return await Delivering.completeDelivery(oid);
   }
 
@@ -419,7 +419,6 @@ class Routes {
 
   /**
    *  Sends a message from the current session user to the given username.
-   *  If the user's message activity is being tracked, a record is created as well.
    *
    * @param session  the session of the user, the user must be allowed to message
    * @param to the username of the user to send the message to, user must exist and be allowed to message, to != from
