@@ -3,7 +3,7 @@ import DocCollection, { BaseDoc } from "../framework/doc";
 
 export interface TagDoc extends BaseDoc {
   item: ObjectId;
-  tags: Set<string>;
+  tags: Array<string>;
 }
 
 export default class TaggingConcept {
@@ -26,15 +26,21 @@ export default class TaggingConcept {
    * @throws Error if the tag already exists for the item.
    */
   async addTag(tag: string, item: ObjectId): Promise<void> {
-    const itemDoc = await this.tags.readOne({ item });
+    const itemDoc = await this.tags.readOne({ item: item });
     if (itemDoc === null) {
-      const _id = await this.tags.createOne({ item, tags: new Set<string>([tag]) });
+      let t = new Array<string>();
+      t.push(tag);
+      console.log("tags", t);
+      await this.tags.createOne({ item: item, tags: t });
+      const _id = await this.tags.readOne({ item: item });
+      console.log("during add tag", _id, await this.tags.readOne({ item: item }));
+      console.log("jinjja", t, item);
       return;
     }
-
     let existingTags = itemDoc.tags;
-    if (!existingTags.has(tag)) {
-      existingTags.add(tag);
+    if (!existingTags.includes(tag)) {
+      console.log("YOOOO");
+      existingTags.push(tag);
       const _id = await this.tags.partialUpdateOne({ item }, { tags: existingTags });
     } else {
       throw new Error(`Tag "${tag}" already exists for item ${item}`);
@@ -57,8 +63,11 @@ export default class TaggingConcept {
     }
 
     let existingTags = itemDoc.tags;
-    if (existingTags.has(tag)) {
-      existingTags.delete(tag);
+    if (existingTags.includes(tag)) {
+      const index = existingTags.indexOf(tag, 0);
+      if (index > -1) {
+        existingTags.splice(index, 1);
+      }
       await this.tags.partialUpdateOne({ item }, { tags: existingTags });
     } else {
       throw new Error(`Tag "${tag}" does not exist for item ${item}`);

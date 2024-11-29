@@ -12,6 +12,7 @@ const { isDonor, currentUsername, isRecipient } = storeToRefs(useUserStore());
 
 const loaded = ref(false);
 let posts = ref<Array<Record<string, any>>>([]);
+let tags = new Map<string, any>();
 let currentPost = ref<Record<string, any> | null>(null);
 let searchAuthor = ref("");
 let isCreatingPost = ref(false);
@@ -60,6 +61,14 @@ async function getPosts(author?: string) {
   }
 }
 
+async function getPostTags(postId: string) {
+  try {
+    return await fetchy(`/api/tags/${postId}`, "GET");
+  } catch {
+    return false;
+  }
+}
+
 async function getAllAvailablePosts() {
   let postResults;
   try {
@@ -81,10 +90,14 @@ async function updatePosts() {
     await getPosts(currentUsername.value);
     for (const post of posts.value) {
       postIdtoClaimStatus.set(post._id, await checkIfClaimed(post._id));
+      tags.set(post._id, await getPostTags(post._id));
     }
   } else if (isRecipient.value) {
     // If it's a recipient, we want them to see all the available non-claimed food listings
     await getAllAvailablePosts();
+    for (const post of posts.value) {
+      tags.set(post._id, await getPostTags(post._id));
+    }
   }
   filterPosts();
   loaded.value = true;
@@ -104,44 +117,51 @@ onBeforeMount(async () => {
   <div class="posts-outer-container">
     <p v-if="!loaded">Loading...</p>
 
-    <div v-if="isDonor" class="filter-buttons">
-      <button
-        :class="{ active: filterType === 'all' }"
-        class="button-click"
-        @click="
-          () => {
-            filterType = 'all';
-            filterPosts();
-          }
-        "
-      >
-        All
-      </button>
-      <button
-        :class="{ active: filterType === 'claimed' }"
-        class="button-click"
-        @click="
-          () => {
-            filterType = 'claimed';
-            filterPosts();
-          }
-        "
-      >
-        Claimed
-      </button>
-      <button
-        :class="{ active: filterType === 'unclaimed' }"
-        class="button-click"
-        @click="
-          () => {
-            filterType = 'unclaimed';
-            filterPosts();
-          }
-        "
-      >
-        Unclaimed
-      </button>
-    </div>
+      <div v-if="isDonor" class="header-container">
+        <h1>My Food Listings</h1>
+
+        <div v-if="isDonor" class="filter-buttons">
+          <button
+            :class="{ active: filterType === 'all' }"
+            class="button-click"
+            @click="
+              () => {
+                filterType = 'all';
+                filterPosts();
+              }
+            "
+          >
+            All
+          </button>
+          <button
+            :class="{ active: filterType === 'claimed' }"
+            class="button-click"
+            @click="
+              () => {
+                filterType = 'claimed';
+                filterPosts();
+              }
+            "
+          >
+            Claimed
+          </button>
+          <button
+            :class="{ active: filterType === 'unclaimed' }"
+            class="button-click"
+            @click="
+              () => {
+                filterType = 'unclaimed';
+                filterPosts();
+              }
+            "
+          >
+            Unclaimed
+          </button>
+        </div>
+        <div class="spacer"></div>
+      </div>
+
+
 
     <section class="posts" v-if="loaded">
       <p v-if="filteredPosts.length === 0">No posts available!</p>
@@ -152,7 +172,7 @@ onBeforeMount(async () => {
       </article>
 
       <article v-for="post in filteredPosts" :key="post._id" class="post-item">
-        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" @refreshPosts="updatePosts" @editPost="startEditing(post)" @claimPost="startClaiming(post)" />
+        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" :tags="tags.get(post._id)" @refreshPosts="updatePosts" @editPost="startEditing(post)" @claimPost="startClaiming(post)" />
       </article>
     </section>
 
@@ -187,10 +207,28 @@ onBeforeMount(async () => {
         />
       </div>
     </div>
-  </div>
+    </div>
 </template>
 
 <style scoped>
+.header-container {
+  display: flex;
+  flex-flow: row nowrap;
+
+  h1 {
+    text-align: left;
+    color: var(--orange);
+    font-size: 2em;
+    margin: 0;
+    font-weight: 900;
+    padding: 0em 2em;
+  }
+}
+
+.spacer {
+  height: 2em;
+}
+
 .posts-outer-container {
   flex-direction: column;
   justify-content: space-between;
@@ -238,6 +276,10 @@ p,
   max-width: 60em;
 }
 
+.post-item {
+  position: relative;
+}
+
 article {
   border-radius: 1em;
   display: flex;
@@ -248,7 +290,7 @@ article {
   width: 250px;
   height: 180px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
+  /* cursor: pointer; */
   transition: transform 0.2s ease;
 }
 
@@ -290,12 +332,9 @@ article {
 
 .filter-buttons {
   display: flex;
-  position: fixed;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-top: -70px;
-  margin-left: 400px;
   gap: 10px;
 }
 .button-click {

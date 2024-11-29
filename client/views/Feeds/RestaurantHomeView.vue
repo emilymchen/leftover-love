@@ -9,11 +9,6 @@ const { isLoggedIn, isDonor } = storeToRefs(useUserStore());
 <template>
   <main class="main-container">
     <section v-if="isLoggedIn && isDonor" class="listing-section">
-      <div class="header-container">
-        <h1>My Food Listings</h1>
-      </div>
-      <div class="spacer"></div>
-
       <PostListComponent />
     </section>
   </main>

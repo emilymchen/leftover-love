@@ -106,15 +106,14 @@ class Routes {
    * @param food_name  the name of the food item
    * @param expiration_time  the expiration time of the food item, must be in the future
    * @param quantity the quantity of the food item
-   * @param t  the tags of the food item
+   * @param tags  the tags of the food item
    * @returns the created post
    */
   @Router.post("/posts")
-  async createPost(session: SessionDoc, food_name: string, expiration_time: Date, quantity: number) {
+  async createPost(session: SessionDoc, food_name: string, expiration_time: Date, quantity: number, tags: Array<string>) {
     const user = Sessioning.getUser(session);
     const created = await Posting.create(user, food_name, expiration_time, quantity);
     await Authing.assertIsRole(user, "Donor");
-    // TODO: Add tags
     return { msg: created.msg, post: await Responses.post(created.post) };
   }
 
@@ -505,7 +504,7 @@ class Routes {
 
     // Add the tag to the post
     await Tagging.addTag(tag, oid);
-
+    console.log("ttttTTTaggggg", tag);
     return { msg: `Tag "${tag}" added to post ${post}` };
   }
 
