@@ -5,14 +5,22 @@ import { fetchy } from "../../utils/fetchy";
 const food_name = ref("");
 const qty = ref(1);
 const expiration_time = ref("");
-const tags = ref("");
+const tag = ref("");
+let tags = ref(new Array<string>());
 const emit = defineEmits(["refreshPosts", "closeCreatePost"]);
 
 const createPost = async (food_name: string, quantity: number, expiration_time: string) => {
   try {
-    await fetchy("/api/posts", "POST", {
+    const created = await fetchy("/api/posts", "POST", {
       body: { food_name: food_name, quantity: quantity, expiration_time: expiration_time },
     });
+    const postId = created.post._id;
+    for (const tag of tags.value) {
+      await fetchy(`/api/tags/${postId}`, "POST", {
+        body: { post: postId, tag: tag}
+      });
+    }
+    
   } catch {
     return;
   }
@@ -21,12 +29,32 @@ const createPost = async (food_name: string, quantity: number, expiration_time: 
   emptyForm();
 };
 
+
+
+const addTag = (tag: string) => {
+  if ((tag.split(" ").length === 1) && (tag !== '') && (!tags.value.includes(tag))) {
+    tags.value.push(tag);
+    emptyTags();  
+  }
+  else {
+    throw new Error("Tags must be one word that has not already been added");
+  }
+}
+
+const removeTag = (tag: string) => {
+  tags.value.splice(tags.value.indexOf(tag), 1);
+}
+
 const emptyForm = () => {
   food_name.value = "";
   qty.value = 1;
   expiration_time.value = "";
-  tags.value = "";
+  tag.value = "";
 };
+
+const emptyTags = () => {
+  tag.value = "";
+}
 </script>
 
 <template>
@@ -45,12 +73,20 @@ const emptyForm = () => {
       <input type="datetime-local" id="expiration_time" v-model="expiration_time" required />
     </div>
     <div class="form-group">
-      <label for="tags">Tags</label>
-      <input type="text" id="tags" v-model="tags" placeholder="Tags (e.g., vegan, spicy)" />
+      <label for="tag">Tags (one word)</label>
+      <input type="text" id="tag" v-model="tag" placeholder="Tags (e.g., vegan, spicy)" />
+      <label for="tags">Current Tags:</label>
+      <div class="tag-display">
+        <div class="tag-box" v-for="tag in tags">
+          {{ tag }}
+          <button type="button" @click="removeTag(tag)">X</button>
+        </div>
+      </div>
+      <button class="add-tag-button" type="button" @click="addTag(tag)">+</button >
     </div>
     <div class="create-post-buttons">
       <button class="create-post-button" type="submit">Post</button>
-      <button class="close-post-button" @click="emit('closeCreatePost')">Close</button>
+      <button class="close-post-button" type="button" @click="emit('closeCreatePost')">Close</button>
     </div>
   </form>
 </template>
@@ -75,6 +111,28 @@ h2 {
   text-align: center;
 }
 
+.tag-display {
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+
+  button {
+    padding: 0px;
+    color: black;
+    background-color: transparent;
+    border: none;
+    margin: 1px;
+  }
+}
+
+.tag-box {
+  background-color: var(--green);
+  padding: 4px 8px;
+  border-radius: 16px;
+  margin: 8px;
+  color: var(--darker-green);
+}
 .form-group {
   display: flex;
   flex-direction: column;

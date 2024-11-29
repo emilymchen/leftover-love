@@ -5,7 +5,7 @@ import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
 import { onMounted, ref } from "vue";
 
-const props = defineProps(["post"]);
+const props = defineProps(["post", "tags"]);
 const emit = defineEmits(["editPost", "refreshPosts", "claimPost"]);
 const { currentUsername, isDonor, isRecipient } = storeToRefs(useUserStore());
 
@@ -24,6 +24,7 @@ async function checkIfClaimed(postId: string) {
   return claim !== null;
 }
 
+
 const claimed = ref(false);
 const pickup = ref("");
 
@@ -37,16 +38,26 @@ onMounted(async () => {
     <div class="food-name">{{ props.post.food_name }}</div>
   </div>
   <div class="author-details">
-    <div class="author">{{ props.post.author }}</div>
+    <div class="author">{{ props.post.author }}</div> 
   </div>
   <div class="qty-expiration-details">
     <div class="quantity">Qty: {{ props.post.quantity }}</div>
     <div class="expiration-time">Expires: {{ formatDate(new Date(props.post.expiration_time)) }}</div>
+
+    <!-- <div class="tags"> Tags: {{ tags.tags.toString() }}</div> -->
+  </div>
+
+  <div class="tag-display">
+  <em>Tags:</em>
+  <div v-for="tag in tags.tags" :key="tags._id" class="tag-box">
+      {{ tag }}
+  </div>
   </div>
 
   <div class="base">
     <button v-if="isExpired(props.post.expiration_time)" class="expired-button">Expired</button>
     <div v-else-if="props.post.author == currentUsername && isDonor">
+      
       <div v-if="claimed">
         <button class="expired-button">Claimed for {{ pickup }}</button>
       </div>
@@ -73,8 +84,30 @@ onMounted(async () => {
   font-style: italic;
 }
 
+.tag-display {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  
+  em {
+    margin-right: 4px;
+  }
+}
+
+.tag-box {
+  background-color: var(--green);
+  padding: 4px 8px;
+  border-radius: 16px;
+  margin: 4px;
+  color: var(--darker-green);
+}
+
 .base {
-  width: 100%;
+  width: 90%;
+
+  position: absolute;
+  bottom: 8px;
+  left: 5%;
 
   menu {
     list-style-type: none;
