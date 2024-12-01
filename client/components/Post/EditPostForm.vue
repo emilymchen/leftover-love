@@ -2,16 +2,27 @@
 import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
-const props = defineProps(["post"]);
+const props = defineProps(["post", "tags"]);
 const food_name = ref(props.post.food_name);
 const qty = ref(props.post.quantity);
 const expiration_time = ref(props.post.expiration_time);
-const tags = ref(props.post.tags);
+// const tags = ref(props.post.tags);
+const tagToAdd = ref("");
+const tagsToDisplay = ref([...props.tags.tags]);
 const emit = defineEmits(["editPost", "refreshPosts", "closeEditPost"]);
 
 const editPost = async (food_name: string, quantity: number, expiration_time: string, tags: string[]) => {
   try {
     await fetchy(`/api/posts/${props.post._id}`, "PATCH", { body: { food_name: food_name, quantity: quantity, expiration_time: expiration_time, tags: tags } });
+    const dbTags = await fetchy(`/api/tags/${props.post._id}`, "GET");
+    for (const tag of dbTags.tags) {
+      await fetchy(`/api/tags/${props.post._id}/${tag}`, "DELETE");
+    }
+    for (const tag of tags) {
+      await fetchy(`/api/tags/${props.post._id}`, "POST", { body: { post: props.post._id, tag: tag } });
+    }
+    // Delete all existing tags
+    // Add back each tag in tags as a tag of the post
   } catch {
     return;
   }
@@ -28,10 +39,22 @@ const deletePost = async () => {
   emit("refreshPosts");
   emit("closeEditPost");
 };
+const addTag = (tag: string) => {
+  if ((tag.split(" ").length === 1) && (tag !== '') && (!tagsToDisplay.value.includes(tag))) {
+    tagsToDisplay.value.push(tag);
+    tagToAdd.value = "";
+  }
+  else {
+    throw new Error("Tags must be one word that has not already been added");
+  }
+}
+const removeTag = (tag: string) => {
+  tagsToDisplay.value.splice(tagsToDisplay.value.indexOf(tag), 1);
+}
 </script>
 
 <template>
-  <form @submit.prevent="editPost(food_name, qty, expiration_time, tags)">
+  <form @submit.prevent="editPost(food_name, qty, expiration_time, tagsToDisplay)">
     <h2>Edit Your Meal</h2>
     <div class="form-group">
       <label for="food_name">Food Item</label>
@@ -46,8 +69,15 @@ const deletePost = async () => {
       <input type="datetime-local" id="expiration_time" v-model="expiration_time" required />
     </div>
     <div class="form-group">
-      <label for="tags">Tags</label>
-      <input type="text" id="tags" v-model="tags" placeholder="Tags (e.g., vegan, spicy)" />
+      <label for="tags">Tags (one word)</label>
+      <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags (e.g., vegan, spicy)" />
+    </div>
+    <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">+</button >
+    <div class="tag-display" v-if="tagsToDisplay">
+      <div class="tag-box" v-for="tag in tagsToDisplay">
+        {{ tag }}
+        <button type="button" @click="removeTag(tag)">X</button>
+      </div>
     </div>
     <div class="create-post-buttons">
       <button class="btn-small pure-button-primary pure-button" type="submit">Save</button>
@@ -69,6 +99,38 @@ form {
   max-width: 30em;
   background: white;
   padding: 50px;
+}
+
+.add-tag-button {
+  align-self: center;
+  padding: 0.5em 1.5em;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tag-display {
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+
+  button {
+    padding: 0px;
+    color: black;
+    background-color: transparent;
+    border: none;
+    margin: 1px;
+  }
+}
+
+.tag-box {
+  background-color: var(--green);
+  padding: 4px 8px;
+  border-radius: 16px;
+  margin: 8px;
+  color: var(--darker-green);
 }
 
 h2 {

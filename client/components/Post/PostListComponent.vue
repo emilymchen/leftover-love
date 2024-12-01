@@ -18,21 +18,60 @@ let searchAuthor = ref("");
 let isCreatingPost = ref(false);
 let isEditingPost = ref(false);
 let isClaimingPost = ref(false);
+let tagToAdd = ref("");
 
 // State for toggle filter
 const filterType = ref<"all" | "claimed" | "unclaimed">("all");
 let postIdtoClaimStatus = new Map<string, boolean>();
 let filteredPosts = ref<Array<Record<string, any>>>([]);
 
+
+let filterTags = ref<Array<string>>([]);
+
 // Computed filtered posts
 function filterPosts() {
   if (filterType.value === "claimed") {
-    filteredPosts.value = posts.value.filter((post) => postIdtoClaimStatus.get(post._id));
+    filteredPosts.value = posts.value.filter((post) => (postIdtoClaimStatus.get(post._id)) );
   } else if (filterType.value === "unclaimed") {
     filteredPosts.value = posts.value.filter((post) => !postIdtoClaimStatus.get(post._id));
   } else {
     filteredPosts.value = posts.value;
   }
+
+  if (filterTags.value.length > 0) {
+    filteredPosts.value = filteredPosts.value.filter((post) => hasAllFilterTags(post));
+  }
+}
+
+function hasAllFilterTags(post: Record<string, any>) {
+  const postTags = tags.get(post._id);
+  if (!postTags) {
+    return false;
+  }
+
+  for (const tag of filterTags.value) {
+    if (!postTags.tags.includes(tag)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const addTag = (tag: string) => {
+  if ((tag.split(" ").length === 1) && (tag !== '') && (!filterTags.value.includes(tag))) {
+    filterTags.value.push(tag);
+    tagToAdd.value = "";
+    filterPosts();
+  }
+  else {
+    throw new Error("Tags must be one word that has not already been added");
+  }
+}
+
+const removeTag = (tag: string) => {
+  filterTags.value.splice(filterTags.value.indexOf(tag), 1);
+  filterPosts();
 }
 
 async function checkIfClaimed(postId: string) {
@@ -162,6 +201,18 @@ onBeforeMount(async () => {
       </div>
 
 
+    <div class="recipient-tag-filter" v-if="isRecipient">
+        <div class="filter-search-bar">
+        <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags to filter by (one word)" />
+        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">+</button >
+        </div>
+        <div class="tag-display">
+          <div class="tag-box" v-for="tag in filterTags">
+            {{ tag }}
+            <button type="button" @click="removeTag(tag)">X</button>
+          </div>
+        </div>
+    </div>
 
     <section class="posts" v-if="loaded">
       <p v-if="filteredPosts.length === 0">No posts available!</p>
@@ -170,8 +221,9 @@ onBeforeMount(async () => {
           <span class="plus-icon">+</span>
         </div>
       </article>
-
+      
       <article v-for="post in filteredPosts" :key="post._id" class="post-item">
+
         <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" :tags="tags.get(post._id)" @refreshPosts="updatePosts" @editPost="startEditing(post)" @claimPost="startClaiming(post)" />
       </article>
     </section>
@@ -186,6 +238,7 @@ onBeforeMount(async () => {
       <div class="modal">
         <EditPostForm
           :post="currentPost"
+          :tags="tags.get(currentPost?._id)"
           @refreshPosts="updatePosts"
           @closeEditPost="
             isEditingPost = false;
@@ -227,6 +280,65 @@ onBeforeMount(async () => {
 
 .spacer {
   height: 2em;
+}
+
+.recipient-tag-filter {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+
+  input {
+    width: 90%;
+    margin: 16px;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    /* border-bottom: 2px solid var(--darker-green); */
+  }
+
+  .filter-search-bar {
+    display: flex;
+    width: 280px;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    border: 2px solid var(--darker-green);
+    border-radius: 16px;
+  }
+
+  input::placeholder {
+    color: var(--darker-green);
+  }
+
+  .add-tag-button {
+    background-color: transparent;
+    color: var(--darker-green);
+    border: none;
+  }
+
+  .tag-display {
+    margin: 8px;
+    max-width: 360px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+
+    button {
+      padding: 0px;
+      color: black;
+      background-color: transparent;
+      border: none;
+      margin: 1px;
+    }
+  }
+
+  .tag-box {
+    background-color: var(--green);
+    padding: 4px 8px;
+    border-radius: 16px;
+    margin: 8px;
+    color: var(--darker-green);
+  }
 }
 
 .posts-outer-container {

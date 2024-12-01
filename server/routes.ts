@@ -503,7 +503,6 @@ class Routes {
 
     // Add the tag to the post
     await Tagging.addTag(tag, oid);
-    console.log("ttttTTTaggggg", tag);
     return { msg: `Tag "${tag}" added to post ${post}` };
   }
 
@@ -518,6 +517,8 @@ class Routes {
    */
   @Router.delete("/tags/:post/:tag")
   async deleteTag(session: SessionDoc, post: string, tag: string) {
+    console.log(tag);
+    console.log(post);
     const oid = new ObjectId(post);
     const user = Sessioning.getUser(session);
 
