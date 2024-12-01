@@ -89,7 +89,7 @@ export default class Responses {
       return delivery;
     }
     const deliverer = await Authing.getUserById(delivery.deliverer);
-    const deliveryClaim = await Delivering.getClaim(delivery._id);
+    const deliveryClaim = await Delivering.getDeliveryRequest(delivery._id);
     const claimedItem = await Claiming.getClaimItem(deliveryClaim);
     const expiration_time = claimedItem ? await Posting.getExpirationTime(claimedItem) : null;
     const claimUser = claimedItem ? await Claiming.getClaimUser(deliveryClaim) : null;
@@ -109,7 +109,7 @@ export default class Responses {
     const deliverers = await Authing.idsToUsernames(deliveries.map((delivery) => delivery.deliverer));
     const deliveriesWithDetails = await Promise.all(
       deliveries.map(async (delivery, i) => {
-        const deliveryClaim = await Delivering.getClaim(delivery._id);
+        const deliveryClaim = await Delivering.getDeliveryRequest(delivery._id);
         const claimedItem = await Claiming.getClaimItem(deliveryClaim);
         const expiration_time = claimedItem ? await Posting.getExpirationTime(claimedItem) : null;
         const claimUser = claimedItem ? await Claiming.getClaimUser(deliveryClaim) : null;
