@@ -186,9 +186,10 @@ form {
   padding: 1.5em;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-color: black;
-  max-width: 30em;
   background: white;
   padding: 50px;
+  overflow-y: auto;
+  max-height: 80vh;
 }
 
 h2 {
