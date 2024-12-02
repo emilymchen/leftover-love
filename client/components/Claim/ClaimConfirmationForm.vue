@@ -171,7 +171,7 @@ watch(address, (newValue) => {
       </iframe>
     </div>
     <div class="create-post-buttons">
-      <button class="btn-small pure-button-primary pure-button" type="submit">Claim</button>
+      <button type="submit">Claim</button>
       <button class="btn-small pure-button" @click="emit('closeClaimPost')">Cancel</button>
     </div>
   </form>

@@ -1,6 +1,6 @@
 /* Add some global styles here! */
-@import url('https://fonts.googleapis.com/css2?family=Caprasimo&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Caprasimo&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Averia+Serif+Libre&display=swap");
 
 :root {
   --red: rgb(208, 67, 12);
@@ -9,8 +9,8 @@
   --light-bg: rgba(255, 255, 255, 28%);
   --lighter-green: #d4d6b0;
   --green: #b0b470;
-  --dark-green: #58823A;
-  --darker-green: #43603B;
+  --dark-green: #58823a;
+  --darker-green: #43603b;
   --orange: #d13717;
   --orange-dark: #b02e0c;
   --base-bg: #f1f3f5;
@@ -47,9 +47,12 @@ button {
   background: var(--orange);
   color: white;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
-
+button:hover {
+  transform: scale(1.05);
+}
 
 .column {
   display: flex;
@@ -59,18 +62,17 @@ button {
   gap: 1em;
 }
 
-
 body {
   background-color: var(--beige);
   color: var(--text);
 }
 
 h1 {
-  font-family: 'Caprasimo';
+  font-family: "Caprasimo";
 }
 
 * {
-  font-family: 'Averia Serif Libre', serif;
+  font-family: "Averia Serif Libre", serif;
 }
 
 .toast {

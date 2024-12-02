@@ -120,7 +120,7 @@ watch(address, (newValue) => {
       >
       </iframe>
       <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary">Register</button>
+        <button type="submit">Register</button>
       </div>
     </fieldset>
   </form>
