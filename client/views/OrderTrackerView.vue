@@ -8,8 +8,8 @@ const { isLoggedIn, isRecipient } = storeToRefs(useUserStore());
 
 <template>
   <main>
-    <div class="header-container">
-      <h1 v-if="isLoggedIn && isRecipient">Order Tracker</h1>
+    <div class="header-container" v-if="isLoggedIn && isRecipient">
+      <h1>Order Tracker</h1>
       <DeliveryOrderTracker />
     </div>
   </main>

@@ -20,17 +20,16 @@ async function logout() {
 </script>
 
 <template>
-  <!-- <RouterLink :to="{ name: 'Recipient-Feed' }" :class="{ underline: currentRouteName == 'Recipient-Feed' }"> Available Orders </RouterLink> -->
   <button class="sidebar-button" @click="toggleSidebar">
     <img class="sidebar-icon" src="@/assets/images/lines.png" />
   </button>
   <div v-if="isSidebarOpen" class="overlay" @click="toggleSidebar"></div>
   <aside class="sidebar" :class="{ open: isSidebarOpen }">
     <ul>
-      <li class="sidebar-username">{{ userStore.currentUsername }} <span class="recipient">recipient</span></li>
-      <li class="sidebar-items">
-        <RouterLink :to="{ name: 'Recipient-Feed' }" @click="toggleSidebar" class="sidebar-item"> available donations </RouterLink>
+      <li class="sidebar-recipient">
+        recipient:
       </li>
+      <li class="sidebar-username">{{ userStore.currentUsername }} </li>
       <li class="sidebar-items">
         <RouterLink :to="{ name: 'Claims' }" @click="toggleSidebar" class="sidebar-item"> my claims </RouterLink>
       </li>
@@ -132,6 +131,8 @@ ul {
   text-align: left;
   padding: 1em, 1em;
   width: 100%;
+  text-decoration: underline;
+
 }
 
 .sidebar-item:hover {
@@ -143,24 +144,18 @@ ul {
 }
 
 .sidebar-username {
-  font-size: 40px;
+  text-align: left;
   color: var(--darker-green);
-  margin-bottom: 0.5em;
+  font-size: 30px;
   width: 100%;
-  padding-left: 1em;
-  padding-top: 0.05em;
-  white-space: normal;
-  word-break: break-word;
 }
-
 .sidebar-button {
   background: none;
   border: none;
   cursor: pointer;
   position: absolute; /* Use absolute positioning */
-  top: auto; /* This will let it follow the normal flow vertically */
+  top: 1.2em;
   left: 1em; /* Align it to the left of the page */
-  bottom: 50.7em;
   z-index: 1000;
 }
 
@@ -184,8 +179,11 @@ ul {
 .logout-button:hover {
   color: black;
 }
-.recipient {
-  font-size: 20px;
-  color: black;
+.sidebar-recipient {
+  text-align: left;
+  font-size: 30px;
+  margin-top: 5px;
+  margin-left: 10px;
+  width: 100%;
 }
 </style>

@@ -25,13 +25,12 @@ const filterType = ref<"all" | "claimed" | "unclaimed">("all");
 let postIdtoClaimStatus = new Map<string, boolean>();
 let filteredPosts = ref<Array<Record<string, any>>>([]);
 
-
 let filterTags = ref<Array<string>>([]);
 
 // Computed filtered posts
 function filterPosts() {
   if (filterType.value === "claimed") {
-    filteredPosts.value = posts.value.filter((post) => (postIdtoClaimStatus.get(post._id)) );
+    filteredPosts.value = posts.value.filter((post) => postIdtoClaimStatus.get(post._id));
   } else if (filterType.value === "unclaimed") {
     filteredPosts.value = posts.value.filter((post) => !postIdtoClaimStatus.get(post._id));
   } else {
@@ -59,20 +58,19 @@ function hasAllFilterTags(post: Record<string, any>) {
 }
 
 const addTag = (tag: string) => {
-  if ((tag.split(" ").length === 1) && (tag !== '') && (!filterTags.value.includes(tag))) {
+  if (tag.split(" ").length === 1 && tag !== "" && !filterTags.value.includes(tag)) {
     filterTags.value.push(tag);
     tagToAdd.value = "";
     filterPosts();
-  }
-  else {
+  } else {
     throw new Error("Tags must be one word that has not already been added");
   }
-}
+};
 
 const removeTag = (tag: string) => {
   filterTags.value.splice(filterTags.value.indexOf(tag), 1);
   filterPosts();
-}
+};
 
 async function checkIfClaimed(postId: string) {
   let claim;
@@ -160,62 +158,61 @@ onBeforeMount(async () => {
   <div class="posts-outer-container">
     <p v-if="!loaded">Loading...</p>
 
-      <div v-if="isDonor" class="header-container">
-        <h1>My Food Listings</h1>
+    <div v-if="isDonor" class="header-container">
+      <h1>My Food Listings</h1>
 
-        <div v-if="isDonor" class="filter-buttons">
-          <button
-            :class="{ active: filterType === 'all' }"
-            class="button-click"
-            @click="
-              () => {
-                filterType = 'all';
-                filterPosts();
-              }
-            "
-          >
-            All
-          </button>
-          <button
-            :class="{ active: filterType === 'claimed' }"
-            class="button-click"
-            @click="
-              () => {
-                filterType = 'claimed';
-                filterPosts();
-              }
-            "
-          >
-            Claimed
-          </button>
-          <button
-            :class="{ active: filterType === 'unclaimed' }"
-            class="button-click"
-            @click="
-              () => {
-                filterType = 'unclaimed';
-                filterPosts();
-              }
-            "
-          >
-            Unclaimed
-          </button>
-        </div>
-        <div class="spacer"></div>
+      <div v-if="isDonor" class="filter-buttons">
+        <button
+          :class="{ active: filterType === 'all' }"
+          class="button-click"
+          @click="
+            () => {
+              filterType = 'all';
+              filterPosts();
+            }
+          "
+        >
+          All
+        </button>
+        <button
+          :class="{ active: filterType === 'claimed' }"
+          class="button-click"
+          @click="
+            () => {
+              filterType = 'claimed';
+              filterPosts();
+            }
+          "
+        >
+          Claimed
+        </button>
+        <button
+          :class="{ active: filterType === 'unclaimed' }"
+          class="button-click"
+          @click="
+            () => {
+              filterType = 'unclaimed';
+              filterPosts();
+            }
+          "
+        >
+          Unclaimed
+        </button>
       </div>
-
+      <div class="spacer"></div>
+    </div>
 
     <div class="recipient-tag-filter" v-if="isRecipient">
-        <div class="filter-search-bar">
+      <div class="filter-search-bar">
         <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags to filter by (one word)" />
-        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">+</button >
+        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">+</button>
+      </div>
+      <div class="tag-display">
+        <div class="tag-box" v-for="tag in filterTags">
+          {{ tag }}
+          <button type="button" @click="removeTag(tag)">X</button>
         </div>
-        <div class="tag-display">
-          <div class="tag-box" v-for="tag in filterTags">
-            {{ tag }}
-            <button type="button" @click="removeTag(tag)">X</button>
-          </div>
-        </div>
+      </div>
     </div>
 
     <section class="posts" v-if="loaded">
@@ -225,10 +222,16 @@ onBeforeMount(async () => {
           <span class="plus-icon">+</span>
         </div>
       </article>
-      
-      <article v-for="post in filteredPosts" :key="post._id" class="post-item">
 
-        <PostComponent v-if="!isEditingPost || currentPost?._id !== post._id" :post="post" :tags="tags.get(post._id)" @refreshPosts="updatePosts" @editPost="startEditing(post)" @claimPost="startClaiming(post)" />
+      <article v-for="post in filteredPosts" :key="post._id" class="post-item">
+        <PostComponent
+          v-if="!isEditingPost || currentPost?._id !== post._id"
+          :post="post"
+          :tags="tags.get(post._id)"
+          @refreshPosts="updatePosts"
+          @editPost="startEditing(post)"
+          @claimPost="startClaiming(post)"
+        />
       </article>
     </section>
 
@@ -264,7 +267,7 @@ onBeforeMount(async () => {
         />
       </div>
     </div>
-    </div>
+  </div>
 </template>
 
 <style scoped>

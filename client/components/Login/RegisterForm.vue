@@ -20,12 +20,12 @@ async function register() {
   void router.push({ name: "Home" });
 }
 
-let googleMapsApiPromise : any = null;
+let googleMapsApiPromise: any = null;
 
 function loadGoogleMapsApi(apiKey: string) {
   if (!googleMapsApiPromise) {
     googleMapsApiPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.onload = () => {
@@ -49,15 +49,15 @@ async function initAutocomplete() {
   }
   try {
     await loadGoogleMapsApi(mapApiKey);
-    const addressInput = document.getElementById('aligned-address') as HTMLInputElement;
+    const addressInput = document.getElementById("aligned-address") as HTMLInputElement;
     if (addressInput) {
-    const autocomplete = new google.maps.places.Autocomplete(addressInput);
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (place.geometry && place.formatted_address) {
-        address.value = place.formatted_address;
-      }
-    });
+      const autocomplete = new google.maps.places.Autocomplete(addressInput);
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry && place.formatted_address) {
+          address.value = place.formatted_address;
+        }
+      });
     } else {
       console.error("Address input element not found");
     }
@@ -67,7 +67,7 @@ async function initAutocomplete() {
 }
 
 onMounted(() => {
-  if (props.role === 'Donor') {
+  if (props.role === "Donor") {
     initAutocomplete();
   }
 });
@@ -89,7 +89,6 @@ const updateDebouncedAddress = debounce((newValue: string) => {
 watch(address, (newValue) => {
   updateDebouncedAddress(newValue);
 });
-
 </script>
 
 <template>
@@ -109,7 +108,8 @@ watch(address, (newValue) => {
         <label for="aligned-address">Address</label>
         <input type="text" v-model.trim="address" id="aligned-address" placeholder="Address" required />
       </div>
-      <iframe v-if="debouncedAddress"
+      <iframe
+        v-if="debouncedAddress"
         width="500"
         height="300"
         style="border: 0"
@@ -130,7 +130,7 @@ watch(address, (newValue) => {
       >
       </iframe>
       <div class="pure-controls">
-        <button type="submit" class="pure-button pure-button-primary">Register</button>
+        <button type="submit">Register</button>
       </div>
     </fieldset>
   </form>
