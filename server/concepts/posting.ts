@@ -24,7 +24,7 @@ export default class PostingConcept {
   }
 
   async create(author: ObjectId, food_name: string, expiration_time: Date, quantity: number) {
-    if (expiration_time < new Date()) {
+    if (new Date(expiration_time) < new Date()) {
       throw new InvalidExpirationTimeError();
     }
     const _id = await this.posts.createOne({ author, food_name, expiration_time, quantity });
