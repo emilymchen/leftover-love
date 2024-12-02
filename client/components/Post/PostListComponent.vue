@@ -238,7 +238,7 @@ onBeforeMount(async () => {
       <div class="modal">
         <EditPostForm
           :post="currentPost"
-          :tags="tags.get(currentPost?._id)"
+          :tags="tags.get(currentPost?._id).tags ?? []"
           @refreshPosts="updatePosts"
           @closeEditPost="
             isEditingPost = false;
