@@ -25,10 +25,11 @@ async function logout() {
   <div v-if="isSidebarOpen" class="overlay" @click="toggleSidebar"></div>
   <aside v-if="isSidebarOpen" class="sidebar" :class="{ open: isSidebarOpen }">
     <ul>
-      <li class="sidebar-username">{{ userStore.currentUsername }} <span class="volunteer">volunteer</span></li>
-      <li class="sidebar-items">
-        <RouterLink :to="{ name: 'Volunteer-Feed' }" @click="toggleSidebar" class="sidebar-item"> deliveries </RouterLink>
+      <li class="sidebar-volunteer">
+        volunteer:
       </li>
+      <li class="sidebar-username">{{ userStore.currentUsername }} </li>
+    
       <li class="sidebar-items">
         <RouterLink :to="{ name: 'Settings' }" @click="toggleSidebar" class="sidebar-item"> account settings </RouterLink>
       </li>
@@ -128,6 +129,7 @@ ul {
   text-align: left;
   padding: 1em, 1em;
   width: 100%;
+  text-decoration: underline;
 }
 
 .sidebar-item:hover {
@@ -139,12 +141,10 @@ ul {
 }
 
 .sidebar-username {
-  font-size: 40px;
+  text-align: left;
   color: var(--darker-green);
-  margin-bottom: 0.5em;
+  font-size: 30px;
   width: 100%;
-  padding-left: 1em;
-  padding-top: 0.05em;
 }
 .sidebar-button {
   background: none;
@@ -176,8 +176,11 @@ ul {
 .logout-button:hover {
   color: black;
 }
-.volunteer {
-  font-size: 20px;
-  color: black;
+.sidebar-volunteer {
+  text-align: left;
+  font-size: 30px;
+  margin-top: 5px;
+  margin-left: 10px;
+  width: 100%;
 }
 </style>
