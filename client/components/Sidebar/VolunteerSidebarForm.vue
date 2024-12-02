@@ -146,15 +146,13 @@ ul {
   padding-left: 1em;
   padding-top: 0.05em;
 }
-
 .sidebar-button {
   background: none;
   border: none;
   cursor: pointer;
   position: absolute; /* Use absolute positioning */
-  top: auto; /* This will let it follow the normal flow vertically */
+  top: 1.2em;
   left: 1em; /* Align it to the left of the page */
-  bottom: 50.7em;
   z-index: 1000;
 }
 

@@ -20,14 +20,13 @@ async function logout() {
 </script>
 
 <template>
-  <!-- <RouterLink :to="{ name: 'Claims' }" :class="{ underline: currentRouteName == 'Claims' }"> Claims </RouterLink> -->
   <button class="sidebar-button" @click="toggleSidebar">
     <img class="sidebar-icon" src="@/assets/images/lines.png" />
   </button>
   <div v-if="isSidebarOpen" class="overlay" @click="toggleSidebar"></div>
   <aside v-if="isSidebarOpen" class="sidebar" :class="{ open: isSidebarOpen }">
     <ul>
-      <li class="sidebar-username">{{ userStore.currentUsername }} <span class="restaurant">restaurant</span></li>
+      <li class="sidebar-username">{{ userStore.currentUsername }} <span class="restaurant"> <br> restaurant</span></li>
       <li class="sidebar-items">
         <RouterLink :to="{ name: 'MyFoodListings' }" @click="toggleSidebar" class="sidebar-item"> my food donations </RouterLink>
       </li>
@@ -154,9 +153,8 @@ ul {
   border: none;
   cursor: pointer;
   position: absolute; /* Use absolute positioning */
-  top: auto; /* This will let it follow the normal flow vertically */
+  top: 1.2em;
   left: 1em; /* Align it to the left of the page */
-  bottom: 50.7em;
   z-index: 1000;
 }
 

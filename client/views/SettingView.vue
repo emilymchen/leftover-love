@@ -21,7 +21,7 @@ async function delete_() {
     <h1>Account Settings</h1>
     <UpdateUserForm />
     <div class="logout-delete-buttons">
-      <button class="logout-button" @click="logout">Logout</button>
+      <button class="logout-button" @click="logout">Sign Out</button>
       <button class="delete-button" @click="delete_">Delete User</button>
     </div>
   </main>

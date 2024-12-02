@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import RecipientSidebarForm from "@/components/Sidebar/RecipientSidebarForm.vue";
 import RestaurantSidebarForm from "@/components/Sidebar/RestaurantSidebarForm.vue";
-import VolunteerSidebarForm from "./components/Sidebar/VolunteerSidebarForm.vue";
 import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { computed, onBeforeMount } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
+import VolunteerSidebarForm from "./components/Sidebar/VolunteerSidebarForm.vue";
 
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
@@ -31,25 +31,20 @@ onBeforeMount(async () => {
         <RouterLink :to="{ name: 'Home' }">
           <h1>Leftover Love</h1>
         </RouterLink>
-      </div>
-      <ul>
-        <li v-if="isLoggedIn && isRecipient">
+        
+        <ul v-if="isLoggedIn && isRecipient">
           <RecipientSidebarForm />
-        </li>
+        </ul>
 
-        <li v-if="isLoggedIn && isDonor">
+        <ul v-if="isLoggedIn && isDonor">
           <RestaurantSidebarForm />
-        </li>
-        <li v-if="isLoggedIn && isVolunteer">
+        </ul>
+
+        <ul v-if="isLoggedIn && isVolunteer">
           <VolunteerSidebarForm />
-        </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
-        </li>
-        <li v-else>
-          <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
-        </li>
-      </ul>
+        </ul>
+      </div>
+
     </nav>
     <article v-if="toast !== null" class="toast" :class="toast.style">
       <p>{{ toast.message }}</p>
