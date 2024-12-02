@@ -81,28 +81,22 @@ function setFilter(newFilter: "all" | "completed" | "non-completed") {
 
 .button-click {
   background-color: var(--green);
-  color: white;
+  color: black;
   border: 2px solid var(--green);
   padding: 10px 20px;
   border-radius: 20px;
-  font-size: 16px;
   cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease;
+  transition: background-color 0.3s ease;
 }
 
 .button-click:hover {
   background-color: #e0e0e0;
-  color: black;
 }
-
 .button-click.active {
   background-color: var(--lighter-green);
   color: black;
-  border: 2px solid var(--lighter-green);
-  transform: scale(1.05);
 }
+
 .deliveries-outer-container {
   margin-bottom: 50px;
 }
