@@ -100,9 +100,12 @@ async function getPosts(author?: string) {
   }
 }
 
-async function getPostTags(postId: string) {
+async function getPostTags(postId: string, expirationTime: string) {
   try {
-    return await fetchy(`/api/tags/${postId}`, "GET");
+    if (new Date(expirationTime).toISOString() > new Date().toISOString()) {
+      return await fetchy(`/api/tags/${postId}`, "GET");
+    }
+    return [];
   } catch {
     return false;
   }
@@ -130,13 +133,13 @@ async function updatePosts() {
     await getPosts(currentUsername.value);
     for (const post of posts.value) {
       postIdtoClaimStatus.set(post._id, await checkIfClaimed(post._id));
-      tags.set(post._id, await getPostTags(post._id));
+      tags.set(post._id, await getPostTags(post._id, post.expiration_time));
     }
   } else if (isRecipient.value) {
     // If it's a recipient, we want them to see all the available non-claimed food listings
     await getAllAvailablePosts();
     for (const post of posts.value) {
-      tags.set(post._id, await getPostTags(post._id));
+      tags.set(post._id, await getPostTags(post._id, post.expiration_time));
     }
   }
   filterPosts();
