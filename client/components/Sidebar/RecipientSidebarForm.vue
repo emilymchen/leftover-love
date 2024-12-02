@@ -157,10 +157,10 @@ ul {
   background: none;
   border: none;
   cursor: pointer;
-  display: inline-block;
-  position: fixed;
-  top: 1.5em;
-  left: 1em;
+  position: absolute; /* Use absolute positioning */
+  top: auto; /* This will let it follow the normal flow vertically */
+  left: 1em; /* Align it to the left of the page */
+  bottom: 50.7em;
   z-index: 1000;
 }
 
