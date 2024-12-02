@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 let username = ref("");
 let currentPassword = ref("");
@@ -11,8 +11,61 @@ let editPasswordToggled = ref(false);
 let address = ref("");
 let editAddressToggled = ref(false);
 const { currentUsername, currentAddress } = storeToRefs(useUserStore());
+const mapApiKey = process.env.MAP_API_KEY;
 
 const { updateUserUsername, updateUserPassword, updateUserAddress, updateSession, isDonor } = useUserStore();
+
+let googleMapsApiPromise : any = null;
+
+function loadGoogleMapsApi(apiKey: string) {
+  if (!googleMapsApiPromise) {
+    googleMapsApiPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+      script.async = true;
+      script.onload = () => {
+        console.log("Google Maps API loaded successfully");
+        resolve(null);
+      };
+      script.onerror = (error) => {
+        console.error("Error loading Google Maps API:", error);
+        reject(error);
+      };
+      document.head.appendChild(script);
+    });
+  }
+  return googleMapsApiPromise;
+}
+
+async function initAutocomplete() {
+  if (mapApiKey === undefined) {
+    console.error("Map API key is undefined");
+    return;
+  }
+  try {
+    await loadGoogleMapsApi(mapApiKey);
+    const addressInput = document.getElementById('address') as HTMLInputElement;
+    if (addressInput) {
+    const autocomplete = new google.maps.places.Autocomplete(addressInput);
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (place.geometry && place.formatted_address) {
+        address.value = place.formatted_address;
+      }
+    });
+    } else {
+      console.error("Address input element not found");
+    }
+  } catch (error) {
+    console.error("Error initializing autocomplete:", error);
+  }
+}
+
+watch(editAddressToggled, (newValue) => {
+  if (newValue === true) {
+    initAutocomplete();
+  }
+});
 
 async function updateUsername() {
   await updateUserUsername(username.value);
@@ -34,6 +87,24 @@ async function updateAddress() {
   address.value = "";
   editAddressToggled.value = false;
 }
+const debouncedAddress = ref("");
+
+function debounce(func: Function, wait: number) {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  return (...args: any[]) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}
+
+const updateDebouncedAddress = debounce((newValue: string) => {
+  debouncedAddress.value = newValue;
+}, 2000); // 2000ms delay
+
+watch(address, (newValue) => {
+  updateDebouncedAddress(newValue);
+});
+
 </script>
 
 <template>
@@ -75,9 +146,28 @@ async function updateAddress() {
           <img @click="editAddressToggled = !editAddressToggled" src="@/assets/images/editPencil.png" />
         </div>
         <div class="edit-components" v-if="editAddressToggled">
-          <input type="text" placeholder="New address" v-model="address" required />
+          <input type="text" v-model.trim="address" id="address" placeholder="New address" required />
           <button type="submit" class="pure-button pure-button-primary">Update address</button>
         </div>
+        <iframe v-if="debouncedAddress"
+        width="350"
+        height="300"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${debouncedAddress}`"
+      >
+      </iframe>
+      <iframe v-else
+        width="350"
+        height="300"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${currentAddress}`"
+      ></iframe>
       </fieldset>
     </form>
   </div>

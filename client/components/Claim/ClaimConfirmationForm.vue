@@ -135,8 +135,8 @@ watch(address, (newValue) => {
     <div v-if="deliveryOption == 'pickup'" class="form-group">
       <label> Pick up at {{ props.post.location }}</label>
       <iframe
-        width="420"
-        height="450"
+        width="300"
+        height="300"
         style="border: 0"
         loading="lazy"
         allowfullscreen
@@ -159,7 +159,7 @@ watch(address, (newValue) => {
         v-if="debouncedAddress"
         class="form-group"
         width="300"
-        height="300"
+        height="200"
         style="border: 0"
         loading="lazy"
         allowfullscreen
@@ -167,6 +167,16 @@ watch(address, (newValue) => {
         :src="`//www.google.com/maps/embed/v1/directions?key=${mapApiKey}
               &origin=${props.post.location}
               &destination=${debouncedAddress}`"
+      >
+      </iframe>
+      <iframe v-else class="form-group"
+        width="300"
+        height="200"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${props.post.location}`"
       >
       </iframe>
     </div>

@@ -119,6 +119,16 @@ watch(address, (newValue) => {
         :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${debouncedAddress}`"
       >
       </iframe>
+      <iframe v-else
+        width="500"
+        height="300"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=Boston,MA`"
+      >
+      </iframe>
       <div class="pure-controls">
         <button type="submit">Register</button>
       </div>
