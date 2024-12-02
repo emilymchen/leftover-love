@@ -124,6 +124,7 @@ function startEditing(post: Record<string, any>) {
 }
 
 async function updatePosts() {
+  console.log("Updating posts");
   if (isDonor.value) {
     // If it's a donor, we only want to have them see their food listings
     await getPosts(currentUsername.value);
