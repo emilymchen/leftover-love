@@ -13,10 +13,10 @@ const emit = defineEmits(["refreshPosts", "closeCreatePost"]);
 const minDateTime = computed(() => {
   const now = new Date();
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 });
 
@@ -28,10 +28,9 @@ const createPost = async (food_name: string, quantity: number, expiration_time: 
     const postId = created.post._id;
     for (const tag of tags.value) {
       await fetchy(`/api/tags/${postId}`, "POST", {
-        body: { post: postId, tag: tag}
+        body: { post: postId, tag: tag },
       });
     }
-    
   } catch {
     return;
   }
@@ -41,18 +40,17 @@ const createPost = async (food_name: string, quantity: number, expiration_time: 
 };
 
 const addTag = (tag: string) => {
-  if ((tag.split(" ").length === 1) && (tag !== '') && (!tags.value.includes(tag))) {
+  if (tag.split(" ").length === 1 && tag !== "" && !tags.value.includes(tag)) {
     tags.value.push(tag);
-    emptyTags();  
-  }
-  else {
+    emptyTags();
+  } else {
     throw new Error("Tags must be one word that has not already been added");
   }
-}
+};
 
 const removeTag = (tag: string) => {
   tags.value.splice(tags.value.indexOf(tag), 1);
-}
+};
 
 const emptyForm = () => {
   food_name.value = "";
@@ -63,7 +61,7 @@ const emptyForm = () => {
 
 const emptyTags = () => {
   tag.value = "";
-}
+};
 </script>
 
 <template>
@@ -79,7 +77,7 @@ const emptyTags = () => {
     </div>
     <div class="form-group">
       <label for="expiration_time">Expiration Date</label>
-      <input type="datetime-local" id="expiration_time" :min="minDateTime"  v-model="expiration_time" required />
+      <input type="datetime-local" id="expiration_time" :min="minDateTime" v-model="expiration_time" required />
     </div>
     <div class="form-group">
       <label for="tag">Tags (one word)</label>
@@ -91,7 +89,7 @@ const emptyTags = () => {
           <button type="button" @click="removeTag(tag)">X</button>
         </div>
       </div>
-      <button class="add-tag-button" type="button" @click="addTag(tag)">+</button >
+      <button class="add-tag-button" type="button" @click="addTag(tag)">+</button>
     </div>
     <div class="create-post-buttons">
       <button class="create-post-button" type="submit">Post</button>

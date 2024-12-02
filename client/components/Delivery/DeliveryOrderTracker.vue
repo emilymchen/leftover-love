@@ -38,11 +38,11 @@ onBeforeMount(async () => {
   await getClaim();
 });
 
-let googleMapsApiPromise : any = null;
+let googleMapsApiPromise: any = null;
 function loadGoogleMapsApi(apiKey: string) {
   if (!googleMapsApiPromise) {
     googleMapsApiPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.onload = () => {
@@ -82,18 +82,19 @@ function loadGoogleMapsApi(apiKey: string) {
       </template>
     </div>
 
-    <iframe class="form-group"
-        width="300"
-        height="300"
-        style="border: 0"
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        :src="`//www.google.com/maps/embed/v1/directions?key=${mapApiKey}
+    <iframe
+      class="form-group"
+      width="300"
+      height="300"
+      style="border: 0"
+      loading="lazy"
+      allowfullscreen
+      referrerpolicy="no-referrer-when-downgrade"
+      :src="`//www.google.com/maps/embed/v1/directions?key=${mapApiKey}
               &origin=${claim.donorAddress}
               &destination=${claim.destinationAddress}`"
-      >
-      </iframe>
+    >
+    </iframe>
 
     <div class="button-container">
       <button class="large-button">Message Your Driver</button>

@@ -3,23 +3,25 @@ import ClaimListComponent from "@/components/Claim/ClaimListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
-const { isLoggedIn } = storeToRefs(useUserStore());
+const { isLoggedIn, isRecipient } = storeToRefs(useUserStore());
 </script>
 
 <template>
   <main>
-    <div class="header-container">
-      <h1 v-if="isLoggedIn">Pending claims</h1>
-    </div>
-    <ClaimListComponent :category="'pending'" />
+    <section v-if="isLoggedIn && isRecipient">
+      <div class="header-container">
+        <h1>Pending claims</h1>
+      </div>
+      <ClaimListComponent :category="'pending'" />
 
-    <h1 v-if="isLoggedIn">Completed claims</h1>
+      <h1>Completed claims</h1>
 
-    <ClaimListComponent :category="'completed'" />
+      <ClaimListComponent :category="'completed'" />
 
-    <h1 v-if="isLoggedIn">Expired claims</h1>
+      <h1>Expired claims</h1>
 
-    <ClaimListComponent :category="'expired'" />
+      <ClaimListComponent :category="'expired'" />
+    </section>
   </main>
 </template>
 

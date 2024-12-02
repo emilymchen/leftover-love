@@ -39,7 +39,7 @@ async function claimPost(post: Record<string, any>) {
 }
 
 watch(deliveryOption, (newValue) => {
-  if (newValue === 'delivery') {
+  if (newValue === "delivery") {
     // Only initialize the autocomplete when the delivery option is selected
     nextTick(() => {
       initAutocomplete();
@@ -48,12 +48,12 @@ watch(deliveryOption, (newValue) => {
   }
 });
 
-let googleMapsApiPromise : any = null;
+let googleMapsApiPromise: any = null;
 
 function loadGoogleMapsApi(apiKey: string) {
   if (!googleMapsApiPromise) {
     googleMapsApiPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.onload = () => {
@@ -77,15 +77,15 @@ async function initAutocomplete() {
   }
   try {
     await loadGoogleMapsApi(mapApiKey);
-    const addressInput = document.getElementById('address') as HTMLInputElement;
+    const addressInput = document.getElementById("address") as HTMLInputElement;
     if (addressInput) {
-    const autocomplete = new google.maps.places.Autocomplete(addressInput);
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (place.geometry && place.formatted_address) {
-        address.value = place.formatted_address;
-      }
-    });
+      const autocomplete = new google.maps.places.Autocomplete(addressInput);
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry && place.formatted_address) {
+          address.value = place.formatted_address;
+        }
+      });
     } else {
       console.error("Address input element not found");
     }
@@ -111,7 +111,6 @@ const updateDebouncedAddress = debounce((newValue: string) => {
 watch(address, (newValue) => {
   updateDebouncedAddress(newValue);
 });
-
 </script>
 
 <template>
@@ -132,7 +131,7 @@ watch(address, (newValue) => {
     <div>
       <h3>{{ props.post.food_name }} from {{ props.post.author }}</h3>
     </div>
-   
+
     <div v-if="deliveryOption == 'pickup'" class="form-group">
       <label> Pick up at {{ props.post.location }}</label>
       <iframe
@@ -146,8 +145,8 @@ watch(address, (newValue) => {
       >
       </iframe>
     </div>
-    <div v-else class="form-group"> 
-      <label> Deliver from  {{ props.post.location }} to: </label>
+    <div v-else class="form-group">
+      <label> Deliver from {{ props.post.location }} to: </label>
       <div v-if="deliveryOption == 'delivery'" class="form-group">
         <label for="address"> Address </label>
         <input ref="addressInput" id="address" v-model="address" placeholder="Your address" required />
@@ -156,7 +155,9 @@ watch(address, (newValue) => {
         <label for="instructions"> Instructions </label>
         <input id="instructions" v-model="instructions" placeholder="e.g. leave at door" required />
       </div>
-      <iframe v-if="debouncedAddress" class="form-group"
+      <iframe
+        v-if="debouncedAddress"
+        class="form-group"
         width="300"
         height="300"
         style="border: 0"

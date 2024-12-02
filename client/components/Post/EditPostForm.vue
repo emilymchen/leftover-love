@@ -44,19 +44,16 @@ const deletePost = async () => {
   emit("closeEditPost");
 };
 const addTag = (tag: string) => {
-  if ((tag.split(" ").length === 1) && (tag !== '') && (!tagsToDisplay.value.includes(tag))) {
+  if (tag.split(" ").length === 1 && tag !== "" && !tagsToDisplay.value.includes(tag)) {
     tagsToDisplay.value.push(tag);
     tagToAdd.value = "";
-  }
-  else {
+  } else {
     throw new Error("Tags must be one word that has not already been added");
   }
-}
+};
 const removeTag = (tag: string) => {
   tagsToDisplay.value.splice(tagsToDisplay.value.indexOf(tag), 1);
-}
-
-
+};
 </script>
 
 <template>
@@ -78,7 +75,7 @@ const removeTag = (tag: string) => {
       <label for="tags">Tags (one word)</label>
       <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags (e.g., vegan, spicy)" />
     </div>
-    <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">+</button >
+    <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">+</button>
     <div class="tag-display" v-if="tagsToDisplay">
       <div class="tag-box" v-for="tag in tagsToDisplay">
         {{ tag }}

@@ -20,7 +20,6 @@ async function logout() {
 </script>
 
 <template>
-  <!-- <RouterLink :to="{ name: 'Recipient-Feed' }" :class="{ underline: currentRouteName == 'Recipient-Feed' }"> Available Orders </RouterLink> -->
   <button class="sidebar-button" @click="toggleSidebar">
     <img class="sidebar-icon" src="@/assets/images/lines.png" />
   </button>

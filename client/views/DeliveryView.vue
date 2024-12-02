@@ -46,15 +46,17 @@ onBeforeMount(async () => {
 
 <template>
   <main>
-    <div class="header-container">
-      <h1 v-if="isLoggedIn && isVolunteer">My Deliveries</h1>
-      <DeliveryListComponent :loaded="loaded" :own="true" :deliveries="myDeliveries" @refreshDeliveries="updateDeliveries" />
-    </div>
+    <section v-if="isLoggedIn && isVolunteer">
+      <div class="header-container">
+        <h1>My Deliveries</h1>
+        <DeliveryListComponent :loaded="loaded" :own="true" :deliveries="myDeliveries" @refreshDeliveries="updateDeliveries" />
+      </div>
 
-    <div class="header-container">
-      <h1>Delivery Requests</h1>
-      <DeliveryListComponent :loaded="loaded" :own="false" :deliveries="deliveryRequests" @refreshDeliveries="updateDeliveries" />
-    </div>
+      <div class="header-container">
+        <h1>Delivery Requests</h1>
+        <DeliveryListComponent :loaded="loaded" :own="false" :deliveries="deliveryRequests" @refreshDeliveries="updateDeliveries" />
+      </div>
+    </section>
   </main>
 </template>
 

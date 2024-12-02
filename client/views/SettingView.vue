@@ -18,7 +18,6 @@ async function delete_() {
 
 <template>
   <main class="account-settings">
-    <!-- <h1>Settings for {{ currentUsername }}</h1> -->
     <h1>Account Settings</h1>
     <UpdateUserForm />
     <div class="logout-delete-buttons">
