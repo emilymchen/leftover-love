@@ -13,15 +13,17 @@ const emit = defineEmits(["editPost", "refreshPosts", "closeEditPost"]);
 
 const editPost = async (food_name: string, quantity: number, expiration_time: string, tags: string[]) => {
   try {
-    const res = await fetchy(`/api/posts/${props.post._id}`, "PATCH", { body: { food_name: food_name, quantity: quantity, expiration_time: expiration_time, tags: tags } });
+    await fetchy(`/api/posts/${props.post._id}`, "PATCH", { body: { food_name: food_name, quantity: quantity, expiration_time: expiration_time, tags: tags } });
     // Delete all existing tags
     // Add back each tag in tags as a tag of the post
-    const dbTags = await fetchy(`/api/tags/${props.post._id}`, "GET");
-    for (const tag of dbTags.tags) {
-      await fetchy(`/api/tags/${props.post._id}/${tag}`, "DELETE");
+    if (new Date(props.post.expiration_time).toISOString() > new Date().toISOString()) {
+      const dbTags = await fetchy(`/api/tags/${props.post._id}`, "GET");
+      for (const tag of dbTags.tags) {
+        await fetchy(`/api/tags/${props.post._id}/${tag}`, "DELETE");
+      }
     }
   } catch {
-    console.log("No tags available!");
+    console.log("No tags found");
   }
   try {
     for (const tag of tags) {
