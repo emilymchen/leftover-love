@@ -3,7 +3,6 @@ import { fetchy } from "@/utils/fetchy";
 import { onBeforeMount, ref } from "vue";
 import ClaimComponent from "../../components/Claim/ClaimComponent.vue";
 
-// const { isDonor, currentUsername, isRecipient } = storeToRefs(useUserStore());
 const props = defineProps(["category"]);
 
 const loaded = ref(false);

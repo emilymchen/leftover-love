@@ -43,15 +43,13 @@ onMounted(async () => {
   <div class="qty-expiration-details">
     <div class="quantity">Qty: {{ props.post.quantity }}</div>
     <div class="expiration-time">Expires: {{ formatDate(new Date(props.post.expiration_time)) }}</div>
-
-    <!-- <div class="tags"> Tags: {{ tags.tags.toString() }}</div> -->
   </div>
 
   <div class="tag-display">
-  <em>Tags:</em>
-  <div v-for="tag in tags.tags" :key="tags._id" class="tag-box">
-      {{ tag }}
-  </div>
+    <em>Tags:</em>
+    <div v-for="tag in tags.tags" :key="tags._id" class="tag-box">
+        {{ tag }}
+    </div>
   </div>
 
   <div class="base">
@@ -85,16 +83,12 @@ onMounted(async () => {
 }
 
 .tag-display {
-  display: flex;
   flex-flow: row wrap;
   align-items: center;
-  
-  em {
-    margin-right: 4px;
-  }
 }
 
 .tag-box {
+  display: inline-flex;
   background-color: var(--green);
   padding: 4px 8px;
   border-radius: 16px;
@@ -102,57 +96,44 @@ onMounted(async () => {
   color: var(--darker-green);
 }
 
+
 .base {
-  width: 90%;
+  position: relative; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; 
+}
 
-  position: absolute;
-  bottom: 8px;
-  left: 5%;
+.edit-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  background-color: var(--orange);
+  transition: transform 0.2s ease;
+  margin-bottom: 0px; 
+}
 
-  menu {
-    list-style-type: none;
-    display: flex;
-    flex-direction: row;
-    gap: 1em;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
+.edit-button:hover {
+  transform: scale(1.05);
+}
 
-  .edit-button {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-    background-color: var(--orange);
-    transition: transform 0.2s ease;
-    position: relative;
-    bottom: 0;
-  }
-
-  .edit-button:hover {
-    transform: scale(1.05);
-  }
-
-  .expired-button {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-    transition: transform 0.2s ease;
-    position: relative;
-    bottom: 0;
-    background-color: grey;
-    color: var(--light-beige);
-  }
+.expired-button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s ease;
+  position: relative;
+  bottom: 0;
+  background-color: grey;
+  color: var(--light-beige);
 }
 
 .base article:only-child {

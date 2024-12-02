@@ -357,7 +357,7 @@ onBeforeMount(async () => {
 .posts {
   display: grid;
   grid-template-columns: repeat(3, minmax(250px, 1fr));
-  margin-top: 1em;
+  margin-top: 3em;
   flex-grow: 1;
 }
 
@@ -406,12 +406,14 @@ article {
   gap: 0.5em;
   padding: 1em;
   background-color: var(--light-beige);
-  width: 250px;
-  height: 180px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* cursor: pointer; */
   transition: transform 0.2s ease;
+  box-sizing: border-box; /* Ensures padding is included */
+  overflow: visible; /* Prevents clipping */
+  align-items: stretch; /* Ensures children expand properly */
 }
+
+
 
 .row {
   display: flex;

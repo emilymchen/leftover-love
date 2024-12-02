@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, defineEmits, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
-import { defineEmits, computed } from "vue";
 
 const food_name = ref("");
 const qty = ref(1);
@@ -81,7 +80,13 @@ const emptyTags = () => {
     </div>
     <div class="form-group">
       <label for="tag">Tags (one word)</label>
-      <input type="text" id="tag" v-model="tag" placeholder="Tags (e.g., vegan, spicy)" />
+      <div class="form-group-tag" style="display: flex; align-items: center; gap: 10px;">
+        <input type="text" id="tag" v-model="tag" placeholder="Tags (e.g., vegan, spicy)" style="flex: 1;" />
+        <button class="add-tag-button" type="button" @click="addTag(tag)">add</button>
+      </div>
+    </div>
+
+    <div class="form-group">
       <label for="tags">Current Tags:</label>
       <div class="tag-display">
         <div class="tag-box" v-for="tag in tags">
@@ -89,8 +94,8 @@ const emptyTags = () => {
           <button type="button" @click="removeTag(tag)">X</button>
         </div>
       </div>
-      <button class="add-tag-button" type="button" @click="addTag(tag)">+</button>
     </div>
+    
     <div class="create-post-buttons">
       <button class="create-post-button" type="submit">Post</button>
       <button class="close-post-button" type="button" @click="emit('closeCreatePost')">Close</button>
@@ -145,7 +150,15 @@ h2 {
   flex-direction: column;
   gap: 0.5em;
 }
+.form-group-tag {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Adjust spacing between elements */
+}
 
+.form-group-tag input {
+  flex: 1; /* Adjust this for input width */
+}
 textarea,
 input {
   font-family: inherit;

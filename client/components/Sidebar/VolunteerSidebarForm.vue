@@ -150,9 +150,9 @@ ul {
   background: none;
   border: none;
   cursor: pointer;
-  position: absolute; /* Use absolute positioning */
+  position: absolute; 
   top: 1.2em;
-  left: 1em; /* Align it to the left of the page */
+  left: 1em; 
   z-index: 1000;
 }
 

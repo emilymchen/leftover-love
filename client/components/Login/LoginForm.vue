@@ -40,8 +40,8 @@ h3 {
 }
 
 .pure-button-primary {
-  background-color: var(--red); /* Red background */
-  border-color: var(--red); /* Red border */
-  color: white; /* White text */
+  background-color: var(--red); 
+  border-color: var(--red); 
+  color: white; 
 }
 </style>

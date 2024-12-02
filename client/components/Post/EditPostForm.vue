@@ -73,17 +73,25 @@ const removeTag = (tag: string) => {
       <label for="expiration_time">Expiration Date</label>
       <input type="datetime-local" id="expiration_time" v-model="expiration_time" required />
     </div>
+
     <div class="form-group">
       <label for="tags">Tags (one word)</label>
-      <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags (e.g., vegan, spicy)" />
-    </div>
-    <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">+</button>
-    <div class="tag-display" v-if="tagsToDisplay">
-      <div class="tag-box" v-for="tag in tagsToDisplay">
-        {{ tag }}
-        <button type="button" @click="removeTag(tag)">X</button>
+      <div class="form-group-tag" style="display: flex; align-items: center; gap: 10px;">
+        <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags (e.g., vegan, spicy)" />
+        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">add</button>
       </div>
     </div>
+
+    <div class="form-group">
+      <label for="tags">Current Tags:</label>
+      <div class="tag-display" v-if="tagsToDisplay">
+        <div class="tag-box" v-for="tag in tagsToDisplay">
+          {{ tag }}
+          <button type="button" @click="removeTag(tag)">X</button>
+        </div>
+      </div>
+    </div>
+
     <div class="create-post-buttons">
       <button class="btn-small pure-button-primary pure-button" type="submit">Save</button>
       <button class="btn-small pure-button" @click="emit('closeEditPost')">Cancel</button>
@@ -94,7 +102,7 @@ const removeTag = (tag: string) => {
 
 <style scoped>
 form {
-  border-radius: 1em;
+  border-radius: qem;
   display: flex;
   flex-direction: column;
   gap: 1em;
