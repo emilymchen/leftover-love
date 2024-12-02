@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
+import { defineEmits, computed } from "vue";
 
 const food_name = ref("");
 const qty = ref(1);
@@ -8,6 +9,16 @@ const expiration_time = ref("");
 const tag = ref("");
 let tags = ref(new Array<string>());
 const emit = defineEmits(["refreshPosts", "closeCreatePost"]);
+
+const minDateTime = computed(() => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+});
 
 const createPost = async (food_name: string, quantity: number, expiration_time: string) => {
   try {
@@ -28,8 +39,6 @@ const createPost = async (food_name: string, quantity: number, expiration_time: 
   emit("closeCreatePost");
   emptyForm();
 };
-
-
 
 const addTag = (tag: string) => {
   if ((tag.split(" ").length === 1) && (tag !== '') && (!tags.value.includes(tag))) {
@@ -70,7 +79,7 @@ const emptyTags = () => {
     </div>
     <div class="form-group">
       <label for="expiration_time">Expiration Date</label>
-      <input type="datetime-local" id="expiration_time" v-model="expiration_time" required />
+      <input type="datetime-local" id="expiration_time" :min="minDateTime"  v-model="expiration_time" required />
     </div>
     <div class="form-group">
       <label for="tag">Tags (one word)</label>
