@@ -8,7 +8,7 @@ const qty = ref(props.post.quantity);
 const expiration_time = ref(props.post.expiration_time);
 // const tags = ref(props.post.tags);
 const tagToAdd = ref("");
-const tagsToDisplay = ref([...props.tags.tags]);
+const tagsToDisplay = ref([...props.tags]);
 const emit = defineEmits(["editPost", "refreshPosts", "closeEditPost"]);
 
 const editPost = async (food_name: string, quantity: number, expiration_time: string, tags: string[]) => {
