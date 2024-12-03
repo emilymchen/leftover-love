@@ -7,7 +7,7 @@ import DeliveryComponent from "./DeliveryComponent.vue";
 
 const { isVolunteer } = storeToRefs(useUserStore());
 const props = defineProps(["loaded", "deliveries", "own"]);
-const emit = defineEmits(["refreshDeliveries"]);
+const emit = defineEmits(["refreshDeliveries", "triggerMessageModal"]);
 let currentDelivery = ref<Record<string, string> | null>(null);
 let isClaimingDelivery = ref(false);
 
@@ -49,7 +49,7 @@ function setFilter(newFilter: "all" | "completed" | "non-completed") {
       <p v-if="filteredDeliveries.length === 0">There are no deliveries!</p>
 
       <article v-for="delivery in filteredDeliveries" :key="delivery._id">
-        <DeliveryComponent :delivery="delivery" :own="props.own" @refreshDeliveries="refreshDeliveries" @claimDelivery="startClaiming(delivery)" />
+        <DeliveryComponent :delivery="delivery" :own="props.own" @triggerMessageModal="emit('triggerMessageModal', delivery.claimUser)" @refreshDeliveries="refreshDeliveries" @claimDelivery="startClaiming(delivery)" />
       </article>
     </section>
   </div>

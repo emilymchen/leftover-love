@@ -429,6 +429,7 @@ class Routes {
     const receiver = (await Authing.getUserByUsername(to))._id;
     const sender = Sessioning.getUser(session);
     const created = await Messaging.send(receiver, sender, content);
+    await Authing.assertUsersDifferentRoles(sender, receiver);
     return { msg: created.msg, message: await Responses.message(created.message) };
   }
 

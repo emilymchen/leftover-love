@@ -29,7 +29,7 @@ async function onKeyDown(event: KeyboardEvent) {
 <template>
   <form @submit.prevent="sendMessage(message, props.toUser)" class="message-form">
     <textarea v-model="message" id="message" name="message" rows="4" required placeholder="Type your message here..." class="message-input" @keydown="onKeyDown">></textarea>
-    <button type="submit" class="btn-small pure-button send-button">Send</button>
+    <button type="submit" class="btn-small send-button">Send</button>
   </form>
 </template>
 
@@ -37,7 +37,7 @@ async function onKeyDown(event: KeyboardEvent) {
 .message-form {
   display: flex;
   align-items: flex-start;
-  border: 2px solid var(--green);
+  border: 2px solid var(--dark-green);
 }
 
 img {
@@ -60,10 +60,6 @@ img {
   cursor: pointer;
   padding: 10px 15px;
   transition: background 0.3s;
-  border: 2px solid var(--green);
 }
 
-.send-button:hover {
-  background: var(--light-green);
-}
 </style>

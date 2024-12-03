@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import MessageComponent from "@/components/Message/MessageComponent.vue";
-import SendMessageComponent from "@/components/Message/SendMessageForm.vue";
 import MessageListComponent from "@/components/Message/MessageListComponent.vue";
+import SendMessageComponent from "@/components/Message/SendMessageForm.vue";
+import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-import { useToastStore } from "@/stores/toast";
 
 const messages = ref<Array<Record<string, string>>>([]);
 const { isLoggedIn, currentUsername } = storeToRefs(useUserStore());
@@ -81,7 +81,7 @@ h1 {
   width: 250px;
   background-color: var(--light-pastel-grey);
   border-right: 1px solid #ddd;
-  border: 2px solid var(--green);
+  border: 2px solid var(--dark-green);
   height: 100%;
   overflow-y: auto;
 }

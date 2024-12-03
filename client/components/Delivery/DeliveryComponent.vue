@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
 import { fetchy } from "@/utils/fetchy";
 import { formatDate } from "@/utils/formatDate";
+import { defineEmits, defineProps } from "vue";
 
 const props = defineProps(["delivery", "own"]);
-const emit = defineEmits(["refreshDeliveries", "claimDelivery"]);
+const emit = defineEmits(["refreshDeliveries", "claimDelivery", "triggerMessageModal"]);
 
 async function markAsPickedUp() {
   try {
@@ -68,6 +68,9 @@ async function unacceptDelivery() {
     </div>
     <div v-else>
       <button class="edit-button" @click="emit('claimDelivery', props.delivery._id)">Claim</button>
+    </div>
+    <div v-if="props.own">
+      <button class="edit-button" @click="emit('triggerMessageModal')">Message Recipient</button>
     </div>
     <div v-if="props.own && props.delivery.status == 'Not Started'">
       <button class="expired-button" @click="unacceptDelivery">Unclaim</button>

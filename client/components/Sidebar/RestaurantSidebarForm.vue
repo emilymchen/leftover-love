@@ -35,6 +35,9 @@ async function logout() {
         <RouterLink :to="{ name: 'MyFoodListings' }" @click="toggleSidebar" class="sidebar-item"> my food donations </RouterLink>
       </li>
       <li class="sidebar-items">
+        <RouterLink :to="{name: 'Messages'}" @click="toggleSidebar" class="sidebar-item"> messages </RouterLink>
+      </li>
+      <li class="sidebar-items">
         <RouterLink :to="{ name: 'Settings' }" @click="toggleSidebar" class="sidebar-item"> account settings </RouterLink>
       </li>
     </ul>

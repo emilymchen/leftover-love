@@ -2,8 +2,8 @@
 import { useUserStore } from "@/stores/user";
 import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
+import { defineEmits, defineProps, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
-import { ref, defineProps, defineEmits } from "vue";
 import MessageDeleteConfirmationComponent from "./MessageDeleteConfirmationComponent.vue";
 
 const props = defineProps(["message", "toUser"]);
@@ -31,7 +31,7 @@ const deleteMessage = async () => {
       <p
         class="message-content"
         :style="{
-          backgroundColor: props.message.from == currentUsername ? '#93ddd1' : 'lightgrey',
+          backgroundColor: props.message.from == currentUsername ? '#b0b470' : 'lightgrey',
         }"
       >
         {{ props.message.content }}

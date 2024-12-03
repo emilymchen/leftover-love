@@ -96,10 +96,10 @@ export default class Responses {
     const postUser = claimedItem ? (await Authing.getUserById(await Posting.getAuthor(claimedItem))).username : null;
     const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
     const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;
-    const donorAdddress = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
+    const donorAddress = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
     const destinationAddress = claimedItem ? await Claiming.getClaimDestinationAddress(deliveryClaim) : null;
     const instructions = claimedItem ? await Claiming.getClaimInstructions(deliveryClaim) : null;
-    return { ...delivery, deliverer: deliverer.username, claimUser, postUser, expiration_time, food_name, quantity, donorAdddress, destinationAddress, instructions };
+    return { ...delivery, deliverer: deliverer.username, claimUser, postUser, expiration_time, food_name, quantity, donorAddress, destinationAddress, instructions };
   }
 
   /**
@@ -112,7 +112,7 @@ export default class Responses {
         const deliveryClaim = await Delivering.getDeliveryRequest(delivery._id);
         const claimedItem = await Claiming.getClaimItem(deliveryClaim);
         const expiration_time = claimedItem ? await Posting.getExpirationTime(claimedItem) : null;
-        const claimUser = claimedItem ? await Claiming.getClaimUser(deliveryClaim) : null;
+        const claimUser = claimedItem ? (await Authing.getUserById(await Claiming.getClaimUser(deliveryClaim))).username : null;
         const postUser = claimedItem ? (await Authing.getUserById(await Posting.getAuthor(claimedItem))).username : null;
         const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
         const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;

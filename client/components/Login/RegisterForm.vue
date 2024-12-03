@@ -108,27 +108,29 @@ watch(address, (newValue) => {
         <label for="aligned-address">Address</label>
         <input type="text" v-model.trim="address" id="aligned-address" placeholder="Address" required />
       </div>
-      <iframe
-        v-if="debouncedAddress"
-        width="500"
-        height="300"
-        style="border: 0"
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${debouncedAddress}`"
-      >
-      </iframe>
-      <iframe v-else
-        width="500"
-        height="300"
-        style="border: 0"
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=Boston,MA`"
-      >
-      </iframe>
+      <div v-if="props.role === 'Donor'">
+        <iframe
+          v-if="debouncedAddress"
+          width="500"
+          height="300"
+          style="border: 0"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${debouncedAddress}`"
+        >
+        </iframe>
+        <iframe v-else
+          width="500"
+          height="300"
+          style="border: 0"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=Boston,MA`"
+        >
+        </iframe>
+      </div>
       <div class="pure-controls">
         <button type="submit">Register</button>
       </div>

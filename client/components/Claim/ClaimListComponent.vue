@@ -93,9 +93,15 @@ onBeforeMount(async () => {
     </div>
 
     <section class="claims" v-if="loaded">
-      <p v-if="filteredClaims.length === 0 && props.category === 'pending'">You have no pending claims!</p>
-      <p v-if="filteredClaims.length === 0 && props.category === 'completed'">You have no completed claims!</p>
-      <p v-if="filteredClaims.length === 0 && props.category === 'expired'">You have no expired claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'pending' && filterType === 'all'" >You have no pending claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'pending' && filterType === 'pickup'" >You have no pending pickup claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'pending' && filterType === 'delivery'" >You have no pending delivery claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'completed' && filterType === 'all'">You have no completed claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'completed' && filterType === 'pickup'">You have no completed pickup claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'completed' && filterType === 'delivery'">You have no completed delivery claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'expired' && filterType === 'all'">You have no expired claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'expired' && filterType === 'pickup'">You have no expired pickup claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'expired' && filterType === 'delivery'">You have no expired delivery claims!</p>
 
       <article v-for="claim in filteredClaims" :key="claim._id" class="claim-item">
         <ClaimComponent v-if="currentClaim?._id !== claim._id" :claim="claim" :category="props.category" @refreshClaims="updateClaims" />

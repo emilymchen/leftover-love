@@ -137,6 +137,17 @@ export default class AuthenticatingConcept {
     }
   }
 
+  async assertUsersDifferentRoles(_id1: ObjectId, _id2: ObjectId) {
+    const user1 = await this.users.readOne({ _id: _id1 });
+    const user2 = await this.users.readOne({ _id: _id2 });
+    if (user1 === null || user2 === null) {
+      throw new NotFoundError(`User not found!`);
+    }
+    if (user1.role === user2.role) {
+      throw new NotAllowedError(`Users must have different roles!`);
+    }
+  }
+
   async getUserRole(_id: ObjectId) {
     const user = await this.users.readOne({ _id });
     if (user === null) {

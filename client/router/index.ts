@@ -3,19 +3,19 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
 import ClaimView from "../views/ClaimView.vue";
+import DeliveryView from "../views/DeliveryView.vue";
 import RecipientFeedView from "../views/Feeds/RecipientFeedView.vue";
 import RestaurantHomeView from "../views/Feeds/RestaurantHomeView.vue";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
+import MessageView from "../views/MessageView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
+import OrderTrackerView from "../views/OrderTrackerView.vue";
 import DonorRegistrationView from "../views/Registration/DonorRegistrationView.vue";
 import RecipientRegistrationView from "../views/Registration/RecipientRegistrationView.vue";
 import VolunteerRegistrationView from "../views/Registration/VolunteerRegistrationView.vue";
-import DeliveryView from "../views/DeliveryView.vue";
 import SettingView from "../views/SettingView.vue";
-import OrderTrackerView from "../views/OrderTrackerView.vue";
 import WelcomeView from "../views/WelcomeView.vue";
-//import MessageView from "../views/MessageView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -149,6 +149,18 @@ const router = createRouter({
         const { isLoggedIn } = storeToRefs(useUserStore());
         if (isLoggedIn.value) {
           return { name: "Settings" };
+        }
+      },
+    },
+    {
+      path: "/messages",
+      name: "Messages",
+      meta: { requiresAuth: true },
+      component: MessageView,
+      beforeEnter: (to, from) => {
+        const { isLoggedIn } = storeToRefs(useUserStore());
+        if (!isLoggedIn.value) {
+          return { name: "Home" };
         }
       },
     },

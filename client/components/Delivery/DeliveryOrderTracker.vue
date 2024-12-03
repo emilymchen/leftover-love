@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { onBeforeMount } from "vue";
-import { fetchy } from "@/utils/fetchy";
+import { useToastStore } from "@/stores/toast";
+import { useUserStore } from "@/stores/user";
+import { fetchy, } from "@/utils/fetchy";
+import { storeToRefs } from "pinia";
+import { defineEmits, onBeforeMount, ref } from "vue";
 import { useRoute } from "vue-router";
-import { ref } from "vue";
+import MessageComponent from "../Message/MessageComponent.vue";
+import SendMessageForm from "../Message/SendMessageForm.vue";
 
 const route = useRoute();
 const claimId = route.params.claimId;
 const mapApiKey = process.env.MAP_API_KEY;
+
+const emit = defineEmits(["triggerMessage"]);
 
 const loaded = ref(false);
 let claim = ref<Record<string, string>>({});
@@ -24,11 +30,10 @@ async function getClaim() {
   try {
     claimResults = await fetchy(`/api/deliveries/status/${claimId}`, "GET");
   } catch {
-    return;
+    console.log("A driver has not been assigned to this claim yet.");
   }
   claim.value = claimResults;
   loaded.value = true;
-  console.log(claimResults);
 }
 
 function expiredDuringTransit() {
@@ -36,13 +41,16 @@ function expiredDuringTransit() {
 }
 onBeforeMount(async () => {
   await getClaim();
+  setSelectedRole("donor");
+  await getMessages(currentUsername.value);
+  messageLoaded.value = true;
 });
 
-let googleMapsApiPromise: any = null;
+let googleMapsApiPromise : any = null;
 function loadGoogleMapsApi(apiKey: string) {
   if (!googleMapsApiPromise) {
     googleMapsApiPromise = new Promise((resolve, reject) => {
-      const script = document.createElement("script");
+      const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.onload = () => {
@@ -58,6 +66,46 @@ function loadGoogleMapsApi(apiKey: string) {
   }
   return googleMapsApiPromise;
 }
+
+
+// messaging modal infrastructure
+
+const messages = ref<Array<Record<string, string>>>([]);
+const { isLoggedIn, currentUsername } = storeToRefs(useUserStore());
+const { toast } = storeToRefs(useToastStore());
+const messageLoaded = ref(false);
+const messageView = ref(false);
+const toUser = ref("");
+const toRole = ref("");
+
+function setSelectedUser(username: string) {
+  toUser.value = username;
+}
+
+function setSelectedRole(role: string) {
+  toRole.value = role;
+}
+
+function setModalVisible(visible: boolean, role?: string) {
+  messageView.value = visible;
+  if (role) {
+    setSelectedRole(role);
+  }
+  if (visible) {
+    getMessages(currentUsername.value);
+  }
+}
+
+async function getMessages(user: string) {
+  console.log(toRole.value);
+  const otherUser = toRole.value === "driver" ? claim.value.deliverer : claim.value.postUser;
+  setSelectedUser(otherUser);
+  let query: Record<string, string> = { currentUser: user, otherUser };
+  let messageResults;
+  messageResults = await fetchy("/api/messages", "GET", { query });
+  messages.value = messageResults;
+}
+
 </script>
 <template>
   <div class="base">
@@ -82,27 +130,66 @@ function loadGoogleMapsApi(apiKey: string) {
       </template>
     </div>
 
-    <iframe
-      class="form-group"
-      width="300"
-      height="300"
-      style="border: 0"
-      loading="lazy"
-      allowfullscreen
-      referrerpolicy="no-referrer-when-downgrade"
-      :src="`//www.google.com/maps/embed/v1/directions?key=${mapApiKey}
+    <iframe v-if="claim.status !== 'Requested'" class="form-group"
+        width="600"
+        height="300"
+        style="border: 0"
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade"
+        :src="`//www.google.com/maps/embed/v1/directions?key=${mapApiKey}
               &origin=${claim.donorAddress}
               &destination=${claim.destinationAddress}`"
-    >
-    </iframe>
+      >
+      </iframe>
 
-    <div class="button-container">
-      <button class="large-button">Message Your Driver</button>
+    <div class="button-container" v-if="claim.status !== 'Requested'">
+      <button @click="setModalVisible(true, 'driver')" >Message Your Driver</button>
+    </div>
+    <button @click="setModalVisible(true, 'donor')" >Message Your Donor</button>
+
+    <div v-if="messageView && claim.status" class="modal-background">
+      <div class="modal">
+        <div class="messages-section">
+          <h1>Messages</h1>
+          <section v-if="messages.length === 0">
+            <p>No message history</p>
+          </section>
+          <article v-for="message in messages" :key="message._id" class="message-container">
+            <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername)" />
+          </article>
+          <SendMessageForm :toUser="toUser" @refreshMessages="getMessages(currentUsername)" class="send-message" /> 
+        </div>
+        <button @click="setModalVisible(false)">Close</button>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.modal-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80%;
+  overflow-y: auto;
+}
+
 .base {
   text-align: center;
   padding: 60px;

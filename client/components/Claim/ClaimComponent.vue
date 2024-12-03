@@ -60,7 +60,7 @@ async function unclaim() {
     </div>
   </div>
   <div class="base" v-if="props.category === 'pending'">
-    <button class="unclaim-button" @click="unclaim">Unclaim</button>
+    <button class="expired-button" @click="unclaim">Unclaim</button>
   </div>
 </template>
 
@@ -114,7 +114,7 @@ async function unclaim() {
   .unclaim-button {
     width: 100%;
     border-radius: 8px;
-    background-color: var(--light-beige);
+    background-color: var(--grey);
     color: black;
     border-color: #333;
     font-size: 12px;

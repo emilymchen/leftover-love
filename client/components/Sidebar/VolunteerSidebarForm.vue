@@ -29,7 +29,9 @@ async function logout() {
         volunteer:
       </li>
       <li class="sidebar-username">{{ userStore.currentUsername }} </li>
-    
+      <li class="sidebar-items">
+        <RouterLink :to="{name: 'Messages'}" @click="toggleSidebar" class="sidebar-item"> messages </RouterLink>
+      </li>
       <li class="sidebar-items">
         <RouterLink :to="{ name: 'Settings' }" @click="toggleSidebar" class="sidebar-item"> account settings </RouterLink>
       </li>
