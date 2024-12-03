@@ -1,10 +1,9 @@
 <script setup lang="ts">
+import DeliveryConfirmationForm from "@/components/Delivery/DeliveryConfirmationForm.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import { computed, defineEmits, defineProps, ref } from "vue";
 import DeliveryComponent from "./DeliveryComponent.vue";
-import DeliveryConfirmationForm from "@/components/Delivery/DeliveryConfirmationForm.vue";
-import { defineProps, defineEmits } from "vue";
-import { ref, computed } from "vue";
 
 const { isVolunteer } = storeToRefs(useUserStore());
 const props = defineProps(["loaded", "deliveries", "own"]);

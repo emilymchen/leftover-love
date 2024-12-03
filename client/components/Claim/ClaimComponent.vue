@@ -96,7 +96,6 @@ async function unclaim() {
 
   .edit-button {
     width: 100%;
-    /* padding: 12px; */
     border-radius: 8px;
     font-size: 16px;
     font-weight: bold;
@@ -114,7 +113,6 @@ async function unclaim() {
 
   .unclaim-button {
     width: 100%;
-    /* padding: 12px; */
     border-radius: 8px;
     background-color: var(--light-beige);
     color: black;
@@ -134,7 +132,6 @@ async function unclaim() {
 
   .expired-button {
     width: 100%;
-    /* padding: 12px; */
     border-radius: 8px;
     font-size: 16px;
     font-weight: bold;

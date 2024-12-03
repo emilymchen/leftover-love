@@ -21,6 +21,7 @@ let isClaimingPost = ref(false);
 let tagToAdd = ref("");
 
 // State for toggle filter
+let suggestedTags = ref<Array<string>>(["dairy", "gluten", "vegan", "vegetarian", "gluten-free", "dairy-free", "meat"]);
 const filterType = ref<"all" | "claimed" | "unclaimed">("all");
 let postIdtoClaimStatus = new Map<string, boolean>();
 let filteredPosts = ref<Array<Record<string, any>>>([]);
@@ -41,6 +42,27 @@ function filterPosts() {
     filteredPosts.value = filteredPosts.value.filter((post) => hasAllFilterTags(post));
   }
 }
+let selectedTag = ref<string | null>(null);
+
+const addTagFromDropdown = (tag: string | null) => {
+  if (tag && !filterTags.value.includes(tag)) {
+    filterTags.value.push(tag);
+    // Remove the added tag from the suggestedTags list
+    suggestedTags.value = suggestedTags.value.filter((suggestedTag) => suggestedTag !== tag);
+    selectedTag.value = null; // Clear the dropdown selection
+    filterPosts();
+  }
+};
+
+const removeTag = (tag: string) => {
+  // Remove the tag from filterTags
+  filterTags.value.splice(filterTags.value.indexOf(tag), 1);
+  // Add the removed tag back to the suggestedTags list
+  if (!suggestedTags.value.includes(tag)) {
+    suggestedTags.value.push(tag);
+  }
+  filterPosts();
+};
 
 function hasAllFilterTags(post: Record<string, any>) {
   const postTags = tags.get(post._id);
@@ -61,16 +83,14 @@ const addTag = (tag: string) => {
   if (tag.split(" ").length === 1 && tag !== "" && !filterTags.value.includes(tag)) {
     filterTags.value.push(tag);
     tagToAdd.value = "";
+    suggestedTags.value = suggestedTags.value.filter((suggestedTag) => suggestedTag !== tag);
+
     filterPosts();
   } else {
     throw new Error("Tags must be one word that has not already been added");
   }
 };
 
-const removeTag = (tag: string) => {
-  filterTags.value.splice(filterTags.value.indexOf(tag), 1);
-  filterPosts();
-};
 
 async function checkIfClaimed(postId: string) {
   let claim;
@@ -154,6 +174,8 @@ onBeforeMount(async () => {
   console.log(filteredPosts.value);
 });
 </script>
+
+
 <template>
   <div class="posts-outer-container">
     <p v-if="!loaded">Loading...</p>
@@ -202,18 +224,38 @@ onBeforeMount(async () => {
       <div class="spacer"></div>
     </div>
 
+    
     <div class="recipient-tag-filter" v-if="isRecipient">
       <div class="filter-search-bar">
-        <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags to filter by (one word)" />
-        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">+</button>
+        <input type="text" id="tags" v-model="tagToAdd" placeholder="Input tags to filter by (one word)" />
+          
+          <select v-model="selectedTag" @change="addTagFromDropdown(selectedTag)">
+            <option value="" disabled>Select a tag</option>
+            <option v-for="tag in suggestedTags" :key="tag" :value="tag">
+              {{ tag }}
+            </option>
+        </select>
       </div>
+
+      <div class="add-filter">
+        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)" >
+            Add Tag
+          </button>
+      </div>
+
+      <!-- Display Added Tags -->
       <div class="tag-display">
-        <div class="tag-box" v-for="tag in filterTags">
+        <div class="tag-box" v-for="tag in filterTags" :key="tag">
           {{ tag }}
-          <button type="button" @click="removeTag(tag)">X</button>
+          <button type="button" @click="removeTag(tag)" aria-label="Remove tag">
+            X
+          </button>
         </div>
       </div>
     </div>
+
+
+
 
     <section class="posts" v-if="loaded">
       <p v-if="filteredPosts.length === 0">No posts available!</p>
@@ -300,12 +342,11 @@ onBeforeMount(async () => {
     border: none;
     background-color: transparent;
     outline: none;
-    /* border-bottom: 2px solid var(--darker-green); */
   }
 
   .filter-search-bar {
     display: flex;
-    width: 280px;
+    width: 300px;
     flex-flow: row nowrap;
     justify-content: space-between;
     border: 2px solid var(--darker-green);
@@ -314,17 +355,18 @@ onBeforeMount(async () => {
 
   input::placeholder {
     color: var(--darker-green);
+    opacity: 60%;
   }
 
   .add-tag-button {
     background-color: transparent;
-    color: var(--darker-green);
+    color: var(--light-beige);
     border: none;
   }
 
   .tag-display {
     margin: 8px;
-    max-width: 360px;
+    max-width: 500px;
     display: flex;
     flex-flow: row wrap;
     justify-content: center;
@@ -408,9 +450,9 @@ article {
   background-color: var(--light-beige);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
-  box-sizing: border-box; /* Ensures padding is included */
-  overflow: visible; /* Prevents clipping */
-  align-items: stretch; /* Ensures children expand properly */
+  box-sizing: border-box;
+  overflow: visible; 
+  align-items: stretch; 
 }
 
 
@@ -475,4 +517,30 @@ article {
   background-color: var(--lighter-green);
   color: black;
 }
+
+select {
+  background-color: transparent;
+  border: transparent;
+  width: 14px;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  border: transparent;
+  border-radius: 16px;
+  margin-right: 13px;
+}
+
+select:focus {
+  outline: none;
+}
+
+.add-filter {
+  display: flex;
+  background-color: var(--pink);
+  font-size: 12px;
+  margin-top: 10px;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  border-radius: 16px;
+}
+
 </style>

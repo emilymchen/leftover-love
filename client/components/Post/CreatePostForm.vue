@@ -95,7 +95,7 @@ const emptyTags = () => {
         </div>
       </div>
     </div>
-    
+
     <div class="create-post-buttons">
       <button class="create-post-button" type="submit">Post</button>
       <button class="close-post-button" type="button" @click="emit('closeCreatePost')">Close</button>
@@ -153,11 +153,11 @@ h2 {
 .form-group-tag {
   display: flex;
   align-items: center;
-  gap: 10px; /* Adjust spacing between elements */
+  gap: 10px; 
 }
 
 .form-group-tag input {
-  flex: 1; /* Adjust this for input width */
+  flex: 1; 
 }
 textarea,
 input {
