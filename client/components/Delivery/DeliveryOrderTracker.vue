@@ -146,9 +146,9 @@ async function getMessages(user: string) {
     <div class="button-container" v-if="claim.status !== 'Requested'">
       <button @click="setModalVisible(true, 'driver')" >Message Your Driver</button>
     </div>
-    <button @click="setModalVisible(true, 'donor')" >Message Your Donor</button>
+    <button v-if="claim.status!='Requested'" @click="setModalVisible(true, 'donor')" >Message Your Donor</button>
 
-    <div v-if="messageView && claim.status" class="modal-background">
+    <div v-if="messageView && claim.status != 'Requested'" class="modal-background">
       <div class="modal">
         <div class="messages-section">
           <h1>Messages</h1>
