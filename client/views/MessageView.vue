@@ -13,20 +13,21 @@ const { isLoggedIn, currentUsername } = storeToRefs(useUserStore());
 const { toast } = storeToRefs(useToastStore());
 const loaded = ref(false);
 const toUser = ref("");
+const emptyUsers = ref(false);
 
 function setSelectedUser(username: string) {
   toUser.value = username;
 }
 
+function setEmptyUserMessage() {
+  emptyUsers.value = true;
+}
+
 async function getMessages(user: string) {
   let query: Record<string, string> = { currentUser: user, otherUser: toUser.value };
   let messageResults;
-  if (!toUser.value) {
-    toast.value = { message: "Please select a user to chat with", style: "error" };
-    setTimeout(() => {
-      toast.value = null;
-    }, 1000);
-  } else {
+  loaded.value = false;
+  if (toUser.value) {
     try {
       messageResults = await fetchy("/api/messages", "GET", { query });
     } catch {
@@ -34,6 +35,7 @@ async function getMessages(user: string) {
     }
     messages.value = messageResults;
   }
+  loaded.value = true;
 }
 
 onBeforeMount(async () => {
@@ -45,17 +47,27 @@ onBeforeMount(async () => {
 <template>
   <section v-if="isLoggedIn">
     <section class="main-container">
-      <NudgeSeriesComponent :toUser="toUser" />
-      <MessageListComponent @toUser="setSelectedUser" @refreshMessages="getMessages(currentUsername)" />
+      <MessageListComponent @toUser="setSelectedUser" @refreshMessages="getMessages(currentUsername)" @emptyUsers="setEmptyUserMessage" />
       <div class="messages-section">
         <h1>Messages</h1>
-        <section v-if="messages.length === 0">
-          <p>No message history</p>
-        </section>
-        <article v-for="message in messages" :key="message._id" class="message-container">
-          <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername)" />
-        </article>
-        <SendMessageComponent :toUser="toUser" @refreshMessages="getMessages(currentUsername)" class="send-message" />
+        <div class="selectedUserInterface" v-if="toUser">
+          <section v-if="messages.length === 0 && loaded">
+            <p>No message history</p>
+          </section>
+          <section v-if="!loaded">
+            <p>Loading...</p>
+          </section>
+          <article v-for="message in messages" :key="message._id" class="message-container">
+            <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername)" />
+          </article>
+          <SendMessageComponent :toUser="toUser" @refreshMessages="getMessages(currentUsername)" class="send-message" />
+        </div>
+        <div class="nonSelectedUserInterface" v-if="!emptyUsers && !toUser">
+          <h3>Please select a user to chat with</h3>
+        </div>
+        <div class="nonSelectedUserInterface" v-if="emptyUsers">
+          <h3>No message history from past orders.</h3>
+        </div>
       </div>
     </section>
   </section>
@@ -93,6 +105,13 @@ h1 {
   background-color: var(--white);
   height: 100%;
 }
+
+.nonSelectedUserInterface {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+}
+
 .send-message {
   position: fixed;
   bottom: 0;

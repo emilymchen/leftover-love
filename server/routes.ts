@@ -407,13 +407,33 @@ class Routes {
   @Router.get("/messages")
   @Router.validate(z.object({ currentUser: z.string(), otherUser: z.string() }))
   async getMessages(currentUser: string, otherUser: string) {
-    const currentUser_id = (await Authing.getUserByUsername(currentUser))._id;
-    const otherUser_id = (await Authing.getUserByUsername(otherUser))._id;
-    const sent_messages = await Messaging.getMessagesByUser(currentUser_id, otherUser_id);
-    const received_messages = await Messaging.getMessagesByUser(otherUser_id, currentUser_id);
-    const all_messages = sent_messages.concat(received_messages);
-    const sorted_messages = all_messages.sort((a, b) => a.time.getTime() - b.time.getTime());
-    return Responses.messages(sorted_messages);
+    const currentUserId = (await Authing.getUserByUsername(currentUser))._id;
+    const otherUserId = (await Authing.getUserByUsername(otherUser))._id;
+    const sentMessages = await Messaging.getMessagesByUser(currentUserId, otherUserId);
+    const receivedMessages = await Messaging.getMessagesByUser(otherUserId, currentUserId);
+    const allMessages = sentMessages.concat(receivedMessages);
+    const sortedMessages = allMessages.sort((a, b) => a.time.getTime() - b.time.getTime());
+    return Responses.messages(sortedMessages);
+  }
+
+  /**
+   * Gets all users with message history with the current session user.
+   * @param session the session of the user
+   * @returns all users with message history with the current session user
+   */
+  @Router.get("/messages/users")
+  async getUsersWithMessageHistory(session: SessionDoc) {
+    const user = Sessioning.getUser(session);
+    const allUsers = await Authing.getUsers();
+    const usersWithMessageHistory = await Promise.all(
+      allUsers.map(async (u) => {
+        const sentMessages = await Messaging.getMessagesByUser(user, u._id);
+        const receivedMessages = await Messaging.getMessagesByUser(u._id, user);
+        const allMessages = sentMessages.concat(receivedMessages);
+        return allMessages.length > 0 ? u : null;
+      }),
+    );
+    return usersWithMessageHistory.filter((u) => u !== null);
   }
 
   /**

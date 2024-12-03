@@ -41,32 +41,7 @@ function expiredDuringTransit() {
 }
 onBeforeMount(async () => {
   await getClaim();
-  setSelectedRole("donor");
-  await getMessages(currentUsername.value);
-  messageLoaded.value = true;
 });
-
-let googleMapsApiPromise : any = null;
-function loadGoogleMapsApi(apiKey: string) {
-  if (!googleMapsApiPromise) {
-    googleMapsApiPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-      script.async = true;
-      script.onload = () => {
-        console.log("Google Maps API loaded successfully");
-        resolve(null);
-      };
-      script.onerror = (error) => {
-        console.error("Error loading Google Maps API:", error);
-        reject(error);
-      };
-      document.head.appendChild(script);
-    });
-  }
-  return googleMapsApiPromise;
-}
-
 
 // messaging modal infrastructure
 
@@ -94,6 +69,10 @@ function setModalVisible(visible: boolean, role?: string) {
   if (visible) {
     getMessages(currentUsername.value);
   }
+  else {
+    messages.value = [];
+    messageLoaded.value = false;
+  }
 }
 
 async function getMessages(user: string) {
@@ -104,6 +83,7 @@ async function getMessages(user: string) {
   let messageResults;
   messageResults = await fetchy("/api/messages", "GET", { query });
   messages.value = messageResults;
+  messageLoaded.value = true;
 }
 
 </script>
@@ -142,25 +122,29 @@ async function getMessages(user: string) {
               &destination=${claim.destinationAddress}`"
       >
       </iframe>
+    <div v-if="claim.status">
+      <div class="button-container" v-if="claim.status !== 'Requested'">
+        <button @click="setModalVisible(true, 'driver')" >Message Your Driver</button>
+      </div>
+      <button v-if="claim.status != 'Requested'" @click="setModalVisible(true, 'donor')" >Message Your Donor</button>
 
-    <div class="button-container" v-if="claim.status !== 'Requested'">
-      <button @click="setModalVisible(true, 'driver')" >Message Your Driver</button>
-    </div>
-    <button v-if="claim.status!='Requested'" @click="setModalVisible(true, 'donor')" >Message Your Donor</button>
-
-    <div v-if="messageView && claim.status != 'Requested'" class="modal-background">
-      <div class="modal">
-        <div class="messages-section">
-          <h1>Messages</h1>
-          <section v-if="messages.length === 0">
-            <p>No message history</p>
-          </section>
-          <article v-for="message in messages" :key="message._id" class="message-container">
-            <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername)" />
-          </article>
-          <SendMessageForm :toUser="toUser" @refreshMessages="getMessages(currentUsername)" class="send-message" /> 
+      <div v-if="messageView && claim.status != 'Requested'" class="modal-background">
+        <div class="modal">
+          <div class="messages-section">
+            <h1>Messages</h1>
+            <section v-if="messages.length === 0 && messageLoaded">
+              <p>No message history</p>
+            </section>
+            <section v-if="!messageLoaded">
+              <p>Loading...</p>
+            </section>
+            <article v-for="message in messages" :key="message._id" class="message-container">
+              <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername)" />
+            </article>
+            <SendMessageForm :toUser="toUser" @refreshMessages="getMessages(currentUsername)" class="send-message" /> 
+          </div>
+          <button @click="setModalVisible(false)">Close</button>
         </div>
-        <button @click="setModalVisible(false)">Close</button>
       </div>
     </div>
   </div>

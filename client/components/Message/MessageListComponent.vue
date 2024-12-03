@@ -7,17 +7,22 @@ import { onBeforeMount, ref } from "vue";
 const users = ref<Array<Record<string, string>>>([]);
 const { isLoggedIn, currentUsername, currentRole } = storeToRefs(useUserStore());
 const loaded = ref(false);
-const emit = defineEmits(["toUser", "refreshMessages"]);
+const emit = defineEmits(["toUser", "refreshMessages", "emptyUsers"]);
 const selectedUser = ref<string | null>(null);
 
+// Gets users only with a message history with the current user
 async function getUsers() {
-  let userResults;
+  let userResults = [];
   try {
-    userResults = await fetchy("/api/users", "GET");
+    userResults = await fetchy("/api/messages/users", "GET");
   } catch {
     return;
   }
-  users.value = userResults.filter((user: Record<string, string>) => user.username !== currentUsername.value && user.role !== currentRole.value);
+  console.log(userResults);
+  users.value = userResults;
+  if (users.value.length == 0) {
+    emit("emptyUsers");
+  }
 }
 onBeforeMount(async () => {
   await getUsers();

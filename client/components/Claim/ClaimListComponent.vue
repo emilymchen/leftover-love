@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { fetchy } from "@/utils/fetchy";
-import { onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, defineEmits} from "vue";
 import ClaimComponent from "../../components/Claim/ClaimComponent.vue";
 
 const props = defineProps(["category"]);
@@ -8,6 +8,7 @@ const props = defineProps(["category"]);
 const loaded = ref(false);
 let claims = ref<Array<Record<string, string>>>([]);
 let currentClaim = ref<Record<string, any> | null>(null);
+let emit = defineEmits(["triggerMessageModal"]);
 
 const filterType = ref<"pickup" | "delivery" | "all">("all");
 
@@ -104,7 +105,7 @@ onBeforeMount(async () => {
       <p v-if="filteredClaims.length === 0 && props.category === 'expired' && filterType === 'delivery'">You have no expired delivery claims!</p>
 
       <article v-for="claim in filteredClaims" :key="claim._id" class="claim-item">
-        <ClaimComponent v-if="currentClaim?._id !== claim._id" :claim="claim" :category="props.category" @refreshClaims="updateClaims" />
+        <ClaimComponent v-if="currentClaim?._id !== claim._id" :claim="claim" :category="props.category" @refreshClaims="updateClaims" @triggerMessageModal="(type) => emit('triggerMessageModal', type === 'driver' ? claim.deliverer : claim.postUser)"/>
       </article>
     </section>
   </div>

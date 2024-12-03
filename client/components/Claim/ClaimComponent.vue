@@ -5,7 +5,7 @@ import { formatDate } from "@/utils/formatDate";
 import { defineProps, onMounted } from "vue";
 
 const props = defineProps(["claim", "category"]);
-const emit = defineEmits(["refreshClaims"]);
+const emit = defineEmits(["refreshClaims", "triggerMessageModal"]);
 onMounted(async () => {});
 
 async function track_order() {
@@ -13,8 +13,6 @@ async function track_order() {
 }
 
 async function unclaim() {
-  console.log(props.claim);
-  console.log(props.claim.post._id);
   try {
     await fetchy(`/api/claims/${props.claim.post._id}`, "DELETE");
   } catch {
@@ -46,6 +44,7 @@ async function unclaim() {
   <div class="donor-buttons base">
     <div v-if="props.category === 'pending'">
       <div v-if="props.claim.method === 'Delivery'">
+        <label v-if="props.claim.deliverer !== null"> Driver: {{ props.claim.deliverer }}</label>
         <button class="edit-button" @click="track_order">Track Order</button>
       </div>
       <div v-else>
@@ -58,8 +57,17 @@ async function unclaim() {
     <div v-else-if="props.category === 'expired'">
       <button class="expired-button">Expired</button>
     </div>
+    <div v-if="props.claim.method === 'Delivery' && props.claim.deliverer !== null">
+      <button class="edit-button" @click="emit('triggerMessageModal', 'driver')">Message Driver</button>
+    </div>
+    <div>
+      <button class="edit-button" @click="emit('triggerMessageModal', 'donor')">Message Donor</button>
+    </div>
   </div>
-  <div class="base" v-if="props.category === 'pending'">
+  <div class="base" v-if="props.category === 'pending' && props.claim.method === 'Delivery' && props.claim.deliverer === null">
+    <button class="expired-button" @click="unclaim">Unclaim</button>
+  </div>
+  <div class="base" v-if="props.category === 'pending' && props.claim.method === 'Pickup'">
     <button class="expired-button" @click="unclaim">Unclaim</button>
   </div>
 </template>

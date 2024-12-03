@@ -68,6 +68,10 @@ function setModalVisible(visible: boolean, claimUser: string) {
   if (visible) {
     getMessages(currentUsername.value, claimUser);
   }
+  else {
+    messages.value = [];
+    messageLoaded.value = false;
+  }
 }
 
 async function getMessages(user: string, claimUser: string) {
@@ -76,6 +80,7 @@ async function getMessages(user: string, claimUser: string) {
   let messageResults;
   messageResults = await fetchy("/api/messages", "GET", { query });
   messages.value = messageResults;
+  messageLoaded.value = true;
 }
 
 </script>
@@ -97,8 +102,11 @@ async function getMessages(user: string, claimUser: string) {
         <div class="modal">
           <div class="messages-section">
             <h1>Messages</h1>
-            <section v-if="messages.length === 0">
+            <section v-if="messages.length === 0 && messageLoaded">
               <p>No message history</p>
+            </section>
+            <section v-if="!messageLoaded">
+              <p>Loading...</p>
             </section>
             <article v-for="message in messages" :key="message._id" class="message-container">
               <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername, toUser)" />
