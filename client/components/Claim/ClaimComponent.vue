@@ -42,9 +42,6 @@ async function unclaim() {
     <div class="quantity">Qty: {{ props.claim.post.quantity }}</div>
     <div class="expiration-time">Expires: {{ formatDate(new Date(props.claim.post.expiration_time)) }}</div>
   </div>
-  <div class="tags-details">
-    <div class="tags">Tags: {{ props.claim.post.tags }}</div>
-  </div>
 
   <div class="pickup-delivery-details">
     <div>Claimed for {{ props.claim.method }}</div>
