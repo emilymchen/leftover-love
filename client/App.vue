@@ -24,14 +24,14 @@ onBeforeMount(async () => {
 });
 </script>
 <template>
-  <header>
+  <header v-if="isLoggedIn">
     <nav>
       <div class="title">
         <img src="@/assets/images/logo.png" alt="Logo" />
         <RouterLink :to="{ name: 'Home' }">
           <h1>Leftover Love</h1>
         </RouterLink>
-        
+
         <ul v-if="isLoggedIn && isRecipient">
           <RecipientSidebarForm />
         </ul>
@@ -44,7 +44,6 @@ onBeforeMount(async () => {
           <VolunteerSidebarForm />
         </ul>
       </div>
-
     </nav>
     <article v-if="toast !== null" class="toast" :class="toast.style">
       <p>{{ toast.message }}</p>
