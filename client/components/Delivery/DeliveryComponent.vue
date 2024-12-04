@@ -70,7 +70,8 @@ async function unacceptDelivery() {
       <button class="edit-button" @click="emit('claimDelivery', props.delivery._id)">Claim</button>
     </div>
     <div v-if="props.own">
-      <button class="edit-button" @click="emit('triggerMessageModal')">Message Recipient</button>
+      <button class="edit-button" @click="emit('triggerMessageModal', 'recipient')">Message Recipient</button>
+      <button class="edit-button" @click="emit('triggerMessageModal', 'donor')">Message Donor</button>
     </div>
     <div v-if="props.own && props.delivery.status == 'Not Started'">
       <button class="expired-button" @click="unacceptDelivery">Unclaim</button>
