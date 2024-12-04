@@ -91,7 +91,6 @@ const addTag = (tag: string) => {
   }
 };
 
-
 async function checkIfClaimed(postId: string) {
   let claim;
   try {
@@ -175,7 +174,6 @@ onBeforeMount(async () => {
 });
 </script>
 
-
 <template>
   <div class="posts-outer-container">
     <p v-if="!loaded">Loading...</p>
@@ -224,38 +222,30 @@ onBeforeMount(async () => {
       <div class="spacer"></div>
     </div>
 
-    
     <div class="recipient-tag-filter" v-if="isRecipient">
       <div class="filter-search-bar">
         <input type="text" id="tags" v-model="tagToAdd" placeholder="Input tags to filter by (one word)" />
-          
-          <select v-model="selectedTag" @change="addTagFromDropdown(selectedTag)">
-            <option value="" disabled>Select a tag</option>
-            <option v-for="tag in suggestedTags" :key="tag" :value="tag">
-              {{ tag }}
-            </option>
+
+        <select v-model="selectedTag" @change="addTagFromDropdown(selectedTag)">
+          <option value="" disabled>Select a tag</option>
+          <option v-for="tag in suggestedTags" :key="tag" :value="tag">
+            {{ tag }}
+          </option>
         </select>
       </div>
 
       <div class="add-filter">
-        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)" >
-            Add Tag
-          </button>
+        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">Add Tag</button>
       </div>
 
       <!-- Display Added Tags -->
       <div class="tag-display">
         <div class="tag-box" v-for="tag in filterTags" :key="tag">
           {{ tag }}
-          <button type="button" @click="removeTag(tag)" aria-label="Remove tag">
-            X
-          </button>
+          <button type="button" @click="removeTag(tag)" aria-label="Remove tag">X</button>
         </div>
       </div>
     </div>
-
-
-
 
     <section class="posts" v-if="loaded">
       <p v-if="filteredPosts.length === 0">No posts available!</p>
@@ -439,6 +429,7 @@ p,
 
 .post-item {
   position: relative;
+  justify-content: space-between;
 }
 
 article {
@@ -451,11 +442,9 @@ article {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
   box-sizing: border-box;
-  overflow: visible; 
-  align-items: stretch; 
+  overflow: visible;
+  align-items: stretch;
 }
-
-
 
 .row {
   display: flex;
@@ -542,5 +531,4 @@ select:focus {
   justify-content: space-between;
   border-radius: 16px;
 }
-
 </style>

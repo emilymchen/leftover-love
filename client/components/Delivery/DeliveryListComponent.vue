@@ -48,8 +48,14 @@ function setFilter(newFilter: "all" | "completed" | "non-completed") {
     <section class="deliveries" v-if="loaded">
       <p v-if="filteredDeliveries.length === 0">There are no deliveries!</p>
 
-      <article v-for="delivery in filteredDeliveries" :key="delivery._id">
-        <DeliveryComponent :delivery="delivery" :own="props.own" @triggerMessageModal="emit('triggerMessageModal', delivery.claimUser)" @refreshDeliveries="refreshDeliveries" @claimDelivery="startClaiming(delivery)" />
+      <article v-for="delivery in filteredDeliveries" :key="delivery._id" class="delivery-item">
+        <DeliveryComponent
+          :delivery="delivery"
+          :own="props.own"
+          @triggerMessageModal="emit('triggerMessageModal', delivery.claimUser)"
+          @refreshDeliveries="refreshDeliveries"
+          @claimDelivery="startClaiming(delivery)"
+        />
       </article>
     </section>
   </div>
@@ -76,6 +82,10 @@ function setFilter(newFilter: "all" | "completed" | "non-completed") {
   align-items: center;
   gap: 15px;
   margin-top: 20px;
+}
+
+.delivery-item {
+  height: fit-content;
 }
 
 .button-click {

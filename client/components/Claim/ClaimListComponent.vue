@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { fetchy } from "@/utils/fetchy";
-import { onBeforeMount, ref, defineEmits} from "vue";
+import { defineEmits, onBeforeMount, ref } from "vue";
 import ClaimComponent from "../../components/Claim/ClaimComponent.vue";
 
 const props = defineProps(["category"]);
@@ -94,9 +94,9 @@ onBeforeMount(async () => {
     </div>
 
     <section class="claims" v-if="loaded">
-      <p v-if="filteredClaims.length === 0 && props.category === 'pending' && filterType === 'all'" >You have no pending claims!</p>
-      <p v-if="filteredClaims.length === 0 && props.category === 'pending' && filterType === 'pickup'" >You have no pending pickup claims!</p>
-      <p v-if="filteredClaims.length === 0 && props.category === 'pending' && filterType === 'delivery'" >You have no pending delivery claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'pending' && filterType === 'all'">You have no pending claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'pending' && filterType === 'pickup'">You have no pending pickup claims!</p>
+      <p v-if="filteredClaims.length === 0 && props.category === 'pending' && filterType === 'delivery'">You have no pending delivery claims!</p>
       <p v-if="filteredClaims.length === 0 && props.category === 'completed' && filterType === 'all'">You have no completed claims!</p>
       <p v-if="filteredClaims.length === 0 && props.category === 'completed' && filterType === 'pickup'">You have no completed pickup claims!</p>
       <p v-if="filteredClaims.length === 0 && props.category === 'completed' && filterType === 'delivery'">You have no completed delivery claims!</p>
@@ -105,7 +105,13 @@ onBeforeMount(async () => {
       <p v-if="filteredClaims.length === 0 && props.category === 'expired' && filterType === 'delivery'">You have no expired delivery claims!</p>
 
       <article v-for="claim in filteredClaims" :key="claim._id" class="claim-item">
-        <ClaimComponent v-if="currentClaim?._id !== claim._id" :claim="claim" :category="props.category" @refreshClaims="updateClaims" @triggerMessageModal="(type) => emit('triggerMessageModal', type === 'driver' ? claim.deliverer : claim.postUser)"/>
+        <ClaimComponent
+          v-if="currentClaim?._id !== claim._id"
+          :claim="claim"
+          :category="props.category"
+          @refreshClaims="updateClaims"
+          @triggerMessageModal="(type) => emit('triggerMessageModal', type === 'driver' ? claim.deliverer : claim.postUser)"
+        />
       </article>
     </section>
   </div>
@@ -121,6 +127,10 @@ onBeforeMount(async () => {
   grid-template-columns: repeat(3, minmax(300px, 1fr));
   margin-top: 1em;
   flex-grow: 1;
+}
+
+.claim-item {
+  height: fit-content;
 }
 
 .create-claim-box {
