@@ -12,6 +12,15 @@ async function track_order() {
   void router.push(`/order-tracker/${props.claim._id}`);
 }
 
+async function markAsPickedUp() {
+  try {
+    await fetchy(`/api/claims/pickup/${props.claim._id}`, "PATCH");
+  } catch {
+    return;
+  }
+  emit("refreshClaims");
+}
+
 async function unclaim() {
   try {
     await fetchy(`/api/claims/${props.claim.post._id}`, "DELETE");
@@ -33,9 +42,6 @@ async function unclaim() {
     <div class="quantity">Qty: {{ props.claim.post.quantity }}</div>
     <div class="expiration-time">Expires: {{ formatDate(new Date(props.claim.post.expiration_time)) }}</div>
   </div>
-  <div class="tags-details">
-    <div class="tags">Tags: {{ props.claim.post.tags }}</div>
-  </div>
 
   <div class="pickup-delivery-details">
     <div>Claimed for {{ props.claim.method }}</div>
@@ -48,7 +54,7 @@ async function unclaim() {
         <button class="edit-button" @click="track_order">Track Order</button>
       </div>
       <div v-else>
-        <button class="edit-button">Please pick it up!</button>
+        <button class="edit-button" @click="markAsPickedUp">Mark as Picked Up</button>
       </div>
     </div>
     <div v-else-if="props.category === 'completed'">

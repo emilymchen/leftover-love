@@ -29,21 +29,17 @@ export default class TaggingConcept {
     const itemDoc = await this.tags.readOne({ item: item });
     if (itemDoc === null) {
       let t = new Array<string>();
-      t.push(tag);
-      console.log("tags", t);
+      t.push(tag.toLowerCase());
       await this.tags.createOne({ item: item, tags: t });
       const _id = await this.tags.readOne({ item: item });
-      console.log("during add tag", _id, await this.tags.readOne({ item: item }));
-      console.log("jinjja", t, item);
       return;
     }
     let existingTags = itemDoc.tags;
-    if (!existingTags.includes(tag)) {
-      console.log("YOOOO");
-      existingTags.push(tag);
+    if (!existingTags.includes(tag.toLowerCase())) {
+      existingTags.push(tag.toLowerCase());
       const _id = await this.tags.partialUpdateOne({ item }, { tags: existingTags });
     } else {
-      throw new Error(`Tag "${tag}" already exists for item ${item}`);
+      throw new Error(`Tag "${tag.toLowerCase()}" already exists for item ${item}`);
     }
   }
 
@@ -63,14 +59,14 @@ export default class TaggingConcept {
     }
 
     let existingTags = itemDoc.tags;
-    if (existingTags.includes(tag)) {
-      const index = existingTags.indexOf(tag, 0);
+    if (existingTags.includes(tag.toLowerCase())) {
+      const index = existingTags.indexOf(tag.toLowerCase(), 0);
       if (index > -1) {
         existingTags.splice(index, 1);
       }
       await this.tags.partialUpdateOne({ item }, { tags: existingTags });
     } else {
-      throw new Error(`Tag "${tag}" does not exist for item ${item}`);
+      throw new Error(`Tag "${tag.toLowerCase()}" does not exist for item ${item}`);
     }
   }
 

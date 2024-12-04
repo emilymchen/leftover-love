@@ -58,10 +58,10 @@ async function unacceptDelivery() {
       <button class="expired-button">Expired</button>
     </div>
     <div v-if="props.own && props.delivery.status == 'Not Started'">
-      <button class="edit-button" @click="markAsPickedUp">Marked as Picked Up From Restaurant</button>
+      <button class="edit-button" @click="markAsPickedUp">Mark as Picked Up From Restaurant</button>
     </div>
     <div v-else-if="props.own && props.delivery.status == 'In Progress'">
-      <button class="edit-button" @click="markAsCompleted">Marked as Delivered</button>
+      <button class="edit-button" @click="markAsCompleted">Mark as Delivered</button>
     </div>
     <div v-else-if="props.own && props.delivery.status == 'Completed'">
       <button class="expired-button">Completed</button>
