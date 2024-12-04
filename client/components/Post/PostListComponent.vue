@@ -248,13 +248,12 @@ onBeforeMount(async () => {
     </div>
 
     <section class="posts" v-if="loaded">
-      <p v-if="filteredPosts.length === 0">No posts available!</p>
       <article v-if="isDonor" class="create-post-box" @click="isCreatingPost = true">
         <div class="create-post-content">
           <span class="plus-icon">+</span>
         </div>
       </article>
-
+      <p v-if="filteredPosts.length === 0">No posts available!</p>
       <article v-for="post in filteredPosts" :key="post._id" class="post-item">
         <PostComponent
           v-if="!isEditingPost || currentPost?._id !== post._id"
@@ -477,9 +476,8 @@ article {
 }
 
 .plus-icon {
-  font-size: 2em;
+  font-size: 5em;
   font-weight: bold;
-  margin-bottom: 0.5em;
 }
 
 .filter-buttons {
