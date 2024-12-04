@@ -70,9 +70,10 @@ export default class Responses {
           const deliveryId = claimedItem ? await Delivering.getDeliveryByRequest(claim._id) : null;
           if (deliveryId !== null) {
             deliverer = (await Authing.getUserById(deliveryId.deliverer)).username;
+          } else {
+            deliverer = null;
           }
-        }
-        catch {
+        } catch {
           deliverer = null;
         }
 
