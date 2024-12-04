@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { defineProps, defineEmits, ref, computed } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
 const props = defineProps(["post", "tags"]);
@@ -10,6 +10,16 @@ const expiration_time = ref(props.post.expiration_time);
 const tagToAdd = ref("");
 const tagsToDisplay = ref([...props.tags]);
 const emit = defineEmits(["editPost", "refreshPosts", "closeEditPost"]);
+
+const minDateTime = computed(() => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+});
 
 const editPost = async (food_name: string, quantity: number, expiration_time: string, tags: string[]) => {
   try {
@@ -71,7 +81,7 @@ const removeTag = (tag: string) => {
     </div>
     <div class="form-group">
       <label for="expiration_time">Expiration Date</label>
-      <input type="datetime-local" id="expiration_time" v-model="expiration_time" required />
+      <input type="datetime-local" id="expiration_time" v-model="expiration_time" :min="minDateTime" required />
     </div>
 
     <div class="form-group">
