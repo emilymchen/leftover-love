@@ -33,17 +33,17 @@ const editPost = async (food_name: string, quantity: number, expiration_time: st
       }
     }
   } catch {
-    console.log("No tags found");
+    console.log("No tags to delete");
   }
   try {
     for (const tag of tags) {
       await fetchy(`/api/tags/${props.post._id}`, "POST", { body: { post: props.post._id, tag: tag } });
     }
   } catch {
-    return;
+    console.log("No tags to add");
   }
-  emit("editPost", null);
   emit("refreshPosts");
+  emit("editPost", null);
   emit("closeEditPost");
 };
 const deletePost = async () => {
@@ -52,9 +52,10 @@ const deletePost = async () => {
   } catch {
     return;
   }
-  emit("refreshPosts");
   emit("closeEditPost");
+  emit("refreshPosts");
 };
+
 const addTag = (tag: string) => {
   if (tag.split(" ").length === 1 && tag !== "" && !tagsToDisplay.value.includes(tag)) {
     tagsToDisplay.value.push(tag);
@@ -105,7 +106,7 @@ const removeTag = (tag: string) => {
     <div class="create-post-buttons">
       <button class="btn-small pure-button-primary pure-button" type="submit">Save</button>
       <button class="btn-small pure-button" @click="emit('closeEditPost')">Cancel</button>
-      <button class="button-error btn-small pure-button" @click="deletePost">Delete</button>
+      <button class="button-error btn-small pure-button" type="button" @click="deletePost">Delete</button>
     </div>
   </form>
 </template>

@@ -6,8 +6,10 @@ import PostComponent from "@/components/Post/PostComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
+import { useToastStore } from "@/stores/toast";
 import { onBeforeMount, ref } from "vue";
 
+const { toast } = storeToRefs(useToastStore());
 const { isDonor, currentUsername, isRecipient } = storeToRefs(useUserStore());
 
 const loaded = ref(false);
@@ -80,14 +82,25 @@ function hasAllFilterTags(post: Record<string, any>) {
 }
 
 const addTag = (tag: string) => {
-  if (tag.split(" ").length === 1 && tag !== "" && !filterTags.value.includes(tag)) {
-    filterTags.value.push(tag);
-    tagToAdd.value = "";
-    suggestedTags.value = suggestedTags.value.filter((suggestedTag) => suggestedTag !== tag);
+  if (!validateTag(tag)) {
+    return;
+  }
+  filterTags.value.push(tag);
+  tagToAdd.value = "";
+  suggestedTags.value = suggestedTags.value.filter((suggestedTag) => suggestedTag !== tag);
+  filterPosts();
+};
 
-    filterPosts();
+const validateTag = (tag: string) => {
+  if (tag.split(" ").length === 1 && tag !== "" && !filterTags.value.includes(tag)) {
+    toast.value = null;
+    return true;
   } else {
-    throw new Error("Tags must be one word that has not already been added");
+    toast.value = { message: "Tags must be one word and not have been added before.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
   }
 };
 
@@ -107,7 +120,7 @@ async function getPosts(author?: string) {
   try {
     postResults = await fetchy("/api/posts", "GET", { query });
   } catch {
-    return;
+    console.log("Error fetching posts");
   }
   searchAuthor.value = author ? author : "";
   if (isRecipient.value) {

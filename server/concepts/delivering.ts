@@ -119,7 +119,7 @@ export default class DeliveringConcept {
   async assertIsNotDelivered(_id: ObjectId) {
     const delivery = await this.deliveries.readOne({ _id });
     if (delivery?.status === "Completed") {
-      throw new NotAllowedError(`Delivery has already been delivered!`);
+      throw new NotAllowedError(`Delivery ${_id} has already been delivered!`);
     }
   }
 
