@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { computed, defineEmits, ref } from "vue";
+import { defineEmits, ref, computed } from "vue";
 import { fetchy } from "../../utils/fetchy";
+import { useToastStore } from "@/stores/toast";
+import { storeToRefs } from "pinia";
 
+const { toast } = storeToRefs(useToastStore());
 const food_name = ref("");
 const qty = ref(1);
 const expiration_time = ref("");
@@ -39,11 +42,24 @@ const createPost = async (food_name: string, quantity: number, expiration_time: 
 };
 
 const addTag = (tag: string) => {
+  if (!validateTag(tag)) {
+    return;
+  }
+  
+  tags.value.push(tag);
+  emptyTags();
+};
+
+const validateTag = (tag: string) => {
   if (tag.split(" ").length === 1 && tag !== "" && !tags.value.includes(tag)) {
-    tags.value.push(tag);
-    emptyTags();
+    toast.value = null;
+    return true;
   } else {
-    throw new Error("Tags must be one word that has not already been added");
+    toast.value = { message: "Tags must be one word and not have been added before.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
   }
 };
 
