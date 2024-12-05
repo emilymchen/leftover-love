@@ -5,8 +5,6 @@ import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-import MessageComponent from "../components/Message/MessageComponent.vue";
-import SendMessageForm from "../components/Message/SendMessageForm.vue";
 
 const { isLoggedIn, isVolunteer, currentUsername } = storeToRefs(useUserStore()); 
 const { toast } = storeToRefs(useToastStore());
@@ -88,31 +86,11 @@ async function getMessages(user: string, claimUser: string) {
 <template>
   <main>
     <section v-if="isLoggedIn && isVolunteer">
+ 
       <div class="header-container">
-        <h1>My Deliveries</h1>
-        <DeliveryListComponent :loaded="loaded" :own="true" :deliveries="myDeliveries" @triggerMessageModal="triggerMessage" @refreshDeliveries="updateDeliveries" />
+        <h1>Delivery Requests</h1>
+        <DeliveryListComponent :loaded="loaded" :own="false" :deliveries="deliveryRequests" @refreshDeliveries="updateDeliveries" />
       </div>
-
-   
-
-      <div v-if="messageView" class="modal-background">
-        <div class="modal">
-          <div class="messages-section">
-            <h1>Messages</h1>
-            <section v-if="messages.length === 0 && messageLoaded">
-              <p>No message history</p>
-            </section>
-            <section v-if="!messageLoaded">
-              <p>Loading...</p>
-            </section>
-            <article v-for="message in messages" :key="message._id" class="message-container">
-              <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername, toUser)" />
-            </article>
-            <SendMessageForm :toUser="toUser" @refreshMessages="getMessages(currentUsername, toUser)" class="send-message" /> 
-          </div>
-          <button @click="setModalVisible(false, toUser)">Close</button>
-        </div>
-       </div>
     </section>
   </main>
 </template>

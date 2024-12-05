@@ -11,7 +11,7 @@ const emit = defineEmits(["refreshDeliveries", "triggerMessageModal"]);
 let currentDelivery = ref<Record<string, string> | null>(null);
 let isClaimingDelivery = ref(false);
 
-let filter = ref<"all" | "completed" | "non-completed">("all");
+let filter = ref<"all" | "completed" | "non-completed">("non-completed");
 
 async function refreshDeliveries() {
   emit("refreshDeliveries");
@@ -52,7 +52,7 @@ function setFilter(newFilter: "all" | "completed" | "non-completed") {
         <DeliveryComponent
           :delivery="delivery"
           :own="props.own"
-          @triggerMessageModal="emit('triggerMessageModal', delivery.claimUser)"
+          @triggerMessageModal="(type) => emit('triggerMessageModal', type === 'recipient' ? delivery.claimUser : delivery.postUser)"
           @refreshDeliveries="refreshDeliveries"
           @claimDelivery="startClaiming(delivery)"
         />
