@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { defineProps, defineEmits, ref, computed } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
 const props = defineProps(["post", "tags"]);
@@ -10,6 +10,16 @@ const expiration_time = ref(props.post.expiration_time);
 const tagToAdd = ref("");
 const tagsToDisplay = ref([...props.tags]);
 const emit = defineEmits(["editPost", "refreshPosts", "closeEditPost"]);
+
+const minDateTime = computed(() => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+});
 
 const editPost = async (food_name: string, quantity: number, expiration_time: string, tags: string[]) => {
   try {
@@ -23,17 +33,17 @@ const editPost = async (food_name: string, quantity: number, expiration_time: st
       }
     }
   } catch {
-    console.log("No tags found");
+    console.log("No tags to delete");
   }
   try {
     for (const tag of tags) {
       await fetchy(`/api/tags/${props.post._id}`, "POST", { body: { post: props.post._id, tag: tag } });
     }
   } catch {
-    return;
+    console.log("No tags to add");
   }
-  emit("editPost", null);
   emit("refreshPosts");
+  emit("editPost", null);
   emit("closeEditPost");
 };
 const deletePost = async () => {
@@ -42,9 +52,10 @@ const deletePost = async () => {
   } catch {
     return;
   }
-  emit("refreshPosts");
   emit("closeEditPost");
+  emit("refreshPosts");
 };
+
 const addTag = (tag: string) => {
   if (tag.split(" ").length === 1 && tag !== "" && !tagsToDisplay.value.includes(tag)) {
     tagsToDisplay.value.push(tag);
@@ -71,7 +82,7 @@ const removeTag = (tag: string) => {
     </div>
     <div class="form-group">
       <label for="expiration_time">Expiration Date</label>
-      <input type="datetime-local" id="expiration_time" v-model="expiration_time" required />
+      <input type="datetime-local" id="expiration_time" v-model="expiration_time" :min="minDateTime" required />
     </div>
 
     <div class="form-group">
@@ -95,7 +106,7 @@ const removeTag = (tag: string) => {
     <div class="create-post-buttons">
       <button class="btn-small pure-button-primary pure-button" type="submit">Save</button>
       <button class="btn-small pure-button" @click="emit('closeEditPost')">Cancel</button>
-      <button class="button-error btn-small pure-button" @click="deletePost">Delete</button>
+      <button class="button-error btn-small pure-button" type="button" @click="deletePost">Delete</button>
     </div>
   </form>
 </template>

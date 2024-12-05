@@ -7,7 +7,7 @@
   border-radius: 6px;
   max-width: 60em;
   margin: 0 auto;
-
+  z-index: 9999;
   color: #fff;
 }
 

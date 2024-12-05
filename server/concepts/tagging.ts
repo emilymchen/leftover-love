@@ -71,6 +71,14 @@ export default class TaggingConcept {
   }
 
   /**
+   * Remove all tags from an item.
+   * @param item  The ID of the item from which all tags will be removed.
+   */
+  async deleteTagsByItem(item: ObjectId) {
+    return await this.tags.deleteMany({ item });
+  }
+
+  /**
    * Delete an item and all its associated tags.
    * If the item does not exist, it throws an error.
    *

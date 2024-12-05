@@ -47,7 +47,7 @@ export default class PostingConcept {
   async getExpirationTime(_id: ObjectId) {
     const post = await this.posts.readOne({ _id });
     if (!post) {
-      throw new NotFoundError(`Post ${_id} does not exist!`);
+      throw new NotFoundError(`Post does not exist!`);
     }
     return post.expiration_time;
   }
@@ -55,7 +55,7 @@ export default class PostingConcept {
   async getFoodName(_id: ObjectId) {
     const post = await this.posts.readOne({ _id });
     if (!post) {
-      throw new NotFoundError(`Post ${_id} does not exist!`);
+      throw new NotFoundError(`Post does not exist!`);
     }
     return post.food_name;
   }
@@ -63,7 +63,7 @@ export default class PostingConcept {
   async getAuthor(_id: ObjectId) {
     const post = await this.posts.readOne({ _id });
     if (!post) {
-      throw new NotFoundError(`Post ${_id} does not exist!`);
+      throw new NotFoundError(`Post does not exist!`);
     }
     return post.author;
   }
@@ -71,7 +71,7 @@ export default class PostingConcept {
   async getQuantity(_id: ObjectId) {
     const post = await this.posts.readOne({ _id });
     if (!post) {
-      throw new NotFoundError(`Post ${_id} does not exist!`);
+      throw new NotFoundError(`Post does not exist!`);
     }
     return post.quantity;
   }
@@ -79,6 +79,9 @@ export default class PostingConcept {
   async update(_id: ObjectId, food_name?: string, expiration_time?: Date, quantity?: number) {
     // Note that if content or options is undefined, those fields will *not* be updated
     // since undefined values for partialUpdateOne are ignored.
+    if (expiration_time && new Date(expiration_time) < new Date()) {
+      throw new InvalidExpirationTimeError();
+    }
     await this.posts.partialUpdateOne({ _id }, { food_name, expiration_time, quantity });
     return { msg: "Post successfully updated!" };
   }
@@ -91,7 +94,7 @@ export default class PostingConcept {
   async assertAuthorIsUser(_id: ObjectId, user: ObjectId) {
     const post = await this.posts.readOne({ _id });
     if (!post) {
-      throw new NotFoundError(`Post ${_id} does not exist!`);
+      throw new NotFoundError(`Post does not exist!`);
     }
     if (post.author.toString() !== user.toString()) {
       throw new PostAuthorNotMatchError(user, _id);
@@ -101,7 +104,7 @@ export default class PostingConcept {
   async isPostExpired(_id: ObjectId) {
     const post = await this.posts.readOne({ _id });
     if (!post) {
-      throw new NotFoundError(`Post ${_id} does not exist!`);
+      throw new NotFoundError(`Post does not exist!`);
     }
     return new Date(post.expiration_time).toISOString() < new Date().toISOString();
   }
@@ -109,10 +112,10 @@ export default class PostingConcept {
   async assertPostIsNotExpired(_id: ObjectId) {
     const post = await this.posts.readOne({ _id });
     if (!post) {
-      throw new NotFoundError(`Post ${_id} does not exist!`);
+      throw new NotFoundError(`Post does not exist!`);
     }
     if (await this.isPostExpired(_id)) {
-      throw new NotAllowedError(`Post ${_id} is expired!`);
+      throw new NotAllowedError(`Post is expired!`);
     }
   }
 }

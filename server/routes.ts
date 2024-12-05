@@ -139,8 +139,8 @@ class Routes {
     await Posting.assertAuthorIsUser(oid, user);
     const deleted_claim = await Claiming.deleteClaim(oid);
     await Delivering.deleteDeliveryByRequest(await deleted_claim.claim);
-    //TODO: Add in tag syncs
-    return Posting.delete(oid);
+    await Tagging.deleteTagsByItem(oid);
+    return await Posting.delete(oid);
   }
 
   /**
@@ -524,7 +524,9 @@ class Routes {
 
     // Add the tag to the post
     await Tagging.addTag(tag, oid);
-    return { msg: `Tag "${tag}" added to post ${post}` };
+
+    // We don't want the tag message to be returned in the response
+    return { msg: `` };
   }
 
   /**
@@ -555,7 +557,8 @@ class Routes {
     // Delete the tag from the post
     await Tagging.delTag(tag, oid);
 
-    return { msg: `Tag "${tag}" deleted from post ${post}` };
+    // We don't want the tag message to be returned in the response
+    return { msg: `` };
   }
 }
 

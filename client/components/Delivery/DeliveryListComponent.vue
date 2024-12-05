@@ -52,7 +52,7 @@ function setFilter(newFilter: "all" | "completed" | "non-completed") {
         <DeliveryComponent
           :delivery="delivery"
           :own="props.own"
-          @triggerMessageModal="emit('triggerMessageModal', delivery.claimUser)"
+          @triggerMessageModal="(type) => emit('triggerMessageModal', type === 'recipient' ? delivery.claimUser : delivery.postUser)"
           @refreshDeliveries="refreshDeliveries"
           @claimDelivery="startClaiming(delivery)"
         />
