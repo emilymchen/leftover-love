@@ -7,22 +7,8 @@ import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
 
 const { isLoggedIn, isVolunteer, currentUsername } = storeToRefs(useUserStore()); 
-const { toast } = storeToRefs(useToastStore());
 const loaded = ref(false);
-
-let myDeliveries = ref<Array<Record<string, string>>>([]);
 let deliveryRequests = ref<Array<Record<string, string>>>([]);
-
-async function getMyDeliveries() {
-  let deliveryResults;
-  try {
-    deliveryResults = await fetchy("/api/deliveries/user", "GET");
-  } catch {
-    return;
-  }
-  myDeliveries.value = deliveryResults;
-  console.log(myDeliveries.value);
-}
 
 async function getDeliveryRequests() {
   let deliveryResults;
@@ -36,7 +22,6 @@ async function getDeliveryRequests() {
 }
 
 async function updateDeliveries() {
-  await getMyDeliveries();
   await getDeliveryRequests();
   loaded.value = true;
 }

@@ -9,11 +9,9 @@ import MessageComponent from "../components/Message/MessageComponent.vue";
 import SendMessageForm from "../components/Message/SendMessageForm.vue";
 
 const { isLoggedIn, isVolunteer, currentUsername } = storeToRefs(useUserStore()); 
-const { toast } = storeToRefs(useToastStore());
 const loaded = ref(false);
 
 let myDeliveries = ref<Array<Record<string, string>>>([]);
-let deliveryRequests = ref<Array<Record<string, string>>>([]);
 
 async function getMyDeliveries() {
   let deliveryResults;
@@ -25,21 +23,8 @@ async function getMyDeliveries() {
   myDeliveries.value = deliveryResults;
   console.log(myDeliveries.value);
 }
-
-async function getDeliveryRequests() {
-  let deliveryResults;
-  try {
-    deliveryResults = await fetchy("/api/deliveries/requests", "GET");
-  } catch {
-    return;
-  }
-  deliveryRequests.value = deliveryResults;
-  console.log(deliveryRequests.value);
-}
-
 async function updateDeliveries() {
   await getMyDeliveries();
-  await getDeliveryRequests();
   loaded.value = true;
 }
 
