@@ -98,6 +98,7 @@ ul {
   height: 100%;
   padding: 1em;
   overflow-y: auto;
+  overflow-x: hidden;
   transition:
     transform 0.3s ease-in-out,
     background-color 0.3s ease-in-out;
@@ -154,6 +155,7 @@ ul {
   color: var(--darker-green);
   font-size: 30px;
   width: 100%;
+  word-wrap: break-word;
 }
 .sidebar-button {
   background: none;

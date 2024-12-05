@@ -34,12 +34,22 @@ class Routes {
   @Router.post("/users")
   async createUser(session: SessionDoc, username: string, password: string, role: string, location?: string) {
     Sessioning.isLoggedOut(session);
+    for (const word of username.split(" ")) {
+      if (word.length > 15) {
+        throw new Error("Limit each word in username to be <15 characters!");
+      }
+    }
     return await Authing.create(username, password, role, location);
   }
 
   @Router.patch("/users/username")
   async updateUsername(session: SessionDoc, username: string) {
     const user = Sessioning.getUser(session);
+    for (const word of username.split(" ")) {
+      if (word.length > 15) {
+        throw new Error("Limit each word in username to be <15 characters!");
+      }
+    }
     return await Authing.updateUsername(user, username);
   }
 
