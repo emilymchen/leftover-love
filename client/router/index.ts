@@ -2,6 +2,7 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
+import AvailableClaimsView from "../views/AvailableClaimsView.vue";
 import ClaimView from "../views/ClaimView.vue";
 import DeliveryView from "../views/DeliveryView.vue";
 import RecipientFeedView from "../views/Feeds/RecipientFeedView.vue";
@@ -26,13 +27,13 @@ const router = createRouter({
       component: HomeView,
       meta: { requiresAuth: true },
       beforeEnter: (to, from) => {
-        const { isDonor, isRecipient } = storeToRefs(useUserStore());
+        const { isDonor, isRecipient, isVolunteer } = storeToRefs(useUserStore());
         if (isDonor.value) {
           return { name: "Restaurant-Food-Listings" };
         } else if (isRecipient.value) {
           return { name: "Recipient-Feed" };
-        } else {
-          return { name: "Volunteer-Feed" };
+        } else if (isVolunteer.value) {
+          return { name: "AvailableClaims" };
         }
       },
     },
@@ -50,10 +51,18 @@ const router = createRouter({
     },
     {
       path: "/volunteer",
-      name: "Volunteer-Feed",
+      name: "AvailableClaims",
+      component: AvailableClaimsView,
+      meta: { requiresAuth: true },
+    },
+
+    {
+      path: "/mydeliveries",
+      name: "MyDeliveries",
       component: DeliveryView,
       meta: { requiresAuth: true },
     },
+
     {
       path: "/order-tracker/:claimId",
       name: "Order-Tracker",
@@ -152,6 +161,7 @@ const router = createRouter({
         }
       },
     },
+
     {
       path: "/messages",
       name: "Messages",
@@ -184,7 +194,7 @@ router.beforeEach((to, from) => {
   if (to.path === "/" && isLoggedIn.value) {
     if (isDonor.value) return { name: "Restaurant-Food-Listings" };
     if (isRecipient.value) return { name: "Recipient-Feed" };
-    if (isVolunteer.value) return { name: "Volunteer-Feed" };
+    if (isVolunteer.value) return { name: "AvailableClaims" };
   }
   if (to.name === "Login" || to.name === "Recipient-Registration" || to.name === "Donor-Registration" || to.name === "Volunteer-Registration") {
     if (isLoggedIn.value) return { name: "Home" };
@@ -198,7 +208,7 @@ router.beforeEach((to, from) => {
     return { name: "Home" };
   }
 
-  if (to.name === "Volunteer-Feed" && !isVolunteer.value) {
+  if (to.name === "AvailableClaims" && !isVolunteer.value) {
     return { name: "Home" };
   }
 });

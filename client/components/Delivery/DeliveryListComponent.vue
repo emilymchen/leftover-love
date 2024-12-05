@@ -11,7 +11,7 @@ const emit = defineEmits(["refreshDeliveries", "triggerMessageModal"]);
 let currentDelivery = ref<Record<string, string> | null>(null);
 let isClaimingDelivery = ref(false);
 
-let filter = ref<"all" | "completed" | "non-completed">("all");
+let filter = ref<"all" | "completed" | "non-completed">("non-completed");
 
 async function refreshDeliveries() {
   emit("refreshDeliveries");
