@@ -39,15 +39,13 @@ export default class Responses {
       return claim;
     }
     const claimUser = await Authing.getUserById(claim.claimUser);
-    const claimedItem = await Claiming.getClaimItem(claim._id);
+    const claimedItem = claim.item;
     const expiration_time = await Posting.getExpirationTime(claim._id);
     const postUser = claimedItem ? (await Authing.getUserById(await Posting.getAuthor(claimedItem))).username : null;
     const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
     const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;
     const donorAddress = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
-    const destinationAddress = await Claiming.getClaimDestinationAddress(claim._id);
-    const instructions = await Claiming.getClaimInstructions(claim._id);
-    return { ...claim, claimedItemId: claimedItem, claimUser: claimUser.username, postUser, expiration_time, food_name, quantity, donorAddress, destinationAddress, instructions };
+    return { ...claim, claimUser: claimUser.username, postUser, expiration_time, food_name, quantity, donorAddress };
   }
 
   /**
@@ -57,14 +55,13 @@ export default class Responses {
     const claimUsers = await Authing.idsToUsernames(claims.map((claim) => claim.claimUser));
     const claimsWithDetails = await Promise.all(
       claims.map(async (claim, i) => {
-        const claimedItem = await Claiming.getClaimItem(claim._id);
-        const expiration_time = claimedItem ? await Posting.getExpirationTime(claimedItem) : null;
-        const postUser = claimedItem ? (await Authing.getUserById(await Posting.getAuthor(claimedItem))).username : null;
-        const food_name = claimedItem ? await Posting.getFoodName(claimedItem) : null;
-        const quantity = claimedItem ? await Posting.getQuantity(claimedItem) : null;
-        const donorAddress = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
-        const destinationAddress = await Claiming.getClaimDestinationAddress(claim._id);
-        const instructions = await Claiming.getClaimInstructions(claim._id);
+        const claimedItem = claim.item;
+        const claimedItemDoc = await Posting.getById(claimedItem);
+        const expiration_time = (claimedItem && claimedItemDoc) ? claimedItemDoc.expiration_time : null;
+        const postUser = (claimedItem && claimedItemDoc)? (await Authing.getUserById(claimedItemDoc.author)).username : null;
+        const food_name = (claimedItem && claimedItemDoc) ? claimedItemDoc.food_name : null;
+        const quantity = (claimedItem && claimedItemDoc) ? claimedItemDoc.quantity : null;
+        const donorAddress = (claimedItem && claimedItemDoc) ? await Authing.getUserAddress(claimedItemDoc.author) : null;
         let deliverer;
         try {
           const deliveryId = claimedItem ? await Delivering.getDeliveryByRequest(claim._id) : null;
@@ -79,15 +76,12 @@ export default class Responses {
 
         return {
           ...claim,
-          claimedItemId: claimedItem,
           claimUser: claimUsers[i],
           postUser: postUser,
           expiration_time,
           food_name: food_name,
           quantity: quantity,
           donorAddress: donorAddress,
-          destinationAddress: destinationAddress,
-          instructions: instructions,
           deliverer: deliverer,
         };
       }),

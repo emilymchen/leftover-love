@@ -23,7 +23,7 @@ async function markAsPickedUp() {
 
 async function unclaim() {
   try {
-    await fetchy(`/api/claims/${props.claim.claimedItemId}`, "DELETE");
+    await fetchy(`/api/claims/${props.claim.item}`, "DELETE");
   } catch {
     return;
   }
