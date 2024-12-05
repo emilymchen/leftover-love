@@ -3,11 +3,14 @@ import ClaimListComponent from "@/components/Claim/ClaimListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import MessageComponent from "../components/Message/MessageComponent.vue";
 import SendMessageForm from "../components/Message/SendMessageForm.vue";
 
 const { isLoggedIn, isRecipient, currentUsername } = storeToRefs(useUserStore());
+
+const claims = ref<Array<Record<string, any>>>([]);
+const claimsLoaded = ref(false);
 
 // messaging modal infrastructure
 
@@ -44,6 +47,21 @@ async function getMessages(user: string, claimUser: string) {
   messageLoaded.value = true;
 }
 
+async function fetchAllClaims() {
+  try {
+    const claimResults = await fetchy("/api/claims", "GET");
+    claims.value = claimResults;
+    claimsLoaded.value = true;
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+onBeforeMount(async () => {
+  await fetchAllClaims();
+  console.log(claims.value);
+});
+
 </script>
 
 <template>
@@ -52,15 +70,15 @@ async function getMessages(user: string, claimUser: string) {
       <div class="header-container">
         <h1>Pending claims</h1>
       </div>
-      <ClaimListComponent @triggerMessageModal="triggerMessage" :category="'pending'" />
+      <ClaimListComponent @triggerMessageModal="triggerMessage" @refreshAllClaims="fetchAllClaims" :claims=claims :category="'pending'" />
 
       <h1>Completed claims</h1>
 
-      <ClaimListComponent @triggerMessageModal="triggerMessage" :category="'completed'" />
+      <ClaimListComponent @triggerMessageModal="triggerMessage" @refreshAllClaims="fetchAllClaims" :claims="claims" :category="'completed'" />
 
       <h1>Expired claims</h1>
 
-      <ClaimListComponent @triggerMessageModal="triggerMessage" :category="'expired'" />
+      <ClaimListComponent @triggerMessageModal="triggerMessage" @refreshAllClaims="fetchAllClaims" :claims="claims" :category="'expired'" />
 
       <div v-if="messageView" class="modal-background">
         <div class="modal">

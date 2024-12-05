@@ -23,7 +23,7 @@ async function markAsPickedUp() {
 
 async function unclaim() {
   try {
-    await fetchy(`/api/claims/${props.claim.post._id}`, "DELETE");
+    await fetchy(`/api/claims/${props.claim.claimedItemId}`, "DELETE");
   } catch {
     return;
   }
@@ -33,14 +33,14 @@ async function unclaim() {
 
 <template>
   <div class="top-section">
-    <div class="food-name">{{ props.claim.post.food_name }}</div>
+    <div class="food-name">{{ props.claim.food_name }}</div>
   </div>
   <div class="author-details">
-    <div class="author">{{ props.claim.post.author }}</div>
+    <div class="author">{{ props.claim.postUser }}</div>
   </div>
   <div class="qty-expiration-details">
-    <div class="quantity">Qty: {{ props.claim.post.quantity }}</div>
-    <div class="expiration-time">Expires: {{ formatDate(new Date(props.claim.post.expiration_time)) }}</div>
+    <div class="quantity">Qty: {{ props.claim.quantity }}</div>
+    <div class="expiration-time">Expires: {{ formatDate(new Date(props.claim.expiration_time)) }}</div>
   </div>
 
   <div class="pickup-delivery-details">

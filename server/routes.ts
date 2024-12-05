@@ -272,13 +272,7 @@ class Routes {
   async getUserClaims(session: SessionDoc) {
     const user = Sessioning.getUser(session);
     const allClaims = await Claiming.getClaimsByUser(user);
-    const fullClaims = allClaims.map(async (claim) => {
-      const oid = new ObjectId(claim.item);
-      const post = await Posting.getById(oid);
-      const postWithAuthor = await Responses.post(post);
-      return { ...claim, post: postWithAuthor };
-    });
-    return Responses.claims(await Promise.all(fullClaims));
+    return Responses.claims(allClaims);
   }
 
   /**

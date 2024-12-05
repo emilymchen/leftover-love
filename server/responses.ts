@@ -47,7 +47,7 @@ export default class Responses {
     const donorAddress = claimedItem ? await Authing.getUserAddress(await Posting.getAuthor(claimedItem)) : null;
     const destinationAddress = await Claiming.getClaimDestinationAddress(claim._id);
     const instructions = await Claiming.getClaimInstructions(claim._id);
-    return { ...claim, claimUser: claimUser.username, postUser, expiration_time, food_name, quantity, donorAddress, destinationAddress, instructions };
+    return { ...claim, claimedItemId: claimedItem, claimUser: claimUser.username, postUser, expiration_time, food_name, quantity, donorAddress, destinationAddress, instructions };
   }
 
   /**
@@ -79,6 +79,7 @@ export default class Responses {
 
         return {
           ...claim,
+          claimedItemId: claimedItem,
           claimUser: claimUsers[i],
           postUser: postUser,
           expiration_time,

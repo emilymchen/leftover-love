@@ -1,32 +1,27 @@
 <script setup lang="ts">
-import { fetchy } from "@/utils/fetchy";
-import { defineEmits, onBeforeMount, ref } from "vue";
+import { defineEmits, ref, watch } from "vue";
 import ClaimComponent from "../../components/Claim/ClaimComponent.vue";
 
-const props = defineProps(["category"]);
+const props = defineProps(["category", "claims"]);
 
 const loaded = ref(false);
 let claims = ref<Array<Record<string, string>>>([]);
 let currentClaim = ref<Record<string, any> | null>(null);
-let emit = defineEmits(["triggerMessageModal"]);
+let emit = defineEmits(["triggerMessageModal", "refreshAllClaims"]);
 
 const filterType = ref<"pickup" | "delivery" | "all">("all");
 
 let filteredClaims = ref<Array<Record<string, string>>>([]);
 
 async function getClaims() {
-  let claimResults;
-  try {
-    claimResults = await fetchy("/api/claims", "GET");
-  } catch {
-    return;
-  }
+  let claimResults = props.claims;
+  loaded.value = true;
   if (props.category === "completed") {
     claims.value = claimResults.filter((claim: Record<string, any>) => claim.status === "Completed");
   } else if (props.category === "expired") {
-    claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.post.expiration_time).toISOString() < new Date().toISOString());
+    claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.expiration_time).toISOString() < new Date().toISOString());
   } else {
-    claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.post.expiration_time).toISOString() >= new Date().toISOString() && claim.status === "Requested");
+    claims.value = claimResults.filter((claim: Record<string, any>) => new Date(claim.expiration_time).toISOString() >= new Date().toISOString() && claim.status === "Requested");
   }
 }
 function filterClaims() {
@@ -45,9 +40,18 @@ async function updateClaims() {
   loaded.value = true;
 }
 
-onBeforeMount(async () => {
-  await updateClaims();
-});
+watch(
+  () => props.claims,
+  async () => {
+    if (props.claims && props.claims.length > 0) {
+      await updateClaims();
+    }
+    else {
+      loaded.value = true;
+    }
+  },
+);
+
 </script>
 
 <template>
@@ -109,7 +113,7 @@ onBeforeMount(async () => {
           v-if="currentClaim?._id !== claim._id"
           :claim="claim"
           :category="props.category"
-          @refreshClaims="updateClaims"
+          @refreshClaims="emit('refreshAllClaims')"
           @triggerMessageModal="(type) => emit('triggerMessageModal', type === 'driver' ? claim.deliverer : claim.postUser)"
         />
       </article>
