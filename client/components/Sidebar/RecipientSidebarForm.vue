@@ -172,6 +172,7 @@ ul {
   height: 25px;
   display: block;
 }
+
 .logout-button {
   position: absolute;
   bottom: 2em;
@@ -180,7 +181,7 @@ ul {
   border: none;
   color: var(--darker-green);
   text-decoration: underline;
-  font-size: 15px;
+  font-size: 20px;
   cursor: pointer;
 }
 

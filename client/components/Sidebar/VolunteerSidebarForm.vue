@@ -178,7 +178,7 @@ ul {
   border: none;
   color: var(--darker-green);
   text-decoration: underline;
-  font-size: 15px;
+  font-size: 20px;
   cursor: pointer;
 }
 
