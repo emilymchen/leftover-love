@@ -73,7 +73,7 @@ function hasAllFilterTags(post: Record<string, any>) {
   }
 
   for (const tag of filterTags.value) {
-    if (!postTags.tags.includes(tag)) {
+    if (!postTags.tags.includes(tag.toLowerCase())) {
       return false;
     }
   }
