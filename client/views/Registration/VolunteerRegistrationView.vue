@@ -8,3 +8,19 @@ import RegisterForm from "@/components/Login/RegisterForm.vue";
     <RegisterForm role="Volunteer" />
   </main>
 </template>
+
+<style scoped>
+h1 {
+  color: #d23818;
+  font-size: 40pt;
+  font-weight: lighter;
+  margin-bottom: 5vh;
+}
+
+.column {
+  background-image: url("@/assets/images/landing-background.png");
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+}
+</style>

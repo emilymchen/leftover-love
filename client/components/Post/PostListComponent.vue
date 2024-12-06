@@ -189,11 +189,8 @@ onBeforeMount(async () => {
 
 <template>
   <div class="posts-outer-container">
-    <p v-if="!loaded">Loading...</p>
-
     <div v-if="isDonor" class="header-container">
       <h1>My Food Listings</h1>
-
       <div v-if="isDonor" class="filter-buttons">
         <button
           :class="{ active: filterType === 'all' }"
@@ -259,7 +256,7 @@ onBeforeMount(async () => {
         </div>
       </div>
     </div>
-
+    <p v-if="!loaded">Loading...</p>
     <section class="posts" v-if="loaded">
       <article v-if="isDonor" class="create-post-box" @click="isCreatingPost = true">
         <div class="create-post-content">
