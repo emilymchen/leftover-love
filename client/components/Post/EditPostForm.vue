@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, computed } from "vue";
+import { defineProps, defineEmits, ref, computed, watch } from "vue";
 import { fetchy } from "../../utils/fetchy";
 import { useToastStore } from "@/stores/toast";
 import { storeToRefs } from "pinia";
@@ -49,6 +49,7 @@ const editPost = async (food_name: string, quantity: number, expiration_time: st
   emit("editPost", null);
   emit("closeEditPost");
 };
+
 const deletePost = async () => {
   try {
     await fetchy(`/api/posts/${props.post._id}`, "DELETE");
@@ -95,6 +96,22 @@ const validateTag = (tag: string) => {
 const removeTag = (tag: string) => {
   tagsToDisplay.value.splice(tagsToDisplay.value.indexOf(tag), 1);
 };
+
+// Watch for quantity changes, enforce a maximum quantity of 5
+watch(qty, (newQty) => {
+  if (newQty > 5) {
+    toast.value = {
+      message: "Maximum quantity allowed is 5.",
+      style: "error",
+    };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+
+    // Reset quantity to the maximum value
+    qty.value = 5;
+  }
+});
 </script>
 
 <template>
@@ -106,7 +123,7 @@ const removeTag = (tag: string) => {
     </div>
     <div class="form-group">
       <label for="qty">Quantity</label>
-      <input type="number" id="qty" v-model="qty" min="1" max="5" placeholder="Quantity" required />
+      <input type="number" id="qty" v-model="qty" min="1" max="6" placeholder="Quantity" required />
     </div>
     <div class="form-group">
       <label for="expiration_time">Expiration Date</label>
