@@ -46,10 +46,12 @@ async function login() {
   justify-content: flex-start;
   gap: 1rem;
   margin-bottom: 1rem;
+  font-size: 20px;
 }
 
 .pure-button-primary {
-  margin-left: -30px;
+  margin-top: 25px;
+  margin-left: 10px;
   background-color: #d23818;
   color: #f7bfa8;
   border: none;
