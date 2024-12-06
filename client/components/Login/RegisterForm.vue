@@ -108,7 +108,7 @@ watch(address, (newValue) => {
         <label for="aligned-address">Address</label>
         <input type="text" v-model.trim="address" id="aligned-address" placeholder="Address" required />
       </div>
-      <div v-if="props.role === 'Donor'">
+      <div v-if="props.role === 'Donor'" class="map-display">
         <iframe
           v-if="debouncedAddress"
           width="500"
@@ -151,9 +151,12 @@ h3 {
   font-size: 20px;
 }
 
+.map-display {
+  margin-top: 30px;
+}
+
 
 .submit-button {
-  margin-top: 25px;
   background-color: #d23818;
   color: #f7bfa8;
   border: none;
