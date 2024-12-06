@@ -153,7 +153,7 @@ h3 {
 
 
 .submit-button {
-  margin-left: -50px;
+  margin-top: 25px;
   background-color: #d23818;
   color: #f7bfa8;
   border: none;
