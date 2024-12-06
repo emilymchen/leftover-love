@@ -46,16 +46,28 @@ const addTag = (tag: string) => {
     return;
   }
   
-  tags.value.push(tag);
+  tags.value.push(tag.toLowerCase());
   emptyTags();
 };
 
 const validateTag = (tag: string) => {
-  if (tag.split(" ").length === 1 && tag !== "" && !tags.value.includes(tag)) {
+  if (tag.split(" ").length === 1 && tag !== "" && !tags.value.includes(tag.toLowerCase())) {
     toast.value = null;
     return true;
-  } else {
+  } else if ((tag.split(" ").length !== 1 || tag == "") && tags.value.includes(tag.toLowerCase())) {
     toast.value = { message: "Tags must be one word and not have been added before.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
+  } else if (tag.split(" ").length !== 1 || tag == "") {
+    toast.value = { message: "Tags must be one word.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
+  } else if (tags.value.includes(tag.toLowerCase())) {
+    toast.value = { message: "Tags must not have been added before.", style: "error" };
     setTimeout(() => {
       toast.value = null;
     }, 3000);

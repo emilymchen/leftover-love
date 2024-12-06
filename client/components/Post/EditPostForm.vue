@@ -63,16 +63,28 @@ const addTag = (tag: string) => {
   if (!validateTag(tag)) {
     return;
   }
-  tagsToDisplay.value.push(tag);
+  tagsToDisplay.value.push(tag.toLowerCase());
   tagToAdd.value = "";
 };
 
 const validateTag = (tag: string) => {
-  if (tag.split(" ").length === 1 && tag !== "" && !tagsToDisplay.value.includes(tag)) {
+  if (tag.split(" ").length === 1 && tag !== "" && !tagsToDisplay.value.includes(tag.toLowerCase())) {
     toast.value = null;
     return true;
-  } else {
+  } else if ((tag.split(" ").length !== 1 || tag == "") && tagsToDisplay.value.includes(tag.toLowerCase())) {
     toast.value = { message: "Tags must be one word and not have been added before.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
+  } else if (tag.split(" ").length !== 1 || tag == "") {
+    toast.value = { message: "Tags must be one word.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
+  } else if (tagsToDisplay.value.includes(tag.toLowerCase())) {
+    toast.value = { message: "Tags must not have been added before.", style: "error" };
     setTimeout(() => {
       toast.value = null;
     }, 3000);
