@@ -120,7 +120,8 @@ watch(address, (newValue) => {
           :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${debouncedAddress}`"
         >
         </iframe>
-        <iframe v-else
+        <iframe
+          v-else
           width="500"
           height="300"
           style="border: 0"
@@ -132,7 +133,7 @@ watch(address, (newValue) => {
         </iframe>
       </div>
       <div class="pure-controls">
-        <button type="submit">Register</button>
+        <button type="submit" class="pure-button submit-button">Register</button>
       </div>
     </fieldset>
   </form>
@@ -142,5 +143,19 @@ watch(address, (newValue) => {
 h3 {
   display: flex;
   justify-content: center;
+}
+
+.submit-button {
+  margin-left: -50px;
+  background-color: #d23818;
+  color: #f7bfa8;
+  border: none;
+  border-radius: 100px;
+  padding: 0.8rem 2rem;
+  font-size: 1.3rem;
+}
+
+.submit-button:hover {
+  background-color: #bf2000;
 }
 </style>
