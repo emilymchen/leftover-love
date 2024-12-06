@@ -40,7 +40,12 @@ async function login() {
 </template>
 
 <style scoped>
+
+.h3 {
+  margin-top: 0px;
+}
 .pure-control-group {
+  margin-left: -100px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -50,8 +55,8 @@ async function login() {
 }
 
 .pure-button-primary {
+  margin-left: -50px;
   margin-top: 25px;
-  margin-left: 10px;
   background-color: #d23818;
   color: #f7bfa8;
   border: none;
@@ -65,8 +70,9 @@ async function login() {
 }
 
 .register-section {
+  margin-left: -300px;
   text-align: center;
-  margin-top: 1.5rem;
+  margin-top: 0px;
   font-size: 1rem;
   color: #194326;
   width: 30vw;

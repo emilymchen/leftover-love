@@ -21,6 +21,7 @@ import LoginForm from "@/components/Login/LoginForm.vue";
 
 <style scoped>
 h1 {
+
   color: #d23818;
   font-size: 40pt;
   font-weight: lighter;

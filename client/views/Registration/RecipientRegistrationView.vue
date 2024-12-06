@@ -18,7 +18,7 @@ h1 {
   color: #d23818;
   font-size: 40pt;
   font-weight: lighter;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
 h2 {

@@ -149,9 +149,12 @@ h3 {
 
 .pure-control-group {
   font-size: 20px;
+  margin-left: -100px;
+
 }
 
 .map-display {
+  margin-left: -50px;
   margin-top: 30px;
 }
 
@@ -163,6 +166,7 @@ h3 {
   border-radius: 100px;
   padding: 0.8rem 2rem;
   font-size: 1.3rem;
+  margin-left: -40px;
 }
 
 .submit-button:hover {

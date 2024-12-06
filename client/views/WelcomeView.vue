@@ -33,7 +33,7 @@ h2 {
   color: #03240c;
   font-style: italic;
   font-weight: 200;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 
 .column {
