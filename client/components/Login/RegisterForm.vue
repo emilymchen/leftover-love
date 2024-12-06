@@ -93,8 +93,8 @@ watch(address, (newValue) => {
 
 <template>
   <form class="pure-form pure-form-aligned" @submit.prevent="register">
-    <h3>Register User</h3>
-    <h3>{{ props.role }}</h3>
+    <!-- <h3>Register User</h3>
+    <h3>{{ props.role }}</h3> -->
     <fieldset>
       <div class="pure-control-group">
         <label for="aligned-name">Username</label>
