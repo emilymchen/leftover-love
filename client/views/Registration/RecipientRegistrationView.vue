@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import RegisterForm from "@/components/Login/RegisterForm.vue";
+import router from "@/router";
+
+async function back() {
+  void router.push("/");
+}
 </script>
 
 <template>
   <main class="column">
+    <button @click="back" class="back-button">back</button>
     <h1>Find food today</h1>
     <h2>Need a meal? We've got you covered.</h2>
     <RegisterForm role="Recipient" />
@@ -31,6 +37,20 @@ h2 {
   background-size: cover;
   width: 100vw;
   height: 100vh;
+}
+
+.back-button {
+  position: absolute;
+  top: 3vh;
+  right: 3vh;
+  margin: 1rem;
+  background-color: #d23818;
+  color: #f7bfa8;
+  border: none;
+  border-radius: 100px;
+  padding: 0.8rem 2rem;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
 .register-section {

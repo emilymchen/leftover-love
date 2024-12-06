@@ -1,19 +1,15 @@
 <script setup lang="ts">
 import LoginForm from "@/components/Login/LoginForm.vue";
+import router from "@/router";
+
+async function back() {
+  void router.push("/");
+}
 </script>
 
 <template>
-  <!-- <header>
-    <nav>
-      <div class="title">
-        <img src="@/assets/images/logo.png" alt="Logo" />
-        <RouterLink :to="{ name: 'Home' }">
-          <h2>Leftover Love</h2>
-        </RouterLink>
-      </div>
-    </nav>
-  </header> -->
   <main class="column">
+    <button @click="back" class="back-button">back</button>
     <h1>Log In</h1>
     <LoginForm />
   </main>
@@ -21,11 +17,24 @@ import LoginForm from "@/components/Login/LoginForm.vue";
 
 <style scoped>
 h1 {
-
   color: #d23818;
   font-size: 40pt;
   font-weight: lighter;
   margin-bottom: 5vh;
+}
+
+.back-button {
+  position: absolute;
+  top: 3vh;
+  right: 3vh;
+  margin: 1rem;
+  background-color: #d23818;
+  color: #f7bfa8;
+  border: none;
+  border-radius: 100px;
+  padding: 0.8rem 2rem;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
 .column {
