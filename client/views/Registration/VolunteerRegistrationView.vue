@@ -4,13 +4,7 @@ import RegisterForm from "@/components/Login/RegisterForm.vue";
 
 <template>
   <main class="column">
-    <div class="header">
-      <RouterLink to="/" class="pull-left">
-        <img src="@/assets/images/arrow_back.png" />
-      </RouterLink>
-      <h1>Make a difference today</h1>
-    </div>
-
+    <h1>Make a difference today</h1>
     <h2>Volunteer to change the world, one meal at a time.</h2>
     <RegisterForm role="Volunteer" />
     <div class="register-section">
@@ -25,30 +19,11 @@ h1 {
   font-size: 40pt;
   font-weight: lighter;
   margin-bottom: 0px;
-  margin: 0 auto;
 }
 
 h2 {
   color: #03240c;
   font-weight: 200;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 57vw;
-  margin: 0 auto;
-}
-
-.pull-left {
-  position: absolute;
-  left: 0;
-}
-
-img {
-  width: 50px;
-  height: 50px;
 }
 
 .column {
