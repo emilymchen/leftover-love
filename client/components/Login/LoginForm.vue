@@ -55,7 +55,7 @@ async function login() {
 }
 
 .pure-button-primary {
-  margin-left: -50px;
+  margin-left: -40px;
   margin-top: 25px;
   background-color: #d23818;
   color: #f7bfa8;
@@ -70,7 +70,7 @@ async function login() {
 }
 
 .register-section {
-  margin-left: -300px;
+  margin-left: 50px;
   text-align: center;
   margin-top: 0px;
   font-size: 1rem;
