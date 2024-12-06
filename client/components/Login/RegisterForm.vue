@@ -139,11 +139,18 @@ watch(address, (newValue) => {
   </form>
 </template>
 
+
+
 <style scoped>
 h3 {
   display: flex;
   justify-content: center;
 }
+
+.pure-control-group {
+  font-size: 20px;
+}
+
 
 .submit-button {
   margin-left: -50px;
