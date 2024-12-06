@@ -46,8 +46,15 @@ async function unacceptDelivery() {
     <div class="food-name">{{ props.delivery.food_name }}</div>
   </div>
   <div class="address">
-    <div class="address">Pickup Location: {{ props.delivery.donorAddress }}</div>
-    <div class="address">Delivery Location: {{ props.delivery.destinationAddress }}</div>
+    <div>
+      <div class="address-type">Pickup Location:</div>
+      {{ props.delivery.donorAddress }}
+    </div>
+    <div>
+      <div class="address-type">Delivery Location:</div>
+      {{ props.delivery.destinationAddress }}
+    </div>
+    <!-- <div class="address">Delivery Location: {{ props.delivery.destinationAddress }}</div> -->
   </div>
   <div class="qty-expiration-details">
     <div class="quantity">Qty: {{ props.delivery.quantity }}</div>
@@ -184,5 +191,16 @@ async function unacceptDelivery() {
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
+}
+
+.address-type {
+  font-weight: bold;
+  color: var(--dark-green);
+}
+
+.address {
+  display: flex;
+  flex-flow: column;
+  gap: 0.5em;
 }
 </style>
