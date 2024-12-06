@@ -3,29 +3,42 @@ import LoginForm from "@/components/Login/LoginForm.vue";
 </script>
 
 <template>
-  <!-- <header>
-    <nav>
-      <div class="title">
-        <img src="@/assets/images/logo.png" alt="Logo" />
-        <RouterLink :to="{ name: 'Home' }">
-          <h2>Leftover Love</h2>
-        </RouterLink>
-      </div>
-    </nav>
-  </header> -->
   <main class="column">
-    <h1>Log In</h1>
+    <div class="header">
+      <RouterLink to="/" class="pull-left">
+        <img src="@/assets/images/arrow_back.png" />
+      </RouterLink>
+      <h1>Log In</h1>
+    </div>
     <LoginForm />
   </main>
 </template>
 
 <style scoped>
 h1 {
-
   color: #d23818;
   font-size: 40pt;
   font-weight: lighter;
   margin-bottom: 5vh;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 25vw;
+  margin: 0 auto;
+}
+
+.pull-left {
+  position: absolute;
+  left: 0;
+}
+
+img {
+  width: 50px;
+  height: 50px;
 }
 
 .column {
@@ -40,28 +53,5 @@ h2 {
   margin: 0;
   font-weight: bold;
   color: var(--darker-green);
-}
-
-nav {
-  padding: 1em 4em;
-  background-color: var(--beige);
-  display: flex;
-  align-items: center;
-}
-
-.title {
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-}
-
-img {
-  height: 2em;
-}
-
-a {
-  font-size: large;
-  color: black;
-  text-decoration: none;
 }
 </style>
