@@ -85,7 +85,7 @@ export default class AuthenticatingConcept {
 
   async authenticate(username: string, password: string) {
     const user = await this.users.readOne({ username, password });
-    if (!user) {
+    if (user == null) {
       throw new NotAllowedError("Username or password is incorrect.");
     }
     return { msg: "Successfully authenticated.", _id: user._id };
@@ -99,7 +99,7 @@ export default class AuthenticatingConcept {
 
   async updatePassword(_id: ObjectId, currentPassword: string, newPassword: string) {
     const user = await this.users.readOne({ _id });
-    if (!user) {
+    if (user == null) {
       throw new NotFoundError("User not found");
     }
     if (user.password !== currentPassword) {

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import LoginForm from "@/components/Login/LoginForm.vue";
 import router from "@/router";
+import { useToastStore } from "@/stores/toast";
 
 async function back() {
   void router.push("/");
 }
+const { toast } = useToastStore();
 </script>
 
 <template>
@@ -22,6 +24,7 @@ h1 {
   font-weight: lighter;
   margin-bottom: 5vh;
 }
+
 
 .back-button {
   position: absolute;

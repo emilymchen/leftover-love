@@ -130,14 +130,14 @@ onBeforeMount(() => {
       <button class="expired-button">Completed</button>
     </div>
     <div v-else>
-      <button class="edit-button" @click="emit('claimDelivery', props.delivery._id)">Claim</button>
+      <button class="edit-button" @click="emit('claimDelivery', props.delivery._id)">Accept Delivery</button>
     </div>
-    <div v-if="props.own">
+    <div class="messaging-buttons" v-if="props.own">
       <button class="edit-button" @click="emit('triggerMessageModal', 'recipient')">Message Recipient</button>
       <button class="edit-button" @click="emit('triggerMessageModal', 'donor')">Message Donor</button>
     </div>
     <div v-if="props.own && props.delivery.status == 'Not Started'">
-      <button class="expired-button" @click="unacceptDelivery">Unclaim</button>
+      <button class="expired-button" @click="unacceptDelivery">Unaccept Delivery</button>
     </div>
   </div>
 </div>
@@ -158,6 +158,7 @@ onBeforeMount(() => {
 
 .base {
   width: 100%;
+  margin-top: 12px;
 
   menu {
     list-style-type: none;
@@ -202,6 +203,10 @@ onBeforeMount(() => {
     bottom: 0;
     background-color: grey;
     color: var(--light-beige);
+  }
+
+  .messaging-buttons{
+    margin-top: 12px;
   }
 }
 

@@ -17,7 +17,7 @@ async function register() {
   await createUser(username.value, password.value, props.role, address.value);
   await loginUser(username.value, password.value);
   await updateSession();
-  void router.push({ name: "Home" });
+  await router.push({ name: "Home" });
 }
 
 let googleMapsApiPromise: any = null;

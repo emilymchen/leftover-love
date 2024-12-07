@@ -5,6 +5,7 @@ import { Router, getExpressRouter } from "./framework/router";
 import { Authing, Claiming, Delivering, Messaging, Posting, Sessioning, Tagging } from "./app";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
+import { NotAllowedError } from "./concepts/errors";
 
 import { z } from "zod";
 
@@ -36,7 +37,7 @@ class Routes {
     Sessioning.isLoggedOut(session);
     for (const word of username.split(" ")) {
       if (word.length > 15) {
-        throw new Error("Limit each word in username to be <15 characters!");
+        throw new NotAllowedError("Limit each word in username to be <15 characters!");
       }
     }
     return await Authing.create(username, password, role, location);
@@ -47,7 +48,7 @@ class Routes {
     const user = Sessioning.getUser(session);
     for (const word of username.split(" ")) {
       if (word.length > 15) {
-        throw new Error("Limit each word in username to be <15 characters!");
+        throw new NotAllowedError("Limit each word in username to be <15 characters!");
       }
     }
     return await Authing.updateUsername(user, username);
