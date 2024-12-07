@@ -59,7 +59,7 @@ async function getDistance() {
       travelMode: google.maps.TravelMode.DRIVING,
     };
 
-    service.getDistanceMatrix(request, (response: google.maps.DistanceMatrixResponse, status: google.maps.DistanceMatrixStatus) => {
+    service.getDistanceMatrix(request, (response: any, status: any) => {
       if (status === google.maps.DistanceMatrixStatus.OK) {
         const distanceInMeters = response.rows[0].elements[0].distance.value;
         const distanceInMiles = distanceInMeters / 1609.34;
