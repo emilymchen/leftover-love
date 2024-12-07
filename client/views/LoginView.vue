@@ -32,7 +32,7 @@ h1 {
   right: 3vh;
   margin: 1rem;
   background-color: #d23818;
-  color: #f7bfa8;
+  color: var(--salmon);
   border: none;
   border-radius: 100px;
   padding: 0.8rem 2rem;

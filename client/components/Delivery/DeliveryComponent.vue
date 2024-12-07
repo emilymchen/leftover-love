@@ -133,8 +133,8 @@ onBeforeMount(() => {
       <button class="edit-button" @click="emit('claimDelivery', props.delivery._id)">Accept Delivery</button>
     </div>
     <div class="messaging-buttons" v-if="props.own">
-      <button class="edit-button" @click="emit('triggerMessageModal', 'recipient')">Message Recipient</button>
-      <button class="edit-button" @click="emit('triggerMessageModal', 'donor')">Message Donor</button>
+      <button class="message-button" @click="emit('triggerMessageModal', 'recipient')">Message Recipient</button>
+      <button class="message-button" @click="emit('triggerMessageModal', 'donor')">Message Donor</button>
     </div>
     <div v-if="props.own && props.delivery.status == 'Not Started'">
       <button class="expired-button" @click="unacceptDelivery">Unaccept Delivery</button>
@@ -181,14 +181,22 @@ onBeforeMount(() => {
     font-weight: bold;
     cursor: pointer;
     text-align: center;
-    background-color: var(--orange);
     transition: transform 0.2s ease;
     position: relative;
     bottom: 0;
   }
 
-  .edit-button:hover {
-    transform: scale(1.05);
+  .message-button {
+    width: 100%;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    background-color: var(--brown);
+    transition: transform 0.2s ease;
+    position: relative;
+    bottom: 0;
   }
 
   .expired-button {
@@ -199,10 +207,9 @@ onBeforeMount(() => {
     cursor: pointer;
     text-align: center;
     transition: transform 0.2s ease;
-    position: relative;
-    bottom: 0;
     background-color: grey;
     color: var(--light-beige);
+    margin-top: 12px;
   }
 
   .messaging-buttons{
