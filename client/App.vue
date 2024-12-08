@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import RecipientSidebarForm from "@/components/Sidebar/RecipientSidebarForm.vue";
 import RestaurantSidebarForm from "@/components/Sidebar/RestaurantSidebarForm.vue";
-import VolunteerSidebarForm from "./components/Sidebar/VolunteerSidebarForm.vue";
 import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { computed, onBeforeMount } from "vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
+import VolunteerSidebarForm from "./components/Sidebar/VolunteerSidebarForm.vue";
 
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
@@ -45,10 +45,10 @@ onBeforeMount(async () => {
         </ul>
       </div>
     </nav>
-    <article v-if="toast !== null" class="toast" :class="toast.style">
-      <p>{{ toast.message }}</p>
-    </article>
   </header>
+  <article v-if="toast !== null" class="toast" :class="toast.style">
+    <p>{{ toast.message }}</p>
+  </article>
   <RouterView />
 </template>
 
