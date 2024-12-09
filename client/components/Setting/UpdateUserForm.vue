@@ -147,7 +147,6 @@ watch(address, (newValue) => {
         </div>
         <div class="edit-components" v-if="editAddressToggled">
           <input type="text" v-model.trim="address" id="address" placeholder="New address" required />
-          <button type="submit" class="pure-button pure-button-primary">Update address</button>
         </div>
         <iframe v-if="debouncedAddress"
         width="350"
@@ -160,7 +159,7 @@ watch(address, (newValue) => {
       >
       </iframe>
       <iframe v-else
-        width="350"
+        width="350" 
         height="300"
         style="border: 0"
         loading="lazy"
@@ -168,6 +167,9 @@ watch(address, (newValue) => {
         referrerpolicy="no-referrer-when-downgrade"
         :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${currentAddress}`"
       ></iframe>
+      <div class="edit-components" v-if="editAddressToggled">
+          <button type="submit" class="pure-button pure-button-primary">Update address</button>
+        </div>
       </fieldset>
     </form>
   </div>
