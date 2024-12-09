@@ -23,7 +23,7 @@ let isClaimingPost = ref(false);
 let tagToAdd = ref("");
 
 // State for toggle filter
-let suggestedTags = ref<Array<string>>(["dairy", "gluten", "vegan", "vegetarian", "gluten-free", "dairy-free", "meat"]);
+let suggestedTags = ref<Array<string>>(["dairy", "gluten", "nut", "vegan", "vegetarian", "dairy-free", "gluten-free", "nut-free", "meat"]);
 const filterType = ref<"all" | "claimed" | "unclaimed">("all");
 let postIdtoClaimStatus = new Map<string, boolean>();
 let filteredPosts = ref<Array<Record<string, any>>>([]);
@@ -234,7 +234,7 @@ onBeforeMount(async () => {
 
     <div class="recipient-tag-filter" v-if="isRecipient">
       <div class="filter-search-bar">
-        <input type="text" id="tags" v-model="tagToAdd" placeholder="Input tags to filter by (one word)" />
+        <input type="text" id="tags" v-model="tagToAdd" @keydown.enter="addTag(tagToAdd)" placeholder="Type or select tags to filter by (one word)" />
 
         <select v-model="selectedTag" @change="addTagFromDropdown(selectedTag)">
           <option value="" disabled>Select a tag</option>
@@ -345,7 +345,7 @@ onBeforeMount(async () => {
 
   .filter-search-bar {
     display: flex;
-    width: 300px;
+    width: 360px;
     flex-flow: row nowrap;
     justify-content: space-between;
     border: 2px solid var(--darker-green);
@@ -361,6 +361,10 @@ onBeforeMount(async () => {
     background-color: transparent;
     color: var(--light-beige);
     border: none;
+    border-radius: 16px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: bold;
   }
 
   .tag-display {
