@@ -31,7 +31,7 @@ const deleteMessage = async () => {
       <p
         class="message-content"
         :style="{
-          backgroundColor: props.message.from == currentUsername ? '#b0b470' : 'lightgrey',
+          backgroundColor: props.message.from == currentUsername ? '#b7bc71' : '#b8a886',
         }"
       >
         {{ props.message.content }}

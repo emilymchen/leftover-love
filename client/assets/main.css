@@ -22,6 +22,10 @@
   --salmon: #f7bfa8;
   --brown: #6f5436;
   --dark-brown: #6f5436;
+  --selected-brown: #93876b;
+  --sidebar-brown: #b8a886;
+  --background-brown: #cfbe98;
+  --my-green: #b7bc71;
 }
 
 button.btn-small {
