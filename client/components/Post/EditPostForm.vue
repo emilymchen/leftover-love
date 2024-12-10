@@ -133,7 +133,7 @@ watch(qty, (newQty) => {
     <div class="form-group">
       <label for="tags">Tags (one word)</label>
       <div class="form-group-tag" style="display: flex; align-items: center; gap: 10px;">
-        <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags (e.g., vegan, spicy)" />
+        <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags (e.g., vegan, spicy)" @keydown.enter.prevent="addTag(tagToAdd)"/>
         <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">add</button>
       </div>
     </div>

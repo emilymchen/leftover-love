@@ -91,6 +91,14 @@ export default class AuthenticatingConcept {
     return { msg: "Successfully authenticated.", _id: user._id };
   }
 
+  async getPasswordLength(_id: ObjectId) {
+    const user = await this.users.readOne({ _id });
+    if (user == null) {
+      throw new NotFoundError("User not found");
+    }
+    return user.password.length;
+  }
+
   async updateUsername(_id: ObjectId, username: string) {
     await this.assertUsernameUnique(username);
     await this.users.partialUpdateOne({ _id }, { username });

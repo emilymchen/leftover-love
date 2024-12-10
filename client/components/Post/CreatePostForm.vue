@@ -125,7 +125,7 @@ const emptyTags = () => {
     <div class="form-group">
       <label for="tag">Tags (one word)</label>
       <div class="form-group-tag" style="display: flex; align-items: center; gap: 10px">
-        <input type="text" id="tag" v-model="tag" placeholder="Tags (e.g., vegan, spicy)" style="flex: 1" />
+        <input type="text" id="tag" v-model="tag" placeholder="Tags (e.g., vegan, spicy)" style="flex: 1" @keydown.enter.prevent="addTag(tag)"/>
         <button class="add-tag-button" type="button" @click="addTag(tag)">add</button>
       </div>
     </div>

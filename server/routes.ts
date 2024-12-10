@@ -60,6 +60,12 @@ class Routes {
     return Authing.updatePassword(user, currentPassword, newPassword);
   }
 
+  @Router.get("users/password")
+  async getPasswordLength(session: SessionDoc){
+    const user = Sessioning.getUser(session);
+    return await Authing.getPasswordLength(user);
+  }
+
   @Router.patch("/users/address")
   async updateAddress(session: SessionDoc, address: string) {
     const user = Sessioning.getUser(session);

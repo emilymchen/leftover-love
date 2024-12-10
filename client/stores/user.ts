@@ -9,6 +9,7 @@ export const useUserStore = defineStore(
     const currentUsername = ref("");
     const currentAddress = ref("");
     const currentRole = ref("");
+    const currentPasswordLength = ref(0);
 
     const isLoggedIn = computed(() => currentUsername.value !== "");
 
@@ -45,6 +46,13 @@ export const useUserStore = defineStore(
         currentRole.value = "";
         currentAddress.value = "";
       }
+
+      try {
+        const { length } = await fetchy("/api/users/password", "GET", { alert: false });
+        currentPasswordLength.value = length;
+      } catch {
+        currentPasswordLength.value = 9;
+      }
     };
 
     const logoutUser = async () => {
@@ -73,6 +81,7 @@ export const useUserStore = defineStore(
       currentUsername,
       currentRole,
       currentAddress,
+      currentPasswordLength,
       isLoggedIn,
       isDonor,
       isRecipient,

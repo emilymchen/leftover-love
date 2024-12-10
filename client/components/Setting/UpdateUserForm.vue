@@ -2,6 +2,9 @@
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
+import { fetchy } from "@/utils/fetchy";
+import { onMounted, computed } from "vue";
+import { on } from "connect-mongo";
 
 let username = ref("");
 let currentPassword = ref("");
@@ -13,14 +16,14 @@ let editAddressToggled = ref(false);
 const { currentUsername, currentAddress } = storeToRefs(useUserStore());
 const mapApiKey = process.env.MAP_API_KEY;
 
-const { updateUserUsername, updateUserPassword, updateUserAddress, updateSession, isDonor } = useUserStore();
+const { updateUserUsername, updateUserPassword, updateUserAddress, updateSession, isDonor, currentPasswordLength } = useUserStore();
 
-let googleMapsApiPromise : any = null;
+let googleMapsApiPromise: any = null;
 
 function loadGoogleMapsApi(apiKey: string) {
   if (!googleMapsApiPromise) {
     googleMapsApiPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.onload = () => {
@@ -44,15 +47,15 @@ async function initAutocomplete() {
   }
   try {
     await loadGoogleMapsApi(mapApiKey);
-    const addressInput = document.getElementById('address') as HTMLInputElement;
+    const addressInput = document.getElementById("address") as HTMLInputElement;
     if (addressInput) {
-    const autocomplete = new google.maps.places.Autocomplete(addressInput);
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (place.geometry && place.formatted_address) {
-        address.value = place.formatted_address;
-      }
-    });
+      const autocomplete = new google.maps.places.Autocomplete(addressInput);
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry && place.formatted_address) {
+          address.value = place.formatted_address;
+        }
+      });
     } else {
       console.error("Address input element not found");
     }
@@ -105,6 +108,7 @@ watch(address, (newValue) => {
   updateDebouncedAddress(newValue);
 });
 
+const passwordStars = computed(() => "*".repeat(currentPasswordLength));
 </script>
 
 <template>
@@ -127,7 +131,7 @@ watch(address, (newValue) => {
       <fieldset>
         <legend>Password</legend>
         <div class="setting-display">
-          <div>*********</div>
+          <div>{{ passwordStars }}</div>
           <img @click="editPasswordToggled = !editPasswordToggled" src="@/assets/images/editPencil.png" />
         </div>
         <div class="edit-components" v-if="editPasswordToggled">
@@ -148,26 +152,28 @@ watch(address, (newValue) => {
         <div class="edit-components" v-if="editAddressToggled">
           <input type="text" v-model.trim="address" id="address" placeholder="New address" required />
         </div>
-        <iframe v-if="debouncedAddress"
-        width="350"
-        height="300"
-        style="border: 0"
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${debouncedAddress}`"
-      >
-      </iframe>
-      <iframe v-else
-        width="350" 
-        height="300"
-        style="border: 0"
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${currentAddress}`"
-      ></iframe>
-      <div class="edit-components" v-if="editAddressToggled">
+        <iframe
+          v-if="debouncedAddress"
+          width="350"
+          height="300"
+          style="border: 0"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${debouncedAddress}`"
+        >
+        </iframe>
+        <iframe
+          v-else
+          width="350"
+          height="300"
+          style="border: 0"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          :src="`//www.google.com/maps/embed/v1/place?key=${mapApiKey}&q=${currentAddress}`"
+        ></iframe>
+        <div class="edit-components" v-if="editAddressToggled">
           <button type="submit" class="pure-button pure-button-primary">Update address</button>
         </div>
       </fieldset>
