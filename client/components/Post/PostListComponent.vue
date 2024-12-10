@@ -3,10 +3,10 @@ import ClaimConfirmationForm from "@/components/Claim/ClaimConfirmationForm.vue"
 import CreatePostForm from "@/components/Post/CreatePostForm.vue";
 import EditPostForm from "@/components/Post/EditPostForm.vue";
 import PostComponent from "@/components/Post/PostComponent.vue";
+import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
-import { useToastStore } from "@/stores/toast";
 import { onBeforeMount, ref } from "vue";
 
 const { toast } = storeToRefs(useToastStore());

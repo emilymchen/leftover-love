@@ -4,8 +4,8 @@ import { Router, getExpressRouter } from "./framework/router";
 
 import { Authing, Claiming, Delivering, Messaging, Posting, Sessioning, Tagging } from "./app";
 import { NotAllowedError } from "./concepts/errors";
-import { SessionDoc } from "./concepts/sessioning";
 import { PostDoc } from "./concepts/posting";
+import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
 
 import { z } from "zod";
@@ -184,8 +184,10 @@ class Routes {
   @Router.get("/posts/non-expired-non-claimed")
   async getAllNonExpiredNonClaimedPosts() {
     const posts = await Posting.getPosts();
+    const allClaims = await Claiming.getClaims();
+    const allClaimIds = allClaims.map((claim) => claim.item.toString());
     const checkPromises = posts.map(async (post) => {
-      const [isExpired, isClaimed] = await Promise.all([Posting.isPostExpired(post._id), Claiming.isItemClaimed(post._id)]);
+      const [isExpired, isClaimed] = await Promise.all([new Date(post.expiration_time).toISOString() < new Date().toISOString(), allClaimIds.includes(post._id.toString())]);
       return { post, isExpired, isClaimed };
     });
     const results = await Promise.all(checkPromises);
@@ -439,31 +441,26 @@ class Routes {
     const allUsers = await Authing.getUsers();
 
     const userClaims = await Claiming.getClaimsByUser(user); // claims made by the user
-    const claimedItems = await Promise.all(
-      userClaims.map(async (claim) => Posting.getPostById(claim.item))
-    );
+    const claimedItems = await Promise.all(userClaims.map(async (claim) => Posting.getPostById(claim.item)));
     const validClaimedItems = claimedItems.filter((item): item is PostDoc => item !== null);
     const claimedUsers = validClaimedItems.map((item) => item.author);
-    const claimedUsersWithUsernames = await Promise.all((claimedUsers.map(async (u) => (await Authing.getUserById(u)).username)));
+    const claimedUsersWithUsernames = await Promise.all(claimedUsers.map(async (u) => (await Authing.getUserById(u)).username));
 
     // delivery driver
     const deliveries = await Delivering.getDeliveriesByRequests(userClaims.map((claim) => claim._id));
     const deliveryDrivers = deliveries.map((delivery) => delivery.deliverer);
-    const deliveryDriversWithUsernames = await Promise.all((deliveryDrivers.map(async (u) => (await Authing.getUserById(u)).username)));
+    const deliveryDriversWithUsernames = await Promise.all(deliveryDrivers.map(async (u) => (await Authing.getUserById(u)).username));
 
     const usersWithMessageHistory = await Promise.all(
       allUsers.map(async (u) => {
-        const [sentMessages, receivedMessages] = await Promise.all([
-          Messaging.getMessagesByUser(user, u._id),
-          Messaging.getMessagesByUser(u._id, user),
-        ]);
-  
+        const [sentMessages, receivedMessages] = await Promise.all([Messaging.getMessagesByUser(user, u._id), Messaging.getMessagesByUser(u._id, user)]);
+
         const hasMessages = sentMessages.length > 0 || receivedMessages.length > 0;
         const isClaimedUser = claimedUsersWithUsernames.includes(u.username);
         const isDeliveryDriver = deliveryDriversWithUsernames.includes(u.username);
-  
-        return (hasMessages || isClaimedUser || isDeliveryDriver) ? u : null;
-      })
+
+        return hasMessages || isClaimedUser || isDeliveryDriver ? u : null;
+      }),
     );
 
     return usersWithMessageHistory.filter((u) => u !== null);
