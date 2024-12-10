@@ -4,7 +4,6 @@ import { storeToRefs } from "pinia";
 import { ref, watch } from "vue";
 import { fetchy } from "@/utils/fetchy";
 import { onMounted, computed } from "vue";
-import { on } from "connect-mongo";
 
 let username = ref("");
 let currentPassword = ref("");
