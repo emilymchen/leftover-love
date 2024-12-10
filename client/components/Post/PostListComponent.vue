@@ -11,6 +11,16 @@ import { onBeforeMount, ref } from "vue";
 
 const { toast } = storeToRefs(useToastStore());
 const { isDonor, currentUsername, isRecipient } = storeToRefs(useUserStore());
+let filteredSuggestedTags = ref<Array<string>>([]);
+
+const filterSuggestedTags = () => {
+  const query = tagToAdd.value.toLowerCase();
+  if (query === "") {
+    filteredSuggestedTags.value = [];
+    return;
+  }
+  filteredSuggestedTags.value = suggestedTags.value.filter((tag) => tag.toLowerCase().includes(query) && !filterTags.value.includes(tag));
+};
 
 const loaded = ref(false);
 let posts = ref<Array<Record<string, any>>>([]);
@@ -51,6 +61,7 @@ const addTagFromDropdown = (tag: string | null) => {
     filterTags.value.push(tag);
     // Remove the added tag from the suggestedTags list
     suggestedTags.value = suggestedTags.value.filter((suggestedTag) => suggestedTag !== tag);
+    filteredSuggestedTags.value = [];
     selectedTag.value = null; // Clear the dropdown selection
     filterPosts();
   }
@@ -88,6 +99,7 @@ const addTag = (tag: string) => {
   filterTags.value.push(tag);
   tagToAdd.value = "";
   suggestedTags.value = suggestedTags.value.filter((suggestedTag) => suggestedTag !== tag);
+  filteredSuggestedTags.value = [];
   filterPosts();
 };
 
@@ -234,7 +246,7 @@ onBeforeMount(async () => {
 
     <div class="recipient-tag-filter" v-if="isRecipient">
       <div class="filter-search-bar">
-        <input type="text" id="tags" v-model="tagToAdd" @keydown.enter="addTag(tagToAdd)" placeholder="Type or select tags to filter by (one word)" />
+        <input type="text" id="tags" v-model="tagToAdd" @input="filterSuggestedTags" @keydown.enter="addTag(tagToAdd)" placeholder="Type or select tags to filter by (one word)" />
 
         <select v-model="selectedTag" @change="addTagFromDropdown(selectedTag)">
           <option value="" disabled>Select a tag</option>
@@ -243,6 +255,11 @@ onBeforeMount(async () => {
           </option>
         </select>
       </div>
+        <ol v-if="filteredSuggestedTags.length > 0" class="suggestion-list">
+          <div v-for="tag in filteredSuggestedTags" :key="tag" @click="addTag(tag)" class="suggestion-item">
+            {{ tag }}
+          </div>
+        </ol>
 
       <div class="add-filter">
         <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">Add Tag</button>
@@ -350,6 +367,7 @@ onBeforeMount(async () => {
     justify-content: space-between;
     border: 2px solid var(--darker-green);
     border-radius: 16px;
+    position: relative;
   }
 
   input::placeholder {
@@ -382,6 +400,24 @@ onBeforeMount(async () => {
       border: none;
       margin: 1px;
     }
+  }
+
+  .suggestion-list {
+    position: relative;
+    top: 100%;
+    background-color: var(--light-beige);
+    border: 1px solid var(--darker-green);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto; 
+    z-index: 10;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .suggestion-item {
+    padding: 8px 16px;
+    cursor: pointer;
+    color: var(--darker-green);
   }
 
   .tag-box {

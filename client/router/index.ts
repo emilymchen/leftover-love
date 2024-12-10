@@ -87,6 +87,16 @@ const router = createRouter({
       name: "Welcome",
       component: WelcomeView,
       meta: { requiresAuth: false },
+      beforeEnter: (to, from) => {
+        const { isDonor, isRecipient, isVolunteer } = storeToRefs(useUserStore());
+        if (isDonor.value) {
+          return { name: "Restaurant-Food-Listings" };
+        } else if (isRecipient.value) {
+          return { name: "Recipient-Feed" };
+        } else if (isVolunteer.value) {
+          return { name: "AvailableClaims" };
+        }
+      },
     },
     {
       path: "/login",
