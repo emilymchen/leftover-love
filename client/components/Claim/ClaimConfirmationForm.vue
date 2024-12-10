@@ -135,7 +135,7 @@ watch(address, (newValue) => {
     <div v-if="deliveryOption == 'pickup'" class="form-group">
       <label> Pick up at {{ props.post.location }}</label>
       <iframe
-        width="300"
+        width="365"
         height="300"
         style="border: 0"
         loading="lazy"
@@ -158,7 +158,7 @@ watch(address, (newValue) => {
       <iframe
         v-if="debouncedAddress"
         class="form-group"
-        width="300"
+        width="400"
         height="200"
         style="border: 0"
         loading="lazy"
@@ -170,7 +170,7 @@ watch(address, (newValue) => {
       >
       </iframe>
       <iframe v-else class="form-group"
-        width="300"
+        width="400"
         height="200"
         style="border: 0"
         loading="lazy"

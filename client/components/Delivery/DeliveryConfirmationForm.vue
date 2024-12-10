@@ -53,7 +53,7 @@ function loadGoogleMapsApi(apiKey: string) {
     <div id="delivery">{{ props.delivery.destinationAddress }}</div>
     <iframe
       class="form-group"
-      width="300"
+      width="750"
       height="300"
       style="border: 0"
       loading="lazy"
@@ -86,6 +86,7 @@ function loadGoogleMapsApi(apiKey: string) {
   flex-direction: column;
   gap: 1em;
   padding: 1.5em;
+  align-items: center;
 }
 
 h2 {
