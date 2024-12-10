@@ -82,11 +82,22 @@ class Routes {
   @Router.delete("/users")
   async deleteUser(session: SessionDoc) {
     const user = Sessioning.getUser(session);
+    const posts = await Posting.getByAuthor(user);
+    await Promise.all(
+      posts.map(async (post) => {
+        const claim = await Claiming.getClaimsByItem(post._id);
+        if (claim) {
+          await Delivering.deleteDeliveryByRequest(claim._id); // deletes delivery if post is claimed
+        }
+        await Claiming.deleteClaim(post._id); // deletes others' claims if post is claimed
+        await Tagging.deleteTagsByItem(post._id); // deletes tags if post is tagged
+      }),
+    );
+    Posting.deletePostsByAuthor(user); // deletes posts if user is an author
+    Claiming.deleteClaimsByUser(user); // deletes claims if user is a recipient
+    Delivering.deleteDeliveriesByUser(user); // deletes deliveries if user is a deliverer
+    Messaging.deleteMessagesByUser(user); // deletes all messages to and from user
     Sessioning.end(session);
-    Posting.deletePostsByAuthor(user);
-    Claiming.deleteClaimsByUser(user);
-    Delivering.deleteDeliveriesByUser(user);
-    Messaging.deleteMessagesByUser(user);
     return await Authing.delete(user);
   }
 
