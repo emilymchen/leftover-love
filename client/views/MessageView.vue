@@ -49,15 +49,18 @@ onBeforeMount(async () => {
     <section class="main-container">
       <MessageListComponent @toUser="setSelectedUser" @refreshMessages="getMessages(currentUsername)" @emptyUsers="setEmptyUserMessage" />
       <div class="messages-section">
-        <h1>Messages</h1>
-        <div class="selectedUserInterface" v-if="toUser">
+        <div class="top-section">
+          <h2 class="selected-user-header">Chatting with: {{ toUser }}</h2>
+        </div>
+        <h1>Inbox</h1>
+        <div v-if="toUser" class="message-container">
           <section v-if="messages.length === 0 && loaded">
             <p>No message history</p>
           </section>
           <section v-if="!loaded">
             <p>Loading...</p>
           </section>
-          <article v-for="message in messages" :key="message._id" class="message-container">
+          <article v-for="message in messages" :key="message._id">
             <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername)" />
           </article>
           <SendMessageComponent :toUser="toUser" @refreshMessages="getMessages(currentUsername)" class="send-message" />
@@ -77,24 +80,27 @@ onBeforeMount(async () => {
 h1 {
   text-align: center;
   margin-bottom: 20px;
+  color: var(--orange);
+  background-color: none;
 }
 
-.nudge-form {
-  margin-left: auto;
+h2.selected-user-header {
+  text-align: left;
+  font-size: 1.2em;
+  margin: 10px 20px;
 }
 
 .main-container {
   display: flex;
-  align-items: flex-start;
-  height: calc(100vh - 80px);
+  height: 80vh;
 }
 
 .sidebar {
-  width: 250px;
-  background-color: var(--light-pastel-grey);
-  border-right: 1px solid #ddd;
-  border: 2px solid var(--dark-green);
-  height: 100%;
+  width: 180px;
+  background-color: var(--sidebar-brown);
+  border-right: 2px solid var(--dark-green);
+  border-top: 2px solid var(--dark-green);
+  height: 85vh;
   overflow-y: auto;
 }
 
@@ -102,22 +108,24 @@ h1 {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: var(--white);
+  background-color: var(--light-beige);
+  position: relative;
   height: 100%;
 }
 
-.nonSelectedUserInterface {
-  display: flex;
-  justify-content: center;
-  height: 100%;
+.message-list {
+  padding: 15px;
+  border-radius: 20px;
+  margin: 10px;
+  flex: 1;
 }
 
 .send-message {
   position: fixed;
   bottom: 0;
-  left: 295px;
+  left: 225px;
   right: 0;
-  background-color: var(--white);
+  background-color: var(--light-beige);
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   z-index: 10;
   padding: 10px;
@@ -130,4 +138,22 @@ h3 {
 p {
   margin-left: 10px;
 }
+
+.top-section {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  width: 100%;
+  background-color: var(--sidebar-brown);
+  border-top: 2px solid var(--dark-green);
+  border-bottom: 2px solid var(--selected-brown);
+}
+
+.message-container{
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+}
+
 </style>

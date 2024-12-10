@@ -18,8 +18,8 @@ const onCancel = () => {
     <div class="modal">
       <h3>Confirm Deletion</h3>
       <p>Are you sure you want to delete this message?</p>
-      <button class="delete" @click="onConfirm">Delete</button>
       <button @click="onCancel">Cancel</button>
+      <button class="delete" @click="onConfirm">Delete</button>
     </div>
   </div>
 </template>

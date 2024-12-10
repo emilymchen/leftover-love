@@ -3,7 +3,9 @@ import { ObjectId } from "mongodb";
 import { Router, getExpressRouter } from "./framework/router";
 
 import { Authing, Claiming, Delivering, Messaging, Posting, Sessioning, Tagging } from "./app";
+import { NotAllowedError } from "./concepts/errors";
 import { SessionDoc } from "./concepts/sessioning";
+import { PostDoc } from "./concepts/posting";
 import Responses from "./responses";
 
 import { z } from "zod";
@@ -36,7 +38,7 @@ class Routes {
     Sessioning.isLoggedOut(session);
     for (const word of username.split(" ")) {
       if (word.length > 15) {
-        throw new Error("Limit each word in username to be <15 characters!");
+        throw new NotAllowedError("Limit each word in username to be <15 characters!");
       }
     }
     return await Authing.create(username, password, role, location);
@@ -47,7 +49,7 @@ class Routes {
     const user = Sessioning.getUser(session);
     for (const word of username.split(" ")) {
       if (word.length > 15) {
-        throw new Error("Limit each word in username to be <15 characters!");
+        throw new NotAllowedError("Limit each word in username to be <15 characters!");
       }
     }
     return await Authing.updateUsername(user, username);
@@ -57,6 +59,12 @@ class Routes {
   async updatePassword(session: SessionDoc, currentPassword: string, newPassword: string) {
     const user = Sessioning.getUser(session);
     return Authing.updatePassword(user, currentPassword, newPassword);
+  }
+
+  @Router.get("/user-password")
+  async getPasswordLength(session: SessionDoc) {
+    const user = Sessioning.getUser(session);
+    return await Authing.getPasswordLength(user);
   }
 
   @Router.patch("/users/address")
@@ -421,22 +429,43 @@ class Routes {
   }
 
   /**
-   * Gets all users with message history with the current session user.
+   * Gets all users with message history with the current session user or that the user has claimed an item of.
    * @param session the session of the user
-   * @returns all users with message history with the current session user
+   * @returns all users with message history with the current session user or that the user has claimed an item of
    */
   @Router.get("/messages/users")
   async getUsersWithMessageHistory(session: SessionDoc) {
     const user = Sessioning.getUser(session);
     const allUsers = await Authing.getUsers();
+
+    const userClaims = await Claiming.getClaimsByUser(user); // claims made by the user
+    const claimedItems = await Promise.all(
+      userClaims.map(async (claim) => Posting.getPostById(claim.item))
+    );
+    const validClaimedItems = claimedItems.filter((item): item is PostDoc => item !== null);
+    const claimedUsers = validClaimedItems.map((item) => item.author);
+    const claimedUsersWithUsernames = await Promise.all((claimedUsers.map(async (u) => (await Authing.getUserById(u)).username)));
+
+    // delivery driver
+    const deliveries = await Delivering.getDeliveriesByRequests(userClaims.map((claim) => claim._id));
+    const deliveryDrivers = deliveries.map((delivery) => delivery.deliverer);
+    const deliveryDriversWithUsernames = await Promise.all((deliveryDrivers.map(async (u) => (await Authing.getUserById(u)).username)));
+
     const usersWithMessageHistory = await Promise.all(
       allUsers.map(async (u) => {
-        const sentMessages = await Messaging.getMessagesByUser(user, u._id);
-        const receivedMessages = await Messaging.getMessagesByUser(u._id, user);
-        const allMessages = sentMessages.concat(receivedMessages);
-        return allMessages.length > 0 ? u : null;
-      }),
+        const [sentMessages, receivedMessages] = await Promise.all([
+          Messaging.getMessagesByUser(user, u._id),
+          Messaging.getMessagesByUser(u._id, user),
+        ]);
+  
+        const hasMessages = sentMessages.length > 0 || receivedMessages.length > 0;
+        const isClaimedUser = claimedUsersWithUsernames.includes(u.username);
+        const isDeliveryDriver = deliveryDriversWithUsernames.includes(u.username);
+  
+        return (hasMessages || isClaimedUser || isDeliveryDriver) ? u : null;
+      })
     );
+
     return usersWithMessageHistory.filter((u) => u !== null);
   }
 

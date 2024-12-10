@@ -9,6 +9,7 @@ export const useUserStore = defineStore(
     const currentUsername = ref("");
     const currentAddress = ref("");
     const currentRole = ref("");
+    const currentPasswordLength = ref(0);
 
     const isLoggedIn = computed(() => currentUsername.value !== "");
 
@@ -20,6 +21,7 @@ export const useUserStore = defineStore(
       currentUsername.value = "";
       currentRole.value = "";
       currentAddress.value = "";
+      currentPasswordLength.value = 0;
     };
 
     const createUser = async (username: string, password: string, role: string, location: string) => {
@@ -45,6 +47,13 @@ export const useUserStore = defineStore(
         currentRole.value = "";
         currentAddress.value = "";
       }
+
+      try {
+        const length = await fetchy("/api/user-password", "GET", { alert: false });
+        currentPasswordLength.value = length;
+      } catch {
+        currentPasswordLength.value = 0;
+      }
     };
 
     const logoutUser = async () => {
@@ -58,6 +67,7 @@ export const useUserStore = defineStore(
 
     const updateUserPassword = async (currentPassword: string, newPassword: string) => {
       await fetchy("/api/users/password", "PATCH", { body: { currentPassword, newPassword } });
+      await updateSession();
     };
 
     const updateUserAddress = async (address: string) => {
@@ -73,6 +83,7 @@ export const useUserStore = defineStore(
       currentUsername,
       currentRole,
       currentAddress,
+      currentPasswordLength,
       isLoggedIn,
       isDonor,
       isRecipient,

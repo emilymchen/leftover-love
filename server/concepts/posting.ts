@@ -59,6 +59,10 @@ export default class PostingConcept {
     }
     return post.food_name;
   }
+  
+  async getPostById(_id: ObjectId) {
+    return await this.posts.readOne({ _id });
+  }
 
   async getAuthor(_id: ObjectId) {
     const post = await this.posts.readOne({ _id });

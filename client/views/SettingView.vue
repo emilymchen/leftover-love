@@ -18,24 +18,41 @@ async function delete_() {
 
 <template>
   <main class="account-settings">
+    <div class="settings">
     <h1>Account Settings</h1>
     <UpdateUserForm />
     <div class="logout-delete-buttons">
-      <button class="logout-button" @click="logout">Sign Out</button>
       <button class="delete-button" @click="delete_">Delete User</button>
+      <button class="logout-button" @click="logout">Sign Out</button>
     </div>
+  </div>
   </main>
 </template>
 
 <style scoped>
 h1 {
   color: var(--red);
+  text-align: center;
 }
 
 .account-settings {
   display: flex;
   flex-flow: column nowrap;
-  margin-left: 40px;
+  align-items: center;
+}
+
+.settings {
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: var(--light-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  max-height: 90vh; 
+  overflow-y: auto;
+  padding: 20px;
+  margin: 20px auto;
 }
 
 .logout-delete-buttons {
@@ -52,7 +69,7 @@ h1 {
   }
 
   .delete-button {
-    background-color: var(--light-grey);
+    background-color: var(--orange);
   }
 }
 </style>

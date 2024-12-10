@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineEmits, ref, computed } from "vue";
+import { defineEmits, ref, computed, watch } from "vue";
 import { fetchy } from "../../utils/fetchy";
 import { useToastStore } from "@/stores/toast";
 import { storeToRefs } from "pinia";
@@ -45,17 +45,29 @@ const addTag = (tag: string) => {
   if (!validateTag(tag)) {
     return;
   }
-  
-  tags.value.push(tag);
+
+  tags.value.push(tag.toLowerCase());
   emptyTags();
 };
 
 const validateTag = (tag: string) => {
-  if (tag.split(" ").length === 1 && tag !== "" && !tags.value.includes(tag)) {
+  if (tag.split(" ").length === 1 && tag !== "" && !tags.value.includes(tag.toLowerCase())) {
     toast.value = null;
     return true;
-  } else {
+  } else if ((tag.split(" ").length !== 1 || tag == "") && tags.value.includes(tag.toLowerCase())) {
     toast.value = { message: "Tags must be one word and not have been added before.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
+  } else if (tag.split(" ").length !== 1 || tag == "") {
+    toast.value = { message: "Tags must be one word.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
+  } else if (tags.value.includes(tag.toLowerCase())) {
+    toast.value = { message: "Tags must not have been added before.", style: "error" };
     setTimeout(() => {
       toast.value = null;
     }, 3000);
@@ -66,6 +78,22 @@ const validateTag = (tag: string) => {
 const removeTag = (tag: string) => {
   tags.value.splice(tags.value.indexOf(tag), 1);
 };
+
+// Watch for quantity changes, enforce a maximum quantity of 5
+watch(qty, (newQty) => {
+  if (newQty > 5) {
+    toast.value = {
+      message: "Maximum quantity allowed is 5.",
+      style: "error",
+    };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+
+    // Reset quantity to the maximum value
+    qty.value = 5;
+  }
+});
 
 const emptyForm = () => {
   food_name.value = "";
@@ -88,7 +116,7 @@ const emptyTags = () => {
     </div>
     <div class="form-group">
       <label for="qty">Quantity</label>
-      <input type="number" id="qty" v-model="qty" min="1" max="5" placeholder="Quantity" required />
+      <input type="number" id="qty" v-model="qty" min="1" max="6" placeholder="Quantity" required />
     </div>
     <div class="form-group">
       <label for="expiration_time">Expiration Date</label>
@@ -96,9 +124,9 @@ const emptyTags = () => {
     </div>
     <div class="form-group">
       <label for="tag">Tags (one word)</label>
-      <div class="form-group-tag" style="display: flex; align-items: center; gap: 10px;">
-        <input type="text" id="tag" v-model="tag" placeholder="Tags (e.g., vegan, spicy)" style="flex: 1;" />
-        <button class="add-tag-button" type="button" @click="addTag(tag)">add</button>
+      <div class="form-group-tag" style="display: flex; align-items: center; gap: 10px">
+        <input type="text" id="tag" v-model="tag" placeholder="Tags (e.g., vegan, spicy)" style="flex: 1" @keydown.enter.prevent="addTag(tag)"/>
+        <button class="add-tag-button" type="button" @click="addTag(tag)">Add</button>
       </div>
     </div>
 
@@ -113,8 +141,8 @@ const emptyTags = () => {
     </div>
 
     <div class="create-post-buttons">
+      <button class="close-post-button" type="button" @click="emit('closeCreatePost')">Cancel</button>
       <button class="create-post-button" type="submit">Post</button>
-      <button class="close-post-button" type="button" @click="emit('closeCreatePost')">Close</button>
     </div>
   </form>
 </template>
@@ -169,11 +197,11 @@ h2 {
 .form-group-tag {
   display: flex;
   align-items: center;
-  gap: 10px; 
+  gap: 10px;
 }
 
 .form-group-tag input {
-  flex: 1; 
+  flex: 1;
 }
 textarea,
 input {

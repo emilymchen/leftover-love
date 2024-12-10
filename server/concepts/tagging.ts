@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb";
 import DocCollection, { BaseDoc } from "../framework/doc";
+import { NotAllowedError, NotFoundError, BadValuesError } from "./errors";
 
 export interface TagDoc extends BaseDoc {
   item: ObjectId;
@@ -31,15 +32,15 @@ export default class TaggingConcept {
       let t = new Array<string>();
       t.push(tag.toLowerCase());
       await this.tags.createOne({ item: item, tags: t });
-      const _id = await this.tags.readOne({ item: item });
+      await this.tags.readOne({ item: item });
       return;
     }
     let existingTags = itemDoc.tags;
     if (!existingTags.includes(tag.toLowerCase())) {
       existingTags.push(tag.toLowerCase());
-      const _id = await this.tags.partialUpdateOne({ item }, { tags: existingTags });
+      await this.tags.partialUpdateOne({ item }, { tags: existingTags });
     } else {
-      throw new Error(`Tag "${tag.toLowerCase()}" already exists for item ${item}`);
+      throw new TagAlreadyExistsError(tag, item);
     }
   }
 
@@ -55,19 +56,18 @@ export default class TaggingConcept {
   async delTag(tag: string, item: ObjectId) {
     const itemDoc = await this.tags.readOne({ item });
     if (!itemDoc) {
-      throw new Error(`Item with ID ${item} does not exist.`);
+      throw new NotFoundError(`Item with ID ${item} does not exist.`);
     }
 
     let existingTags = itemDoc.tags;
-    if (existingTags.includes(tag.toLowerCase())) {
-      const index = existingTags.indexOf(tag.toLowerCase(), 0);
-      if (index > -1) {
-        existingTags.splice(index, 1);
-      }
-      await this.tags.partialUpdateOne({ item }, { tags: existingTags });
-    } else {
-      throw new Error(`Tag "${tag.toLowerCase()}" does not exist for item ${item}`);
+    if (!existingTags.includes(tag.toLowerCase())) {
+      throw new TagNotAssociatedError(tag, item);
     }
+    const index = existingTags.indexOf(tag.toLowerCase(), 0);
+    if (index > -1) {
+      existingTags.splice(index, 1);
+    }
+    await this.tags.partialUpdateOne({ item }, { tags: existingTags });
   }
 
   /**
@@ -88,7 +88,7 @@ export default class TaggingConcept {
   async deleteItem(item: ObjectId) {
     const deleteResult = await this.tags.deleteOne({ item });
     if (deleteResult.deletedCount === 0) {
-      throw new Error(`Item with ID ${item} does not exist.`);
+      throw new NotFoundError(`Item with ID ${item} does not exist.`);
     }
   }
 
@@ -114,11 +114,23 @@ export default class TaggingConcept {
    */
   async getItemsWithTags(tags: Array<string>): Promise<TagDoc[]> {
     if (tags.length === 0) {
-      throw new Error("No tags provided to search for.");
+      throw new BadValuesError("No tags provided to search for.");
     }
 
     const matchingItems = await this.tags.readMany({ tags: { $all: tags } });
 
     return matchingItems;
+  }
+}
+
+export class TagNotAssociatedError extends BadValuesError {
+  constructor(public readonly tag: string, public readonly item: ObjectId) {
+    super(`Tag "${tag}" is not associated with item ${item}`);
+  }
+}
+
+export class TagAlreadyExistsError extends NotAllowedError {
+  constructor(public readonly tag: string, public readonly item: ObjectId) {
+    super(`Tag "${tag}" already exists for item ${item}`);
   }
 }

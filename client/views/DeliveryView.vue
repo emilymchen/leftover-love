@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DeliveryListComponent from "@/components/Delivery/DeliveryListComponent.vue";
-import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
@@ -93,9 +92,9 @@ async function getMessages(user: string, claimUser: string) {
             <article v-for="message in messages" :key="message._id" class="message-container">
               <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername, toUser)" />
             </article>
-            <SendMessageForm :toUser="toUser" @refreshMessages="getMessages(currentUsername, toUser)" class="send-message" /> 
           </div>
-          <button @click="setModalVisible(false, toUser)">Close</button>
+            <SendMessageForm :toUser="toUser" @refreshMessages="getMessages(currentUsername, toUser)" class="send-message" /> 
+          <button class="close-button" @click="setModalVisible(false, toUser)">Close</button>
         </div>
        </div>
     </section>
@@ -120,10 +119,45 @@ async function getMessages(user: string, claimUser: string) {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 80%;
-  max-width: 600px;
+  width: 90%;
+  max-width: 800px;
   max-height: 80%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  height: 80vh;
+}
+
+.messages-section {
+  flex-grow: 1;
   overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.send-message {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding: 10px;
+}
+
+.close-button {
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: var(--orange-dark);
+  transform: none;
 }
 
 h1 {

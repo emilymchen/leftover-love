@@ -17,7 +17,7 @@ async function register() {
   await createUser(username.value, password.value, props.role, address.value);
   await loginUser(username.value, password.value);
   await updateSession();
-  void router.push({ name: "Home" });
+  await router.push({ name: "Home" });
 }
 
 let googleMapsApiPromise: any = null;
@@ -93,8 +93,6 @@ watch(address, (newValue) => {
 
 <template>
   <form class="pure-form pure-form-aligned" @submit.prevent="register">
-    <!-- <h3>Register User</h3>
-    <h3>{{ props.role }}</h3> -->
     <fieldset>
       <div class="pure-control-group">
         <label for="aligned-name">Username</label>
@@ -139,8 +137,6 @@ watch(address, (newValue) => {
   </form>
 </template>
 
-
-
 <style scoped>
 h3 {
   display: flex;
@@ -150,14 +146,12 @@ h3 {
 .pure-control-group {
   font-size: 20px;
   margin-left: -100px;
-
 }
 
 .map-display {
   margin-left: -50px;
   margin-top: 30px;
 }
-
 
 .submit-button {
   background-color: #d23818;

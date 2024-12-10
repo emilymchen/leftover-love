@@ -45,10 +45,10 @@ onBeforeMount(async () => {
         </ul>
       </div>
     </nav>
-    <article v-if="toast !== null" class="toast" :class="toast.style">
-      <p>{{ toast.message }}</p>
-    </article>
   </header>
+  <article v-if="toast !== null" class="toast" :class="toast.style">
+    <p>{{ toast.message }}</p>
+  </article>
   <RouterView />
 </template>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, computed } from "vue";
+import { defineProps, defineEmits, ref, computed, watch } from "vue";
 import { fetchy } from "../../utils/fetchy";
 import { useToastStore } from "@/stores/toast";
 import { storeToRefs } from "pinia";
@@ -49,6 +49,7 @@ const editPost = async (food_name: string, quantity: number, expiration_time: st
   emit("editPost", null);
   emit("closeEditPost");
 };
+
 const deletePost = async () => {
   try {
     await fetchy(`/api/posts/${props.post._id}`, "DELETE");
@@ -63,16 +64,28 @@ const addTag = (tag: string) => {
   if (!validateTag(tag)) {
     return;
   }
-  tagsToDisplay.value.push(tag);
+  tagsToDisplay.value.push(tag.toLowerCase());
   tagToAdd.value = "";
 };
 
 const validateTag = (tag: string) => {
-  if (tag.split(" ").length === 1 && tag !== "" && !tagsToDisplay.value.includes(tag)) {
+  if (tag.split(" ").length === 1 && tag !== "" && !tagsToDisplay.value.includes(tag.toLowerCase())) {
     toast.value = null;
     return true;
-  } else {
+  } else if ((tag.split(" ").length !== 1 || tag == "") && tagsToDisplay.value.includes(tag.toLowerCase())) {
     toast.value = { message: "Tags must be one word and not have been added before.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
+  } else if (tag.split(" ").length !== 1 || tag == "") {
+    toast.value = { message: "Tags must be one word.", style: "error" };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+    return false;
+  } else if (tagsToDisplay.value.includes(tag.toLowerCase())) {
+    toast.value = { message: "Tags must not have been added before.", style: "error" };
     setTimeout(() => {
       toast.value = null;
     }, 3000);
@@ -83,6 +96,22 @@ const validateTag = (tag: string) => {
 const removeTag = (tag: string) => {
   tagsToDisplay.value.splice(tagsToDisplay.value.indexOf(tag), 1);
 };
+
+// Watch for quantity changes, enforce a maximum quantity of 5
+watch(qty, (newQty) => {
+  if (newQty > 5) {
+    toast.value = {
+      message: "Maximum quantity allowed is 5.",
+      style: "error",
+    };
+    setTimeout(() => {
+      toast.value = null;
+    }, 3000);
+
+    // Reset quantity to the maximum value
+    qty.value = 5;
+  }
+});
 </script>
 
 <template>
@@ -94,7 +123,7 @@ const removeTag = (tag: string) => {
     </div>
     <div class="form-group">
       <label for="qty">Quantity</label>
-      <input type="number" id="qty" v-model="qty" min="1" max="5" placeholder="Quantity" required />
+      <input type="number" id="qty" v-model="qty" min="1" max="6" placeholder="Quantity" required />
     </div>
     <div class="form-group">
       <label for="expiration_time">Expiration Date</label>
@@ -104,8 +133,8 @@ const removeTag = (tag: string) => {
     <div class="form-group">
       <label for="tags">Tags (one word)</label>
       <div class="form-group-tag" style="display: flex; align-items: center; gap: 10px;">
-        <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags (e.g., vegan, spicy)" />
-        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">add</button>
+        <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags (e.g., vegan, spicy)" @keydown.enter.prevent="addTag(tagToAdd)"/>
+        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">Add</button>
       </div>
     </div>
 
@@ -120,16 +149,16 @@ const removeTag = (tag: string) => {
     </div>
 
     <div class="create-post-buttons">
-      <button class="btn-small pure-button-primary pure-button" type="submit">Save</button>
-      <button class="btn-small pure-button" @click="emit('closeEditPost')">Cancel</button>
-      <button class="button-error btn-small pure-button" type="button" @click="deletePost">Delete</button>
+      <button class="close-post-button"  @click="emit('closeEditPost')">Cancel</button>
+      <button class="delete-post-button" type="button" @click="deletePost">Delete</button>
+      <button class="save-post-button" type="submit">Save</button>
     </div>
   </form>
 </template>
 
 <style scoped>
 form {
-  border-radius: qem;
+  border-radius: 1em;
   display: flex;
   flex-direction: column;
   gap: 1em;
@@ -224,6 +253,14 @@ button {
 
   .close-post-button {
     background-color: var(--light-grey);
+  }
+
+  .save-post-button{
+    background-color: var(--pink);
+  }
+
+  .delete-post-button{
+    background-color: var(--orange);
   }
 }
 </style>

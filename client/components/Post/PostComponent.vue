@@ -112,7 +112,7 @@ onMounted(async () => {
   font-weight: bold;
   cursor: pointer;
   text-align: center;
-  background-color: var(--orange);
+  background-color: var(--pink);
   transition: transform 0.2s ease;
   margin-bottom: 0px; 
 }

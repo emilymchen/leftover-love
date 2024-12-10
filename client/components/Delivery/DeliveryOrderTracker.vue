@@ -46,8 +46,7 @@ onBeforeMount(async () => {
 // messaging modal infrastructure
 
 const messages = ref<Array<Record<string, string>>>([]);
-const { isLoggedIn, currentUsername } = storeToRefs(useUserStore());
-const { toast } = storeToRefs(useToastStore());
+const { currentUsername } = storeToRefs(useUserStore());
 const messageLoaded = ref(false);
 const messageView = ref(false);
 const toUser = ref("");
@@ -141,9 +140,9 @@ async function getMessages(user: string) {
             <article v-for="message in messages" :key="message._id" class="message-container">
               <MessageComponent :message="message" @refreshMessages="getMessages(currentUsername)" />
             </article>
-            <SendMessageForm :toUser="toUser" @refreshMessages="getMessages(currentUsername)" class="send-message" /> 
           </div>
-          <button @click="setModalVisible(false)">Close</button>
+            <SendMessageForm :toUser="toUser" @refreshMessages="getMessages(currentUsername)" class="send-message" /> 
+          <button class="close-button" @click="setModalVisible(false)">Close</button>
         </div>
       </div>
     </div>
@@ -168,10 +167,45 @@ async function getMessages(user: string) {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 80%;
-  max-width: 600px;
+  width: 90%;
+  max-width: 800px;
   max-height: 80%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  height: 80vh;
+}
+
+.messages-section {
+  flex-grow: 1;
   overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.send-message {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding: 10px;
+}
+
+.close-button {
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: var(--orange-dark);
+  transform: none;
 }
 
 .base {
