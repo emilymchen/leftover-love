@@ -48,7 +48,7 @@ export const useUserStore = defineStore(
       }
 
       try {
-        const { length } = await fetchy("/api/users/password", "GET", { alert: false });
+        const length = await fetchy("/api/user-password", "GET", { alert: false });
         currentPasswordLength.value = length;
       } catch {
         currentPasswordLength.value = 9;

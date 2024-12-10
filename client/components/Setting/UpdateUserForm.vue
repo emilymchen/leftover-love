@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
-import { ref, watch } from "vue";
-import { fetchy } from "@/utils/fetchy";
-import { onMounted, computed } from "vue";
-import { on } from "connect-mongo";
+import { computed, ref, watch } from "vue";
 
 let username = ref("");
 let currentPassword = ref("");
@@ -107,7 +104,8 @@ const updateDebouncedAddress = debounce((newValue: string) => {
 watch(address, (newValue) => {
   updateDebouncedAddress(newValue);
 });
-
+console.log("asdf");
+console.log(currentPasswordLength);
 const passwordStars = computed(() => "*".repeat(currentPasswordLength));
 </script>
 

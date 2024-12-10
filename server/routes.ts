@@ -3,9 +3,9 @@ import { ObjectId } from "mongodb";
 import { Router, getExpressRouter } from "./framework/router";
 
 import { Authing, Claiming, Delivering, Messaging, Posting, Sessioning, Tagging } from "./app";
+import { NotAllowedError } from "./concepts/errors";
 import { SessionDoc } from "./concepts/sessioning";
 import Responses from "./responses";
-import { NotAllowedError } from "./concepts/errors";
 
 import { z } from "zod";
 
@@ -60,8 +60,8 @@ class Routes {
     return Authing.updatePassword(user, currentPassword, newPassword);
   }
 
-  @Router.get("users/password")
-  async getPasswordLength(session: SessionDoc){
+  @Router.get("/user-password")
+  async getPasswordLength(session: SessionDoc) {
     const user = Sessioning.getUser(session);
     return await Authing.getPasswordLength(user);
   }
