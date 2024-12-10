@@ -193,7 +193,7 @@ onBeforeMount(() => {
     font-weight: bold;
     cursor: pointer;
     text-align: center;
-    background-color: var(--brown);
+    background-color: var(--darker-green);
     transition: transform 0.2s ease;
     position: relative;
     bottom: 0;

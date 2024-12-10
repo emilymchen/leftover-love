@@ -64,10 +64,10 @@ async function unclaim() {
       <button class="expired-button">Expired</button>
     </div>
     <div v-if="props.claim.method === 'Delivery' && props.claim.deliverer !== null">
-      <button class="edit-button" @click="emit('triggerMessageModal', 'driver')">Message Driver</button>
+      <button class="message-button" @click="emit('triggerMessageModal', 'driver')">Message Driver</button>
     </div>
     <div>
-      <button class="edit-button" @click="emit('triggerMessageModal', 'donor')">Message Donor</button>
+      <button class="message-button" @click="emit('triggerMessageModal', 'donor')">Message Donor</button>
     </div>
   </div>
   <div class="base" v-if="props.category === 'pending' && props.claim.method === 'Delivery' && props.claim.deliverer === null">
@@ -115,7 +115,33 @@ async function unclaim() {
     font-weight: bold;
     cursor: pointer;
     text-align: center;
-    background-color: var(--orange);
+    background-color: var(--pink);
+    transition: transform 0.2s ease;
+    position: relative;
+    bottom: 0;
+  }
+
+  .track-order-button {
+    width: 100%;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    background-color: var(--brown);
+    transition: transform 0.2s ease;
+    position: relative;
+    bottom: 0;
+  }
+
+  .message-button {
+    width: 100%;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    background-color: var(--darker-green);
     transition: transform 0.2s ease;
     position: relative;
     bottom: 0;

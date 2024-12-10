@@ -134,7 +134,7 @@ watch(qty, (newQty) => {
       <label for="tags">Tags (one word)</label>
       <div class="form-group-tag" style="display: flex; align-items: center; gap: 10px;">
         <input type="text" id="tags" v-model="tagToAdd" placeholder="Tags (e.g., vegan, spicy)" @keydown.enter.prevent="addTag(tagToAdd)"/>
-        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">add</button>
+        <button class="add-tag-button" type="button" @click="addTag(tagToAdd)">Add</button>
       </div>
     </div>
 
@@ -149,16 +149,16 @@ watch(qty, (newQty) => {
     </div>
 
     <div class="create-post-buttons">
-      <button class="btn-small pure-button-primary pure-button" type="submit">Save</button>
-      <button class="btn-small pure-button" @click="emit('closeEditPost')">Cancel</button>
-      <button class="button-error btn-small pure-button" type="button" @click="deletePost">Delete</button>
+      <button class="close-post-button"  @click="emit('closeEditPost')">Cancel</button>
+      <button class="delete-post-button" type="button" @click="deletePost">Delete</button>
+      <button class="save-post-button" type="submit">Save</button>
     </div>
   </form>
 </template>
 
 <style scoped>
 form {
-  border-radius: qem;
+  border-radius: 1em;
   display: flex;
   flex-direction: column;
   gap: 1em;
@@ -253,6 +253,14 @@ button {
 
   .close-post-button {
     background-color: var(--light-grey);
+  }
+
+  .save-post-button{
+    background-color: var(--pink);
+  }
+
+  .delete-post-button{
+    background-color: var(--orange);
   }
 }
 </style>

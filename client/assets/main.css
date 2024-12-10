@@ -47,7 +47,7 @@ button {
   padding: 0.5em 1em;
   border-radius: 0.25em;
   border: 1px solid #dee2e6;
-  background: var(--orange);
+  background: var(--pink);
   color: white;
   cursor: pointer;
   transition: background 0.3s ease;

@@ -126,7 +126,7 @@ const emptyTags = () => {
       <label for="tag">Tags (one word)</label>
       <div class="form-group-tag" style="display: flex; align-items: center; gap: 10px">
         <input type="text" id="tag" v-model="tag" placeholder="Tags (e.g., vegan, spicy)" style="flex: 1" @keydown.enter.prevent="addTag(tag)"/>
-        <button class="add-tag-button" type="button" @click="addTag(tag)">add</button>
+        <button class="add-tag-button" type="button" @click="addTag(tag)">Add</button>
       </div>
     </div>
 
@@ -141,8 +141,8 @@ const emptyTags = () => {
     </div>
 
     <div class="create-post-buttons">
+      <button class="close-post-button" type="button" @click="emit('closeCreatePost')">Cancel</button>
       <button class="create-post-button" type="submit">Post</button>
-      <button class="close-post-button" type="button" @click="emit('closeCreatePost')">Close</button>
     </div>
   </form>
 </template>

@@ -22,8 +22,8 @@ async function delete_() {
     <h1>Account Settings</h1>
     <UpdateUserForm />
     <div class="logout-delete-buttons">
-      <button class="logout-button" @click="logout">Sign Out</button>
       <button class="delete-button" @click="delete_">Delete User</button>
+      <button class="logout-button" @click="logout">Sign Out</button>
     </div>
   </div>
   </main>
@@ -69,7 +69,7 @@ h1 {
   }
 
   .delete-button {
-    background-color: var(--light-grey);
+    background-color: var(--orange);
   }
 }
 </style>
