@@ -10,10 +10,10 @@ let editUsernameToggled = ref(false);
 let editPasswordToggled = ref(false);
 let address = ref("");
 let editAddressToggled = ref(false);
-const { currentUsername, currentAddress } = storeToRefs(useUserStore());
+const { currentUsername, currentAddress, currentPasswordLength } = storeToRefs(useUserStore());
 const mapApiKey = process.env.MAP_API_KEY;
 
-const { updateUserUsername, updateUserPassword, updateUserAddress, updateSession, isDonor, currentPasswordLength } = useUserStore();
+const { updateUserUsername, updateUserPassword, updateUserAddress, updateSession, isDonor } = useUserStore();
 
 let googleMapsApiPromise: any = null;
 
@@ -104,9 +104,8 @@ const updateDebouncedAddress = debounce((newValue: string) => {
 watch(address, (newValue) => {
   updateDebouncedAddress(newValue);
 });
-console.log("asdf");
-console.log(currentPasswordLength);
-const passwordStars = computed(() => "*".repeat(currentPasswordLength));
+
+const passwordStars = computed(() => "*".repeat(currentPasswordLength.value));
 </script>
 
 <template>

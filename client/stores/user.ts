@@ -21,6 +21,7 @@ export const useUserStore = defineStore(
       currentUsername.value = "";
       currentRole.value = "";
       currentAddress.value = "";
+      currentPasswordLength.value = 0;
     };
 
     const createUser = async (username: string, password: string, role: string, location: string) => {
@@ -51,7 +52,7 @@ export const useUserStore = defineStore(
         const length = await fetchy("/api/user-password", "GET", { alert: false });
         currentPasswordLength.value = length;
       } catch {
-        currentPasswordLength.value = 9;
+        currentPasswordLength.value = 0;
       }
     };
 
@@ -66,6 +67,7 @@ export const useUserStore = defineStore(
 
     const updateUserPassword = async (currentPassword: string, newPassword: string) => {
       await fetchy("/api/users/password", "PATCH", { body: { currentPassword, newPassword } });
+      await updateSession();
     };
 
     const updateUserAddress = async (address: string) => {
