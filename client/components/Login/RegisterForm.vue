@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
+import { loadGoogleMapsApi } from "@/utils/googleMapsLoader";
 import { defineProps, onMounted, ref, watch } from "vue";
 
 const username = ref("");
@@ -18,28 +19,6 @@ async function register() {
   await loginUser(username.value, password.value);
   await updateSession();
   await router.push({ name: "Home" });
-}
-
-let googleMapsApiPromise: any = null;
-
-function loadGoogleMapsApi(apiKey: string) {
-  if (!googleMapsApiPromise) {
-    googleMapsApiPromise = new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-      script.async = true;
-      script.onload = () => {
-        console.log("Google Maps API loaded successfully");
-        resolve(null);
-      };
-      script.onerror = (error) => {
-        console.error("Error loading Google Maps API:", error);
-        reject(error);
-      };
-      document.head.appendChild(script);
-    });
-  }
-  return googleMapsApiPromise;
 }
 
 async function initAutocomplete() {

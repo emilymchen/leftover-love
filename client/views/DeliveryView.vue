@@ -19,7 +19,9 @@ async function getMyDeliveries() {
   } catch {
     return;
   }
-  myDeliveries.value = deliveryResults;
+  myDeliveries.value = deliveryResults.value = deliveryResults.sort((a: any, b: any) => 
+    new Date(a.expiration_time).getTime() - new Date(b.expiration_time).getTime()
+  );
   console.log(myDeliveries.value);
 }
 async function updateDeliveries() {

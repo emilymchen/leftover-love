@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DeliveryListComponent from "@/components/Delivery/DeliveryListComponent.vue";
-import { useToastStore } from "@/stores/toast";
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
@@ -17,7 +16,9 @@ async function getDeliveryRequests() {
   } catch {
     return;
   }
-  deliveryRequests.value = deliveryResults;
+  deliveryRequests.value = deliveryRequests.value = deliveryResults.sort((a: any, b: any) => 
+    new Date(a.expiration_time).getTime() - new Date(b.expiration_time).getTime()
+  );
   console.log(deliveryRequests.value);
 }
 

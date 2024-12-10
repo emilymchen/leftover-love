@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { fetchy } from "@/utils/fetchy";
+import { loadGoogleMapsApi } from "@/utils/googleMapsLoader";
 import { defineEmits, defineProps, nextTick, ref, watch } from "vue";
 
 const props = defineProps(["post"]);
@@ -47,28 +48,6 @@ watch(deliveryOption, (newValue) => {
     });
   }
 });
-
-let googleMapsApiPromise: any = null;
-
-function loadGoogleMapsApi(apiKey: string) {
-  if (!googleMapsApiPromise) {
-    googleMapsApiPromise = new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-      script.async = true;
-      script.onload = () => {
-        console.log("Google Maps API loaded successfully");
-        resolve(null);
-      };
-      script.onerror = (error) => {
-        console.error("Error loading Google Maps API:", error);
-        reject(error);
-      };
-      document.head.appendChild(script);
-    });
-  }
-  return googleMapsApiPromise;
-}
 
 async function initAutocomplete() {
   if (mapApiKey === undefined) {
