@@ -446,6 +446,11 @@ class Routes {
     const claimedUsers = validClaimedItems.map((item) => item.author);
     const claimedUsersWithUsernames = await Promise.all((claimedUsers.map(async (u) => (await Authing.getUserById(u)).username)));
 
+    // delivery driver
+    const deliveries = await Delivering.getDeliveriesByRequests(userClaims.map((claim) => claim._id));
+    const deliveryDrivers = deliveries.map((delivery) => delivery.deliverer);
+    const deliveryDriversWithUsernames = await Promise.all((deliveryDrivers.map(async (u) => (await Authing.getUserById(u)).username)));
+
     const usersWithMessageHistory = await Promise.all(
       allUsers.map(async (u) => {
         const [sentMessages, receivedMessages] = await Promise.all([
@@ -455,8 +460,9 @@ class Routes {
   
         const hasMessages = sentMessages.length > 0 || receivedMessages.length > 0;
         const isClaimedUser = claimedUsersWithUsernames.includes(u.username);
+        const isDeliveryDriver = deliveryDriversWithUsernames.includes(u.username);
   
-        return (hasMessages || isClaimedUser) ? u : null;
+        return (hasMessages || isClaimedUser || isDeliveryDriver) ? u : null;
       })
     );
 
