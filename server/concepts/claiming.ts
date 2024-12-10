@@ -93,6 +93,14 @@ export default class ClaimingConcept {
   }
 
   /**
+   * Given a user, deletes all claims made by them.
+   */
+  async deleteClaimsByUser(claimUser: ObjectId) {
+    await this.claims.deleteMany({ claimUser });
+    return { msg: "Claims deleted successfully!" };
+  }
+
+  /**
    * Given an item, returns the claim associated with it.
    */
   async getClaimsByItem(item: ObjectId) {

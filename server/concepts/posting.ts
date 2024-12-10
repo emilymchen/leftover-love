@@ -59,7 +59,7 @@ export default class PostingConcept {
     }
     return post.food_name;
   }
-  
+
   async getPostById(_id: ObjectId) {
     return await this.posts.readOne({ _id });
   }
@@ -93,6 +93,11 @@ export default class PostingConcept {
   async delete(_id: ObjectId) {
     await this.posts.deleteOne({ _id });
     return { msg: "Post deleted successfully!" };
+  }
+
+  async deletePostsByAuthor(author: ObjectId) {
+    await this.posts.deleteMany({ author });
+    return { msg: "Posts associated with this author deleted successfully!" };
   }
 
   async assertAuthorIsUser(_id: ObjectId, user: ObjectId) {

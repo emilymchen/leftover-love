@@ -45,6 +45,12 @@ export default class MessagingConcept {
     return { msg: "Message deleted successfully!" };
   }
 
+  async deleteMessagesByUser(_id: ObjectId) {
+    await this.messages.deleteMany({ from: _id });
+    await this.messages.deleteMany({ to: _id });
+    return { msg: "Messages deleted successfully!" };
+  }
+
   async assertSenderIsUser(_id: ObjectId, user: ObjectId) {
     const message = await this.messages.readOne({ _id });
     if (!message) {

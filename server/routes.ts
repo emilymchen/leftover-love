@@ -83,6 +83,10 @@ class Routes {
   async deleteUser(session: SessionDoc) {
     const user = Sessioning.getUser(session);
     Sessioning.end(session);
+    Posting.deletePostsByAuthor(user);
+    Claiming.deleteClaimsByUser(user);
+    Delivering.deleteDeliveriesByUser(user);
+    Messaging.deleteMessagesByUser(user);
     return await Authing.delete(user);
   }
 

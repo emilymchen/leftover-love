@@ -61,6 +61,11 @@ export default class DeliveringConcept {
     return await this.deliveries.readMany({ deliverer });
   }
 
+  async deleteDeliveriesByUser(deliverer: ObjectId) {
+    await this.deliveries.deleteMany({ deliverer });
+    return { msg: "Deliveries associated with this user deleted successfully!" };
+  }
+
   async getDeliveryByRequest(request: ObjectId) {
     return await this.deliveries.readOne({ request });
   }
